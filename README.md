@@ -1,1 +1,1 @@
-# Sorteador
+# Counter-Strike - Manager
