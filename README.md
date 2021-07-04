@@ -1,3 +1,5 @@
+<br/>
+
 <p align="center">
   <a href="https://github.com/Julibazzi">
     <img alt="Author Juliano Bazzi" src="https://img.shields.io/badge/author-Juliano%20Bazzi-%23ffb84d?color=01579b&style=for-the-badge">
@@ -21,8 +23,9 @@ Coming soon.
 
 ## Technologies
 
-- [Vue.js 3](https://vuejs.org/)
+- [Vue.js 2](https://vuejs.org/)
 - [Typescript](https://www.typescriptlang.org/)
+- [BootstrapVue](https://bootstrap-vue.org/)
 - [Firebase (Auth and Firestore)](https://firebase.google.com/)
 
 ## Installation
