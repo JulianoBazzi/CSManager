@@ -7,11 +7,11 @@
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item to="/">Início</b-nav-item>
-          <b-nav-item to="/players">Jogadores</b-nav-item>
-          <b-nav-item to="/maps">Mapas</b-nav-item>
-          <b-nav-item to="/sweepstakes">Sorteios</b-nav-item>
-          <b-nav-item to="/about">Sobre</b-nav-item>
+          <b-nav-item to="/" active-class="pageActive" exact>Início</b-nav-item>
+          <b-nav-item to="/players" active-class="pageActive">Jogadores</b-nav-item>
+          <b-nav-item to="/maps" active-class="pageActive">Mapas</b-nav-item>
+          <b-nav-item to="/sweepstakes" active-class="pageActive">Sorteios</b-nav-item>
+          <b-nav-item to="/about" active-class="pageActive">Sobre</b-nav-item>
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->
@@ -48,6 +48,10 @@ export default class NavBar extends Vue {
 <style scoped>
 .navBar {
   padding-bottom: 20px;
+}
+
+.pageActive {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 </style>
