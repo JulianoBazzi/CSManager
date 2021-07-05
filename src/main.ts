@@ -34,12 +34,14 @@ Vue.config.errorHandler = (err: Error, vm: Vue, info: string) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let app: any;
 
-firebase.auth().onAuthStateChanged(() => {
+firebase.auth().onAuthStateChanged((user) => {
   if (!app) {
     app = new Vue({
       router,
       store,
       render: (h) => h(App),
     }).$mount('#app');
+
+    app.$store.commit('setUser', user);
   }
 });

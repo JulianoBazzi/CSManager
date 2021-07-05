@@ -17,6 +17,7 @@
             v-model="email"
             type="email"
             required
+            :disabled="isLoading"
           ></b-form-input>
         </b-form-group>
 
@@ -30,25 +31,16 @@
             type="password"
             minlength="6"
             required
+            :disabled="isLoading"
           ></b-form-input>
         </b-form-group>
 
-        <b-form-checkbox
-          class="mb-4"
-          id="checkbox-1"
-          v-model="remember"
-          name="remember"
-          value="accepted"
-          unchecked-value="not_accepted"
-        >
-          Manter-me conectado
-        </b-form-checkbox>
-
-        <b-button type="submit" variant="success">
-          <b-icon icon="box-arrow-in-right"/>
+        <b-button type="submit" variant="success" :disabled="isLoading">
+          <b-spinner small v-if="isLoading"></b-spinner>
+          <b-icon icon="box-arrow-in-right" v-else/>
             Entrar
         </b-button>
-        <b-button class="ml-2" @click="toggleButton" variant="info">
+        <b-button class="ml-2" @click="toggleButton" variant="info" :disabled="isLoading">
           <b-icon icon="person-plus"/>
             Registrar-se
         </b-button>
@@ -66,6 +58,7 @@
             v-model="name"
             minlength="3"
             required
+            :disabled="isLoading"
           ></b-form-input>
         </b-form-group>
 
@@ -79,6 +72,7 @@
             v-model="email"
             type="email"
             required
+            :disabled="isLoading"
           ></b-form-input>
         </b-form-group>
 
@@ -92,11 +86,27 @@
             type="password"
             minlength="6"
             required
+            :disabled="isLoading"
           ></b-form-input>
         </b-form-group>
 
-        <b-button type="submit" variant="success">
-          <b-icon icon="person-plus"/>
+        <b-form-group
+          id="register-group-password-repeat"
+          label="Repetir Senha"
+          label-for="register-password-repeat">
+          <b-form-input
+            id="register-password-repeat"
+            v-model="passwordRepeat"
+            type="password"
+            minlength="6"
+            required
+            :disabled="isLoading"
+          ></b-form-input>
+        </b-form-group>
+
+        <b-button type="submit" variant="success" :disabled="isLoading">
+          <b-spinner small v-if="isLoading"></b-spinner>
+          <b-icon icon="person-plus" v-else/>
             Registrar-se
         </b-button>
       </b-form>
@@ -106,14 +116,13 @@
 
 <script lang="ts">
 import AppError, { ToastsTypeEnum } from '@/errors/AppError';
+import firebase from 'firebase';
 import { Component, Vue } from 'vue-property-decorator';
 
-@Component({
-  data: {
-
-  },
-})
+@Component
 export default class Login extends Vue {
+  isLoading = false;
+
   login = true;
 
   title = 'Entrar';
@@ -126,17 +135,42 @@ export default class Login extends Vue {
 
   password = '';
 
+  passwordRepeat = '';
+
   toggleButton(): void {
     this.login = !this.login;
     this.title = this.login ? 'Entrar' : 'Registrar-se';
     this.name = '';
     this.email = '';
     this.password = '';
+    this.passwordRepeat = '';
   }
 
   async handleLogin(): Promise<void> {
     if (!this.email || !this.password) {
-      throw new AppError('Efetuar Login', 'O e-mail e senha é obrigatório', ToastsTypeEnum.Warning);
+      throw new AppError('Login', 'O e-mail e senha é obrigatório!', ToastsTypeEnum.Warning);
+    }
+
+    this.isLoading = true;
+    try {
+      const { user } = await firebase
+        .auth()
+        .signInWithEmailAndPassword(this.email, this.password);
+
+      if (!user) {
+        throw new AppError('Login', 'Usuário não encontrado!', ToastsTypeEnum.Warning);
+      }
+
+      if (!user?.emailVerified) {
+        await user?.sendEmailVerification();
+      }
+
+      this.$store.commit('setUser', user);
+
+      this.isLoading = false;
+      this.$router.push('/');
+    } catch (error) {
+      this.isLoading = false;
     }
 
     // Validar principais rejeições do Firebase
@@ -147,9 +181,15 @@ export default class Login extends Vue {
   }
 
   async handleRegister(): Promise<void> {
-    if (!this.name || !this.email || !this.password) {
-      throw new AppError('Efetuar Registro', 'O nome, e-mail e senha é obrigatório', ToastsTypeEnum.Warning);
+    if (!this.name || !this.email || !this.password || !this.passwordRepeat) {
+      throw new AppError('Registrar-se', 'O nome, e-mail e senha é obrigatório!', ToastsTypeEnum.Warning);
     }
+
+    if (this.password !== this.passwordRepeat) {
+      throw new AppError('Registrar-se', 'As senhas não conferem!', ToastsTypeEnum.Warning);
+    }
+
+    this.isLoading = true;
 
     // Principais rejeições do Firebase Auth
     // https://firebase.google.com/docs/auth/admin/errors?hl=pt-br

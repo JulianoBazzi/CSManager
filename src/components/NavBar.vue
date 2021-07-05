@@ -7,11 +7,35 @@
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item to="/" active-class="pageActive" exact>Início</b-nav-item>
-          <b-nav-item to="/players" active-class="pageActive">Jogadores</b-nav-item>
-          <b-nav-item to="/maps" active-class="pageActive">Mapas</b-nav-item>
-          <b-nav-item to="/sweepstakes" active-class="pageActive">Sorteios</b-nav-item>
-          <b-nav-item to="/about" active-class="pageActive">Sobre</b-nav-item>
+          <b-nav-item
+            to="/"
+            active-class="pageActive"
+            exact>
+            Início
+          </b-nav-item>
+          <b-nav-item
+            to="/players"
+            active-class="pageActive"
+            v-if="authenticatedUser">
+            Jogadores
+          </b-nav-item>
+          <b-nav-item
+            to="/maps"
+            active-class="pageActive"
+            v-if="authenticatedUser">
+            Mapas
+          </b-nav-item>
+          <b-nav-item
+            to="/sweepstakes"
+            active-class="pageActive"
+            v-if="authenticatedUser">
+            Sorteios
+          </b-nav-item>
+          <b-nav-item
+            to="/about"
+            active-class="pageActive">
+            Sobre
+          </b-nav-item>
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->
@@ -22,14 +46,15 @@
             <b-dropdown-item href="#">Español</b-dropdown-item>
           </b-nav-item-dropdown>
 
-          <b-nav-item-dropdown right>
+          <b-nav-item-dropdown right v-if="authenticatedUser">
             <!-- Using 'button-content' slot -->
             <template #button-content>
               <em>Usuário</em>
             </template>
             <b-dropdown-item to="#">Meu Perfil</b-dropdown-item>
-            <b-dropdown-item to="#">Sair</b-dropdown-item>
+            <b-dropdown-item @click="logOut">Sair</b-dropdown-item>
           </b-nav-item-dropdown>
+          <b-nav-item to="/login" active-class="pageActive" v-else>Entrar</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
@@ -37,11 +62,22 @@
 </template>
 
 <script lang="ts">
+import firebase from 'firebase';
 import { Component, Vue } from 'vue-property-decorator';
 
-@Component
+@Component({
+  computed: {
+    authenticatedUser() {
+      return this.$store.state.user != null;
+    },
+  },
+})
 export default class NavBar extends Vue {
-
+  async logOut(): Promise<void> {
+    await firebase.auth().signOut();
+    this.$store.commit('setUser', null);
+    this.$router.push('/');
+  }
 }
 </script>
 
