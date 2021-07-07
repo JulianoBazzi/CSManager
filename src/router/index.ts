@@ -8,6 +8,7 @@ import Maps from '../views/Maps.vue';
 import Players from '../views/Players.vue';
 import Sweepstakes from '../views/Sweepstakes.vue';
 import Login from '../views/Login.vue';
+import EmailConfirmation from '../views/EmailConfirmation.vue';
 
 Vue.use(VueRouter);
 
@@ -51,6 +52,14 @@ const routes: Array<RouteConfig> = [
     name: 'Login',
     component: Login,
   },
+  {
+    path: '/emailConfirmation',
+    name: 'EmailConfirmation',
+    component: EmailConfirmation,
+    meta: {
+      emailConfirmation: true,
+    },
+  },
 ];
 
 const router = new VueRouter({
@@ -61,9 +70,17 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some((page) => page.meta.requiresAuth);
+  const user = firebase.auth().currentUser;
 
-  if (requiresAuth && !firebase.auth().currentUser) {
+  if (requiresAuth && !user) {
     next('/login');
+  }
+
+  if (user && !user.emailVerified) {
+    const emailConfirmation = to.matched.some((page) => page.meta.emailConfirmation);
+    if (!emailConfirmation) {
+      next('/emailConfirmation');
+    }
   }
 
   next();

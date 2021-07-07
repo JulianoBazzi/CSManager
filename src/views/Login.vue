@@ -29,7 +29,6 @@
             id="login-password"
             v-model="password"
             type="password"
-            minlength="6"
             required
             :disabled="isLoading"
           ></b-form-input>
@@ -148,7 +147,7 @@ export default class Login extends Vue {
 
   async handleLogin(): Promise<void> {
     if (!this.email || !this.password) {
-      throw new AppError('Login', 'O e-mail e senha é obrigatório!', ToastsTypeEnum.Warning);
+      throw new AppError(this.title, 'O e-mail e senha é obrigatório!', ToastsTypeEnum.Warning);
     }
 
     this.isLoading = true;
@@ -158,43 +157,71 @@ export default class Login extends Vue {
         .signInWithEmailAndPassword(this.email, this.password);
 
       if (!user) {
-        throw new AppError('Login', 'Usuário não encontrado!', ToastsTypeEnum.Warning);
-      }
-
-      if (!user?.emailVerified) {
-        await user?.sendEmailVerification();
+        throw new AppError(this.title, 'Usuário não encontrado!', ToastsTypeEnum.Warning);
       }
 
       this.$store.commit('setUser', user);
-
       this.isLoading = false;
+
+      if (!user?.emailVerified) {
+        this.$router.push('/emailConfirmation');
+        return;
+      }
+
       this.$router.push('/');
     } catch (error) {
       this.isLoading = false;
+      if (error.code === 'auth/invalid-email') {
+        throw new AppError(this.title, 'E-mail inválido!', ToastsTypeEnum.Warning);
+      } else if (error.code === 'auth/too-many-requests') {
+        throw new AppError(this.title, 'Você enviou muitas solicitações, aguarde alguns minutos e tente novamente.', ToastsTypeEnum.Secondary);
+      } else if ((error.code === 'auth/user-disabled')
+                 || (error.code === 'auth/user-not-found')
+                 || (error.code === 'auth/wrong-password')) {
+        throw new AppError(this.title, 'E-mail ou senha inválido!', ToastsTypeEnum.Warning);
+      }
+      throw new AppError(this.title, error.message, ToastsTypeEnum.Warning);
     }
-
-    // Validar principais rejeições do Firebase
-    // https://firebase.google.com/docs/reference/js/firebase.auth.Auth?hl=pt-br#signinwithemailandpassword
-    // auth/invalid-email
-    // auth/user-not-found
-    // auth/wrong-password
   }
 
   async handleRegister(): Promise<void> {
     if (!this.name || !this.email || !this.password || !this.passwordRepeat) {
-      throw new AppError('Registrar-se', 'O nome, e-mail e senha é obrigatório!', ToastsTypeEnum.Warning);
+      throw new AppError(this.title, 'O nome, e-mail e senha é obrigatório!', ToastsTypeEnum.Warning);
     }
 
     if (this.password !== this.passwordRepeat) {
-      throw new AppError('Registrar-se', 'As senhas não conferem!', ToastsTypeEnum.Warning);
+      throw new AppError(this.title, 'As senhas não conferem!', ToastsTypeEnum.Warning);
     }
 
-    this.isLoading = true;
+    try {
+      this.isLoading = true;
 
-    // Principais rejeições do Firebase Auth
-    // https://firebase.google.com/docs/auth/admin/errors?hl=pt-br
-    // auth/email-already-exists
-    // auth/invalid-email
+      const { user } = await firebase
+        .auth()
+        .createUserWithEmailAndPassword(this.email, this.password);
+
+      await user?.updateProfile({
+        displayName: this.name,
+      });
+
+      await user?.sendEmailVerification();
+      this.$store.commit('setUser', user);
+      this.isLoading = false;
+
+      this.$router.push('/emailConfirmation');
+    } catch (error) {
+      this.isLoading = false;
+      if (error.code === 'auth/too-many-requests') {
+        throw new AppError(this.title, 'Você enviou muitas solicitações, aguarde alguns minutos e tente novamente.', ToastsTypeEnum.Secondary);
+      } else if ((error.code === 'auth/email-already-in-use') || (error.code === 'auth/email-already-exists')) {
+        throw new AppError(this.title, 'E-mail já registrado!', ToastsTypeEnum.Warning);
+      } else if (error.code === 'auth/invalid-email') {
+        throw new AppError(this.title, 'E-mail inválido!', ToastsTypeEnum.Warning);
+      } else if (error.code === 'auth/weak-password') {
+        throw new AppError(this.title, 'A senha deve ter pelo menos 6 caracteres!', ToastsTypeEnum.Warning);
+      }
+      throw new AppError(this.title, error.message, ToastsTypeEnum.Warning);
+    }
   }
 }
 </script>

@@ -1,0 +1,173 @@
+[
+  {
+    "type": "account",
+    "items": [{
+      "id": "re",
+      "rank": "0",
+      "name": {
+        "es": "Recluta",
+        "en": "Recruit",
+        "pt-BR": "Recruta"
+      }
+    }]
+  },
+  {
+    "type": "competitive",
+    "items": [{
+      "id": "uninformed",
+      "name": {
+        "es": "No Informado",        
+        "en": "Uninformed",
+        "pt-BR": "Não Informado"
+      }
+    },
+    {
+      "id": "s1",
+      "name": {
+        "es": "Plata I",        
+        "en": "Silver I",
+        "pt-BR": "Prata I"
+      }
+    },    
+    {
+      "id": "s2",
+      "name": {
+        "es": "Plata II",        
+        "en": "Silver II",
+        "pt-BR": "Prata II"
+      }
+    }, 
+    {
+      "id": "s3",
+      "name": {
+        "es": "Plata IV",        
+        "en": "Silver III",
+        "pt-BR": "Prata IV"
+      }
+    },   
+    {
+      "id": "s4",
+      "name": {
+        "es": "Plata IV",        
+        "en": "Silver IV",
+        "pt-BR": "Prata IV"
+      }
+    },   
+    {
+      "id": "se",
+      "name": {
+        "es": "Élite de Plata",        
+        "en": "Silver Elite",
+        "pt-BR": "Prata Elite"
+      }
+    }, 
+    {
+      "id": "sem",
+      "name": {
+        "es": "Maestro(a) de Élite de Plata",        
+        "en": "Silver Elite Master",
+        "pt-BR": "Prata Elite Mestre"
+      }
+    },    
+    {
+      "id": "gn1",
+      "name": {
+        "es": "Nova de Oro I",        
+        "en": "Gold Nova I",
+        "pt-BR": "Ouro I"
+      }
+    },  
+    {
+      "id": "gn2",
+      "name": {
+        "es": "Nova de Oro II",        
+        "en": "Gold Nova II",
+        "pt-BR": "Ouro II"
+      }
+    }, 
+    {
+      "id": "gn3",
+      "name": {
+        "es": "Nova de Oro III",        
+        "en": "Gold Nova III",
+        "pt-BR": "Ouro III"
+      }
+    },  
+    {
+      "id": "gnm",
+      "name": {
+        "es": "Maestro(a) Nova de Oro",        
+        "en": "Gold Nova Master",
+        "pt-BR": "Ouro Mestre"
+      }
+    },   
+    {
+      "id": "mg1",
+      "name": {
+        "es": "Maestro(a) Guardián I",        
+        "en": "Master Guardian I",
+        "pt-BR": "AK I"
+      }
+    },                               
+    {
+      "id": "mg2",
+      "name": {
+        "es": "Maestro(a) Guardián II",        
+        "en": "Master Guardian II",
+        "pt-BR": "AK II"
+      }
+    },     
+    {
+      "id": "mge",
+      "name": {
+        "es": "Maestro(a) Guardián de Élite",        
+        "en": "Master Guardian Elite",
+        "pt-BR": "AK Cruzada"
+      }
+    },    
+    {
+      "id": "dmg",
+      "name": {
+        "es": "Maestro(a) Guardián Distinguido",        
+        "en": "Distinguished Master Guardian",
+        "pt-BR": "Xerife"
+      }
+    },   
+    {
+      "id": "le",
+      "name": {
+        "es": "Águila Legendaria",        
+        "en": "Legendary Eagle",
+        "pt-BR": "Águia I"
+      }
+    },  
+    {
+      "id": "lem",
+      "name": {
+        "es": "Maestro(a) Águila Legendaria",        
+        "en": "Legendary Eagle Master",
+        "pt-BR": "Águia II"
+      }
+    },          
+    {
+      "id": "smfc",
+      "name": {
+        "es": "Maestro(a) Supremo",        
+        "en": "Supreme Master First Class",
+        "pt-BR": "Supremo"
+      }
+    },         
+    {
+      "id": "ge",
+      "name": {
+        "es": "La Élite Global",        
+        "en": "The Global Elite",
+        "pt-BR": "Global"
+      }
+    }]
+  },
+  {
+    "type": "danger zone",
+    "items": []
+  }
+]
