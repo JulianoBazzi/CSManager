@@ -113,6 +113,12 @@
             <p>Nenhum Registro Encontrado</p>
           </div>
         </template>
+       <template #cell(patent)="row">
+          <img
+          width="70"
+            :alt="`${row.item.patent}`"
+            :src=" require(`@/assets/cs-go/competitive/${row.item.patent}.png`) ">
+        </template>
         <template #cell(active)="row">
           <b-icon icon="check-square-fill" v-if="row.item.active"/>
           <b-icon icon="square" v-else/>
@@ -122,7 +128,7 @@
             size="sm"
             variant="light"
             @click="edit(row.item)">
-            <b-icon icon="pencil"/>
+            <b-icon class="button" icon="pencil" scale="0.9"/>
           </b-button>
         </template>
       </b-table>
@@ -169,7 +175,7 @@ export default class Players extends Vue {
 
   patents: IFilterComboBoxStringDTO[] = []
 
-  searchPatent = 'uninformed';
+  searchPatent = null;
 
   isBusy = false;
 
@@ -202,33 +208,38 @@ export default class Players extends Vue {
     id: '1',
     name: 'Juliano Bazzi',
     username: 'Bazzi',
-    patent: 'Prata II',
+    patent: 's2',
     active: true,
   },
   {
     id: '2',
     name: 'Henrique Boniatti',
     username: 'Reuri',
-    patent: 'Ouro I',
+    patent: 'gn1',
     active: false,
   },
   {
     id: '3',
     name: 'Pedro da Silva',
     username: 'PedroSilva',
-    patent: 'Prata II',
+    patent: 'unknown',
     active: true,
   },
   {
     id: '3',
     name: 'Ricardo Mella',
     username: 'FeraSokeRuim',
-    patent: 'Ouro III',
+    patent: 'gn3',
     active: false,
   }];
 
   get loadPatents(): IFilterComboBoxStringDTO[] {
     if (this.patents.length <= 0) {
+      this.patents.push({
+        value: null,
+        text: 'Todas',
+      });
+
       const competitive = rakingsCsGo.find((rank) => rank.type === 'competitive');
       if (competitive) {
         competitive.items.forEach((patent) => {
@@ -265,7 +276,7 @@ export default class Players extends Vue {
   cleanFilters(): void {
     this.searchText = '';
     this.searchSituation = null;
-    this.searchPatent = 'uninformed';
+    this.searchPatent = null;
   }
 
   async add(): Promise<void> {

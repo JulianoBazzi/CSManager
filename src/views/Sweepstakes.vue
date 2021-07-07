@@ -2,7 +2,7 @@
   <div class="sweepstakes">
     <b-card header-tag="header" bg-variant="dark" text-variant="white">
       <template #header>
-        <h3 class="mb-0">Sorteios Realizados</h3>
+        <h3 class="mb-0">Sorteios</h3>
       </template>
       <p>This is an sweepstakes page.</p>
     </b-card>

@@ -14,13 +14,21 @@
   {
     "type": "competitive",
     "items": [{
-      "id": "uninformed",
+      "id": "unknown",
       "name": {
-        "es": "No Informado",        
-        "en": "Uninformed",
-        "pt-BR": "Não Informado"
+        "es": "Rango Desconocido",        
+        "en": "Unknown Rank",
+        "pt-BR": "Rank Desconhecido"
       }
     },
+    {
+      "id": "expired",
+      "name": {
+        "es": "Rango Vencido",        
+        "en": "Expired Rank",
+        "pt-BR": "Rank Expirado"
+      }
+    },    
     {
       "id": "s1",
       "name": {

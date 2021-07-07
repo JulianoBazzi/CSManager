@@ -49,7 +49,7 @@
           <b-nav-item-dropdown right v-if="authenticatedUser">
             <!-- Using 'button-content' slot -->
             <template #button-content>
-              <em>Usuário</em>
+              <em>{{ displayName }}</em>
             </template>
             <b-dropdown-item to="#">Meu Perfil</b-dropdown-item>
             <b-dropdown-item @click="logOut">Sair</b-dropdown-item>
@@ -69,6 +69,9 @@ import { Component, Vue } from 'vue-property-decorator';
   computed: {
     authenticatedUser() {
       return this.$store.state.user != null;
+    },
+    displayName() {
+      return this.$store.state.user == null ? 'Usuário' : this.$store.state.user.displayName;
     },
   },
 })
