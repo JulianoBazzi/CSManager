@@ -14,7 +14,7 @@
             v-model="email"
             type="email"
             required
-            :disabled="isLoading"
+            :disabled="isBusy"
           ></b-form-input>
         </b-form-group>
 
@@ -27,16 +27,16 @@
             v-model="password"
             type="password"
             required
-            :disabled="isLoading"
+            :disabled="isBusy"
           ></b-form-input>
         </b-form-group>
 
-        <b-button type="submit" variant="success" :disabled="isLoading">
-          <b-spinner small v-if="isLoading"></b-spinner>
+        <b-button type="submit" variant="success" :disabled="isBusy">
+          <b-spinner small v-if="isBusy"></b-spinner>
           <b-icon icon="box-arrow-in-right" v-else/>
             Entrar
         </b-button>
-        <b-button class="ml-2" @click="toggleButton" variant="info" :disabled="isLoading">
+        <b-button class="ml-2" @click="toggleButton" variant="info" :disabled="isBusy">
           <b-icon icon="person-plus"/>
             Registrar-se
         </b-button>
@@ -54,7 +54,7 @@
             v-model="name"
             minlength="3"
             required
-            :disabled="isLoading"
+            :disabled="isBusy"
           ></b-form-input>
         </b-form-group>
 
@@ -68,7 +68,7 @@
             v-model="email"
             type="email"
             required
-            :disabled="isLoading"
+            :disabled="isBusy"
           ></b-form-input>
         </b-form-group>
 
@@ -82,7 +82,7 @@
             type="password"
             minlength="6"
             required
-            :disabled="isLoading"
+            :disabled="isBusy"
           ></b-form-input>
         </b-form-group>
 
@@ -96,12 +96,12 @@
             type="password"
             minlength="6"
             required
-            :disabled="isLoading"
+            :disabled="isBusy"
           ></b-form-input>
         </b-form-group>
 
-        <b-button type="submit" variant="success" :disabled="isLoading">
-          <b-spinner small v-if="isLoading"></b-spinner>
+        <b-button type="submit" variant="success" :disabled="isBusy">
+          <b-spinner small v-if="isBusy"></b-spinner>
           <b-icon icon="person-plus" v-else/>
             Registrar-se
         </b-button>
@@ -111,19 +111,18 @@
 </template>
 
 <script lang="ts">
-import AppError, { ToastsTypeEnum } from '@/errors/AppError';
 import firebase from 'firebase';
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
+import Base from '@/views/Base';
 import Card from '@/components/Card.vue';
+import AppError, { ToastsTypeEnum } from '@/errors/AppError';
 
 @Component({
   components: {
     Card,
   },
 })
-export default class Login extends Vue {
-  isLoading = false;
-
+export default class Login extends Base {
   login = true;
 
   title = 'Entrar';
@@ -152,7 +151,7 @@ export default class Login extends Vue {
       throw new AppError(this.title, 'O e-mail e senha é obrigatório!', ToastsTypeEnum.Warning);
     }
 
-    this.isLoading = true;
+    this.isBusy = true;
     try {
       const { user } = await firebase
         .auth()
@@ -163,7 +162,7 @@ export default class Login extends Vue {
       }
 
       this.$store.commit('setUser', user);
-      this.isLoading = false;
+      this.isBusy = false;
 
       if (!user?.emailVerified) {
         this.$router.push('/emailConfirmation');
@@ -172,7 +171,7 @@ export default class Login extends Vue {
 
       this.$router.push('/');
     } catch (error) {
-      this.isLoading = false;
+      this.isBusy = false;
       if (error.code === 'auth/invalid-email') {
         throw new AppError(this.title, 'E-mail inválido!', ToastsTypeEnum.Warning);
       } else if (error.code === 'auth/too-many-requests') {
@@ -196,7 +195,7 @@ export default class Login extends Vue {
     }
 
     try {
-      this.isLoading = true;
+      this.isBusy = true;
 
       const { user } = await firebase
         .auth()
@@ -208,11 +207,11 @@ export default class Login extends Vue {
 
       await user?.sendEmailVerification();
       this.$store.commit('setUser', user);
-      this.isLoading = false;
+      this.isBusy = false;
 
       this.$router.push('/emailConfirmation');
     } catch (error) {
-      this.isLoading = false;
+      this.isBusy = false;
       if (error.code === 'auth/too-many-requests') {
         throw new AppError(this.title, 'Você enviou muitas solicitações, aguarde alguns minutos e tente novamente.', ToastsTypeEnum.Secondary);
       } else if ((error.code === 'auth/email-already-in-use') || (error.code === 'auth/email-already-exists')) {

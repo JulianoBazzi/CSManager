@@ -7,7 +7,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
+import Base from '@/views/Base';
 import Card from '@/components/Card.vue';
 
 @Component({
@@ -15,5 +16,5 @@ import Card from '@/components/Card.vue';
     Card,
   },
 })
-export default class Maps extends Vue {}
+export default class Maps extends Base {}
 </script>

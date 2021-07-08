@@ -94,19 +94,13 @@
           <b-icon icon="square" v-else/>
         </template>
       </Table>
-    <!-- <b-pagination
-      v-model="currentPage"
-      :total-rows="rows"
-      :per-page="perPage"
-      aria-controls="my-table"
-      align="right"
-    ></b-pagination> -->
     </Card>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
+import Base from '@/views/Base';
 import Card from '@/components/Card.vue';
 import Table from '@/components/Table.vue';
 import rakingsCsGo from '../assets/cs-go/rakings.json';
@@ -121,7 +115,7 @@ import ITableFieldsDTO from '../dtos/ITableFieldsDTO';
     Table,
   },
 })
-export default class Players extends Vue {
+export default class Players extends Base {
   searchText = '';
 
   situations: IFilterComboBoxBooleanDTO[] = [
@@ -144,8 +138,6 @@ export default class Players extends Vue {
   patents: IFilterComboBoxStringDTO[] = []
 
   searchPatent = null;
-
-  isBusy = false;
 
   fields: ITableFieldsDTO[] = [{
     key: 'name',

@@ -8,7 +8,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
+import Base from '@/views/Base';
 import NavBar from '@/components/template/NavBar.vue';
 
 @Component({
@@ -16,7 +17,7 @@ import NavBar from '@/components/template/NavBar.vue';
     NavBar,
   },
 })
-export default class App extends Vue {}
+export default class App extends Base {}
 </script>
 
 <style>

@@ -17,8 +17,8 @@
       <b-button
         @click="checkEmailVerified"
         variant="success"
-        :disabled="isLoading">
-          <b-spinner small v-if="isLoading"></b-spinner>
+        :disabled="isBusy">
+          <b-spinner small v-if="isBusy"></b-spinner>
           <b-icon icon="check-circle" v-else/>
             Já confirmei meu e-mail
       </b-button>
@@ -26,8 +26,8 @@
         class="ml-2"
         @click="sendConfirmationEmail"
         variant="info"
-        :disabled="isLoadingEmail">
-        <b-spinner small v-if="isLoadingEmail"></b-spinner>
+        :disabled="isBusyEmail">
+        <b-spinner small v-if="isBusyEmail"></b-spinner>
         <b-icon icon="envelope" v-else/>
           Reenviar e-mail de confirmação
       </b-button>
@@ -38,7 +38,8 @@
 <script lang="ts">
 import AppError, { ToastsTypeEnum } from '@/errors/AppError';
 import firebase from 'firebase';
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
+import Base from '@/views/Base';
 import Card from '@/components/Card.vue';
 
 @Component({
@@ -46,10 +47,8 @@ import Card from '@/components/Card.vue';
     Card,
   },
 })
-export default class EmailConfirmation extends Vue {
-  isLoading = false;
-
-  isLoadingEmail = false;
+export default class EmailConfirmation extends Base {
+  isBusyEmail = false;
 
   user = firebase.auth().currentUser;
 
@@ -61,41 +60,41 @@ export default class EmailConfirmation extends Vue {
 
   async sendConfirmationEmail(): Promise<void> {
     try {
-      this.isLoadingEmail = true;
+      this.isBusyEmail = true;
 
       this.user = firebase.auth().currentUser;
 
       if (this.user?.emailVerified) {
-        this.isLoadingEmail = false;
+        this.isBusyEmail = false;
         this.$router.push('/');
         throw new AppError('Confirmação de e-mail', 'E-mail verificado com sucesso!', ToastsTypeEnum.Info);
       }
 
       await this.user?.sendEmailVerification();
 
-      this.isLoadingEmail = false;
+      this.isBusyEmail = false;
       throw new AppError('Confirmação de e-mail', 'E-mail de confirmação foi enviado com sucesso!', ToastsTypeEnum.Success);
     } catch (error) {
-      this.isLoadingEmail = false;
+      this.isBusyEmail = false;
       throw new AppError('Confirmação de e-mail', error.message, ToastsTypeEnum.Warning);
     }
   }
 
   async checkEmailVerified(): Promise<void> {
     try {
-      this.isLoading = true;
+      this.isBusy = true;
 
       this.user = firebase.auth().currentUser;
 
       if (this.user?.emailVerified) {
-        this.isLoading = false;
+        this.isBusy = false;
         this.$router.push('/');
         throw new AppError('Confirmação de e-mail', 'E-mail verificado com sucesso!', ToastsTypeEnum.Info);
       }
 
       throw new AppError('Confirmação de e-mail', 'Opss.. E-mail ainda não verificado!', ToastsTypeEnum.Warning);
     } catch (error) {
-      this.isLoading = false;
+      this.isBusy = false;
       throw new AppError('Confirmação de e-mail', error.message, ToastsTypeEnum.Warning);
     }
   }
