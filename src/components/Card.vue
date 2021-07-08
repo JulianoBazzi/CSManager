@@ -8,7 +8,7 @@
             size="sm"
             variant="success"
             @click="$emit('onClickAdd')"
-            :disabled="isBusy"
+            :disabled="busy"
             v-if="displayAddButton">
             <b-icon icon="plus" scale="1.5"/>
           </b-button>
@@ -28,7 +28,7 @@ import { Component, Vue } from 'vue-property-decorator';
       type: String,
       required: true,
     },
-    isBusy: {
+    busy: {
       type: Boolean,
       required: false,
     },

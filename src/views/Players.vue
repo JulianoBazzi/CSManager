@@ -1,6 +1,6 @@
 <template>
   <div class="players">
-    <Card title="Jogadores" :isBusy="isBusy" :displayAddButton="true" @onClickAdd="add">
+    <Card title="Jogadores" :busy="isBusy" :displayAddButton="true" @onClickAdd="add">
       <b-modal
         id="modalcrud"
         header-bg-variant="dark"
@@ -76,32 +76,14 @@
 
           <b-button @click="cleanFilters">Limpar</b-button>
       </b-form>
-      <b-table
-        sticky-header
-        striped
-        hover
-        dark
-        no-border-collapse
-        show-empty
+      <Table
+        :displayEditButton="true"
         :items="itemsFiltered"
         :fields="fields"
-        :busy="isBusy">
-        <template #table-busy>
-          <div class="text-center text-light my-2">
-            <b-spinner class="align-middle"></b-spinner>
-          </div>
-        </template>
-        <template #empty>
-          <div align="center">
-            <p>Nenhum Registro Cadastrado</p>
-          </div>
-        </template>
-        <template #emptyfiltered>
-          <div align="center">
-            <p>Nenhum Registro Encontrado</p>
-          </div>
-        </template>
-       <template #cell(patent)="row">
+        :busy="isBusy"
+        @onClickAdd="edit"
+      >
+        <template #cell(patent)="row">
           <img
           width="70"
             :alt="`${row.item.patent}`"
@@ -111,15 +93,7 @@
           <b-icon icon="check-square-fill" v-if="row.item.active"/>
           <b-icon icon="square" v-else/>
         </template>
-        <template #cell(actions)="row">
-          <b-button
-            size="sm"
-            variant="light"
-            @click="edit(row.item)">
-            <b-icon class="button" icon="pencil" scale="0.9"/>
-          </b-button>
-        </template>
-      </b-table>
+      </Table>
     <!-- <b-pagination
       v-model="currentPage"
       :total-rows="rows"
@@ -134,6 +108,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import Card from '@/components/Card.vue';
+import Table from '@/components/Table.vue';
 import rakingsCsGo from '../assets/cs-go/rakings.json';
 import IFilterComboBoxBooleanDTO from '../dtos/IFilterComboBoxBooleanDTO';
 import IFilterComboBoxStringDTO from '../dtos/IFilterComboBoxStringDTO';
@@ -143,6 +118,7 @@ import ITableFieldsDTO from '../dtos/ITableFieldsDTO';
 @Component({
   components: {
     Card,
+    Table,
   },
 })
 export default class Players extends Vue {
