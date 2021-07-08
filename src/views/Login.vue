@@ -1,10 +1,7 @@
 }
 <template>
   <div>
-    <b-card header-tag="header" bg-variant="dark" text-variant="white">
-      <template #header>
-        <h3 class="mb-0">{{ title }}</h3>
-      </template>
+    <Card :title="title">
       <!-- Login -->
       <b-form @submit.prevent="handleLogin" v-if="login">
         <b-form-group
@@ -109,7 +106,7 @@
             Registrar-se
         </b-button>
       </b-form>
-    </b-card>
+    </Card>
   </div>
 </template>
 
@@ -117,8 +114,13 @@
 import AppError, { ToastsTypeEnum } from '@/errors/AppError';
 import firebase from 'firebase';
 import { Component, Vue } from 'vue-property-decorator';
+import Card from '@/components/Card.vue';
 
-@Component
+@Component({
+  components: {
+    Card,
+  },
+})
 export default class Login extends Vue {
   isLoading = false;
 

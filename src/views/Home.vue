@@ -1,17 +1,19 @@
 <template>
   <div class="home">
-    <b-card header-tag="header" bg-variant="dark" text-variant="white">
-      <template #header>
-        <h3 class="mb-0">Início</h3>
-      </template>
+    <Card title="Início">
       <p>This is an home page.</p>
-    </b-card>
+    </Card>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import Card from '@/components/Card.vue';
 
-@Component
+@Component({
+  components: {
+    Card,
+  },
+})
 export default class Home extends Vue {}
 </script>

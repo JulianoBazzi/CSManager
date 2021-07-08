@@ -1,6 +1,6 @@
 <template>
   <div class="players">
-    <b-card header-tag="header" bg-variant="dark" text-variant="white">
+    <Card title="Jogadores" :isBusy="isBusy" :displayAddButton="true" @onClickAdd="add">
       <b-modal
         id="modalcrud"
         header-bg-variant="dark"
@@ -55,18 +55,6 @@
           >Ativo
           </b-form-checkbox> -->
         </b-modal>
-      <template #header>
-        <div class="top">
-          <h3 class="mb-0">Jogadores</h3>
-          <b-button
-            size="sm"
-            variant="success"
-            v-b-modal.modalcrud
-            :disabled="isBusy">
-            <b-icon icon="plus" scale="1.5"/>
-          </b-button>
-        </div>
-      </template>
       <b-form class="mb-3" inline>
           <b-form-input
             class="mr-2"
@@ -139,20 +127,24 @@
       aria-controls="my-table"
       align="right"
     ></b-pagination> -->
-    </b-card>
+    </Card>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-
+import Card from '@/components/Card.vue';
 import rakingsCsGo from '../assets/cs-go/rakings.json';
 import IFilterComboBoxBooleanDTO from '../dtos/IFilterComboBoxBooleanDTO';
 import IFilterComboBoxStringDTO from '../dtos/IFilterComboBoxStringDTO';
 import IPlayerDTO from '../dtos/IPlayerDTO';
 import ITableFieldsDTO from '../dtos/ITableFieldsDTO';
 
-@Component
+@Component({
+  components: {
+    Card,
+  },
+})
 export default class Players extends Vue {
   searchText = '';
 

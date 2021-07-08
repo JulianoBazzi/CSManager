@@ -1,17 +1,19 @@
 <template>
   <div class="sweepstakes">
-    <b-card header-tag="header" bg-variant="dark" text-variant="white">
-      <template #header>
-        <h3 class="mb-0">Sorteios</h3>
-      </template>
+    <Card title="Sorteios">
       <p>This is an sweepstakes page.</p>
-    </b-card>
+    </Card>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import Card from '@/components/Card.vue';
 
-@Component
+@Component({
+  components: {
+    Card,
+  },
+})
 export default class Sweepstakes extends Vue {}
 </script>

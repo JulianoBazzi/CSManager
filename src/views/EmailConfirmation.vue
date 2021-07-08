@@ -1,9 +1,6 @@
 <template>
   <div class="emailConfirmation">
-    <b-card header-tag="header" bg-variant="dark" text-variant="white">
-      <template #header>
-        <h3 class="mb-0">Confirmação de E-mail</h3>
-      </template>
+    <Card title="Confirmação de E-mail">
       <b-alert variant="warning" show>
         <strong>
           ATENÇÃO:
@@ -34,7 +31,7 @@
         <b-icon icon="envelope" v-else/>
           Reenviar e-mail de confirmação
       </b-button>
-    </b-card>
+    </Card>
   </div>
 </template>
 
@@ -42,14 +39,25 @@
 import AppError, { ToastsTypeEnum } from '@/errors/AppError';
 import firebase from 'firebase';
 import { Component, Vue } from 'vue-property-decorator';
+import Card from '@/components/Card.vue';
 
-@Component
+@Component({
+  components: {
+    Card,
+  },
+})
 export default class EmailConfirmation extends Vue {
   isLoading = false;
 
   isLoadingEmail = false;
 
   user = firebase.auth().currentUser;
+
+  created(): void {
+    if (this.user?.emailVerified) {
+      this.$router.push('/');
+    }
+  }
 
   async sendConfirmationEmail(): Promise<void> {
     try {
