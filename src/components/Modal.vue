@@ -1,7 +1,7 @@
 <template>
   <div class="manager-modal">
     <b-modal
-        v-model="show"
+        v-model="showProp"
         header-bg-variant="dark"
         header-text-variant="light"
         body-bg-variant="dark"
@@ -9,7 +9,7 @@
         footer-bg-variant="dark"
         footer-text-variant="light"
         @hidden="$emit('onClickHidden')"
-        @ok="$emit('onClickOk')"
+        @ok="$emit('onClickOk', $event)"
         :title="title">
       <slot></slot>
       <template v-slot:modal-footer="{ hide, ok }">
@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({
   props: {
@@ -34,8 +34,15 @@ import { Component, Vue } from 'vue-property-decorator';
       required: true,
     },
   },
+  computed: {
+    showProp: {
+      get() { return this.$props.show; },
+      set(value) { this.$emit('update:show', value); },
+    },
+  },
 })
 export default class Modal extends Vue {
+
 }
 </script>
 

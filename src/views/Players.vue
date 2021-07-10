@@ -1,37 +1,39 @@
 <template>
   <div class="players">
-    <Card title="Jogadores" :busy="isBusy" :displayAddButton="true" @onClickAdd="add">
-      <b-modal
-        id="modalcrud"
-        header-bg-variant="dark"
-        header-text-variant="light"
-        body-bg-variant="dark"
-        body-text-variant="light"
-        footer-bg-variant="dark"
-        footer-text-variant="light"
-        title="Cadastrar"
+    <Card
+      title="Jogadores"
+      :busy="isBusy"
+      :displayAddButton="true"
+      @onClickAdd="showModal = true">
+      <Modal
+        title="Jogador"
+        :show.sync="showModal"
+        @onClickClose="handleClose"
+        @onClickOk="handleOk"
         >
-          <!-- <b-form-group
+        <b-form ref="form" @submit.stop.prevent="handleSubmit">
+          <b-form-group
             id="modal-group-name"
             label="Nome Completo"
             label-for="modal-name">
             <b-form-input
               id="modal-name"
-              v-model="name"
+              v-model="selectedPlayer.name"
               required
-              :disabled="isLoading">
+              autofocus
+              :disabled="isBusy">
               </b-form-input>
           </b-form-group>
 
           <b-form-group
             id="modal-group-username"
-            label="Username"
+            label="Nome de Usuário na Steam"
             label-for="modal-username">
             <b-form-input
               id="modal-username"
-              v-model="username"
+              v-model="selectedPlayer.username"
               required
-              :disabled="isLoading">
+              :disabled="isBusy">
               </b-form-input>
           </b-form-group>
 
@@ -39,27 +41,30 @@
             id="modal-group-patent"
             label="Patente (CS:GO)"
             label-for="modal-patent">
-            <b-form-input
+            <b-form-select
               id="modal-patent"
-              v-model="patent"
-              required
-              :disabled="isLoading">
-              </b-form-input>
+              v-model="selectedPlayer.patent"
+              :options="loadPatents"
+              :disabled="isBusy">
+            </b-form-select>
           </b-form-group>
 
           <b-form-checkbox
             id="checkbox-1"
-            v-model="active"
+            v-model="selectedPlayer.active"
             value="true"
             unchecked-value="false"
           >Ativo
-          </b-form-checkbox> -->
-        </b-modal>
+          </b-form-checkbox>
+        </b-form>
+        </Modal>
       <b-form class="mb-3" inline>
           <b-form-input
             class="mr-2"
             v-model="searchText"
             placeholder="Pesquisar"
+            autofocus
+            autocomplete="false"
           ></b-form-input>
 
           <b-form-select
@@ -81,11 +86,11 @@
         :items="itemsFiltered"
         :fields="fields"
         :busy="isBusy"
-        @onClickAdd="edit"
+        @onClickEdit="edit"
       >
         <template #cell(patent)="row">
           <img
-          width="70"
+            width="70"
             :alt="`${row.item.patent}`"
             :src=" require(`@/assets/cs-go/competitive/${row.item.patent}.png`) ">
         </template>
@@ -99,10 +104,14 @@
 </template>
 
 <script lang="ts">
+import firebase from 'firebase';
+import { v4 } from 'uuid';
 import { Component } from 'vue-property-decorator';
 import Base from '@/views/Base';
 import Card from '@/components/Card.vue';
+import Modal from '@/components/Modal.vue';
 import Table from '@/components/Table.vue';
+import AppError, { ToastsTypeEnum } from '@/errors/AppError';
 import rakingsCsGo from '../assets/cs-go/rakings.json';
 import IFilterComboBoxBooleanDTO from '../dtos/IFilterComboBoxBooleanDTO';
 import IFilterComboBoxStringDTO from '../dtos/IFilterComboBoxStringDTO';
@@ -112,10 +121,22 @@ import ITableFieldsDTO from '../dtos/ITableFieldsDTO';
 @Component({
   components: {
     Card,
+    Modal,
     Table,
   },
 })
 export default class Players extends Base {
+  showModal = false;
+
+  players: IPlayerDTO[] = [];
+
+  selectedPlayer: IPlayerDTO = {
+    name: '',
+    username: '',
+    patent: 'unknown',
+    active: true,
+  };
+
   searchText = '';
 
   situations: IFilterComboBoxBooleanDTO[] = [
@@ -164,34 +185,32 @@ export default class Players extends Base {
     label: 'Ações',
   }];
 
-  players: IPlayerDTO[] = [{
-    id: '1',
-    name: 'Juliano Bazzi',
-    username: 'Bazzi',
-    patent: 's2',
-    active: true,
-  },
-  {
-    id: '2',
-    name: 'Henrique Boniatti',
-    username: 'Reuri',
-    patent: 'gn1',
-    active: false,
-  },
-  {
-    id: '3',
-    name: 'Pedro da Silva',
-    username: 'PedroSilva',
-    patent: 'unknown',
-    active: true,
-  },
-  {
-    id: '3',
-    name: 'Ricardo Mella',
-    username: 'FeraSokeRuim',
-    patent: 'gn3',
-    active: false,
-  }];
+  async created(): Promise<void> {
+    this.isBusy = true;
+    this.players = [];
+
+    const user = firebase.auth().currentUser;
+
+    const docs = await firebase
+      .firestore()
+      .collection('players')
+      .where('userId', '==', user?.uid)
+      .orderBy('updated', 'desc')
+      .get();
+
+    docs.forEach((player) => {
+      this.players.push({
+        id: player.id,
+        name: player.data().name,
+        username: player.data().username,
+        patent: player.data().patent,
+        active: player.data().active,
+        created: player.data().created,
+      });
+    });
+
+    this.isBusy = false;
+  }
 
   get loadPatents(): IFilterComboBoxStringDTO[] {
     if (this.patents.length <= 0) {
@@ -233,20 +252,75 @@ export default class Players extends Base {
     return items;
   }
 
+  handleClose(): void {
+    this.selectedPlayer = {
+      name: '',
+      username: '',
+      patent: 'unknown',
+      active: true,
+    };
+    this.showModal = false;
+  }
+
+  handleOk(bvModalEvt: any): void {
+    // Prevent modal from closing
+    bvModalEvt.preventDefault();
+    // Trigger submit handler
+    this.handleSubmit(true);
+  }
+
+  handleSubmit(canSave: boolean): void {
+    if (!this.selectedPlayer.name) {
+      throw new AppError('Jogador', 'O nome é obrigatório!', ToastsTypeEnum.Warning);
+    }
+
+    if (!this.selectedPlayer.username) {
+      throw new AppError('Jogador', 'O nome de usuário na Steam é obrigatório!', ToastsTypeEnum.Warning);
+    }
+
+    if (!this.selectedPlayer.patent) {
+      throw new AppError('Jogador', 'A patente é obrigatória!', ToastsTypeEnum.Warning);
+    }
+
+    this.isBusy = true;
+    if (canSave) {
+      const user = firebase.auth().currentUser;
+      const id = this.selectedPlayer?.id ? this.selectedPlayer?.id : v4();
+
+      // await firebase.firestore().collection('players')
+      //   .doc(id).set({
+      //     userId: user?.uid,
+      //     created: this.selectedPlayer?.created ? this.selectedPlayer?.created : new Date(),
+      //     updated: new Date(),
+      //     name: this.selectedPlayer?.name,
+      //     username: this.selectedPlayer?.username,
+      //     patent: this.selectedPlayer?.patent,
+      //     active: this.selectedPlayer?.active,
+      //   }, { merge: true });
+
+      // this.players = this.players.filter((player) => player.id !== id);
+      // this.players.push({
+      //   id,
+      //   name: this.selectedPlayer?.name,
+      //   username: this.selectedPlayer.username,
+      //   patent: this.selectedPlayer.patent,
+      //   active: this.selectedPlayer.active,
+      //   created: this.selectedPlayer.created,
+      // });
+    }
+    this.isBusy = false;
+    this.showModal = false;
+  }
+
   cleanFilters(): void {
     this.searchText = '';
     this.searchSituation = null;
     this.searchPatent = null;
   }
 
-  async add(): Promise<void> {
-    this.isBusy = true;
-    this.isBusy = false;
-  }
-
   async edit(obj: IPlayerDTO): Promise<void> {
-    this.isBusy = true;
-    this.isBusy = false;
+    this.selectedPlayer = obj;
+    this.showModal = true;
   }
 }
 </script>
