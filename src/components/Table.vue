@@ -9,7 +9,7 @@
       show-empty
       :items="items"
       :fields="fields"
-      :busy="isBusy">
+      :busy="busy">
       <template #table-busy>
         <div class="text-center text-light my-2">
           <b-spinner class="align-middle"></b-spinner>

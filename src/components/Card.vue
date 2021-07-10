@@ -39,7 +39,6 @@ import { Component, Vue } from 'vue-property-decorator';
   },
 })
 export default class Card extends Vue {
-  domElement = this.$el;
 }
 </script>
 

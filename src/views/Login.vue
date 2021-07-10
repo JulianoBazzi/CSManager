@@ -14,6 +14,7 @@
             v-model="email"
             type="email"
             required
+            autofocus
             :disabled="isBusy"
           ></b-form-input>
         </b-form-group>
@@ -54,6 +55,7 @@
             v-model="name"
             minlength="3"
             required
+            autofocus
             :disabled="isBusy"
           ></b-form-input>
         </b-form-group>
