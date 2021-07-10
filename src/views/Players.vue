@@ -1,7 +1,6 @@
 <template>
   <div class="players">
     <Card
-      id="tablePlayers"
       title="Jogadores"
       :busy="isBusy"
       :displayAddButton="true"
@@ -9,7 +8,7 @@
       <Modal
         title="Jogador"
         :show.sync="showModal"
-        @handleHidden="handleClose"
+        @handleHidden="handleHidden"
         @handleSubmit="handleSubmit"
         >
         <b-form ref="form" @submit.stop.prevent="handleSubmit">
@@ -47,48 +46,60 @@
             <b-form-select
               id="modal-patent"
               v-model="selectedPlayer.patent"
-              :options="loadPatents"
               :disabled="isBusy">
+             <option
+                v-bind:value="patent.value"
+                v-for="patent in patents"
+                v-bind:key="patent.value">
+                {{ patent.text }}
+              </option>
             </b-form-select>
           </b-form-group>
 
-          <b-form-checkbox
-            id="checkbox-1"
-            v-model="selectedPlayer.active"
-          >Ativo
-          </b-form-checkbox>
+          <b-form-checkbox v-model="selectedPlayer.active">Ativo</b-form-checkbox>
         </b-form>
-        </Modal>
+      </Modal>
       <b-form class="mb-3" inline>
           <b-form-input
             class="mr-2"
             v-model="searchText"
             placeholder="Pesquisar"
-            autofocus
             autocomplete="off"
+            :disabled="isBusy"
           ></b-form-input>
 
           <b-form-select
           class="mr-2"
           v-model="searchSituation"
-          :options="situations">
+          :options="situationsFilter"
+          :disabled="isBusy">
           </b-form-select>
 
           <b-form-select
           class="mr-3"
           v-model="searchPatent"
-          :options="loadPatents">
+          :disabled="isBusy">
+           <option
+              value="null">
+              Todas
+            </option>
+           <option
+              v-bind:value="patent.value"
+              v-for="patent in patents"
+              v-bind:key="patent.value">
+              {{ patent.text }}
+            </option>
           </b-form-select>
 
-          <b-button @click="cleanFilters">Limpar</b-button>
+          <b-button @click="cleanFilters" :disabled="isBusy">Limpar</b-button>
       </b-form>
       <Table
+        id="tablePlayers"
         :displayEditButton="true"
         :items="itemsFiltered"
         :fields="fields"
         :busy="isBusy"
-        @onClickEdit="edit"
-      >
+        @onClickEdit="edit">
         <template #cell(patent)="row">
           <img
             v-if="row.item.patent"
@@ -141,7 +152,7 @@ export default class Players extends Base {
 
   searchText = '';
 
-  situations: IFilterComboBoxBooleanDTO[] = [
+  situationsFilter: IFilterComboBoxBooleanDTO[] = [
     {
       value: null,
       text: 'Todos',
@@ -158,7 +169,7 @@ export default class Players extends Base {
 
   searchSituation: boolean | null = null;
 
-  patents: IFilterComboBoxStringDTO[] = []
+  patents: IFilterComboBoxStringDTO[] = [];
 
   searchPatent = null;
 
@@ -190,6 +201,7 @@ export default class Players extends Base {
   async created(): Promise<void> {
     this.isBusy = true;
     this.players = [];
+    this.patents = [];
 
     const user = firebase.auth().currentUser;
 
@@ -211,28 +223,17 @@ export default class Players extends Base {
       });
     });
 
-    this.isBusy = false;
-  }
-
-  get loadPatents(): IFilterComboBoxStringDTO[] {
-    if (this.patents.length <= 0) {
-      this.patents.push({
-        value: null,
-        text: 'Todas',
-      });
-
-      const competitive = rakingsCsGo.find((rank) => rank.type === 'competitive');
-      if (competitive) {
-        competitive.items.forEach((patent) => {
-          this.patents.push({
-            value: patent.id,
-            text: patent.name['pt-BR'],
-          });
+    const competitive = rakingsCsGo.find((rank) => rank.type === 'competitive');
+    if (competitive) {
+      competitive.items.forEach((patent) => {
+        this.patents.push({
+          value: patent.id,
+          text: patent.name['pt-BR'],
         });
-      }
+      });
     }
 
-    return this.patents;
+    this.isBusy = false;
   }
 
   get itemsFiltered(): IPlayerDTO[] {
@@ -247,14 +248,14 @@ export default class Players extends Base {
       ? item
       : item.active === this.searchSituation));
 
-    items = items.filter((item) => (this.searchPatent === null
+    items = items.filter((item) => (this.searchPatent === null || this.searchPatent === 'null'
       ? item
       : item.patent === this.searchPatent));
 
     return items;
   }
 
-  handleClose(): void {
+  handleHidden(): void {
     this.selectedPlayer = {
       name: '',
       username: '',

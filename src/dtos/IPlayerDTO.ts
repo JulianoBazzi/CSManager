@@ -1,4 +1,4 @@
-export default interface IPlayerDTO {
+interface IPlayerDTO {
   id?: string;
   name: string;
   username: string;
@@ -6,3 +6,5 @@ export default interface IPlayerDTO {
   active: boolean;
   created?: Date;
 }
+
+export default IPlayerDTO;

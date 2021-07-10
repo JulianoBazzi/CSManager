@@ -36,7 +36,8 @@
         <b-button
           size="sm"
           variant="light"
-          @click="$emit('onClickEdit', row.item)">
+          @click="$emit('onClickEdit', row.item)"
+          title="Editar Registro">
           <b-icon class="button" icon="pencil" scale="0.9"/>
         </b-button>
       </template>
