@@ -15,12 +15,12 @@ Vue.use(VueRouter);
 const routes: Array<RouteConfig> = [
   {
     path: '/',
-    name: 'Home',
+    name: 'Início',
     component: Home,
   },
   {
     path: '/players',
-    name: 'Players',
+    name: 'Jogadores',
     component: Players,
     meta: {
       requiresAuth: true,
@@ -28,7 +28,7 @@ const routes: Array<RouteConfig> = [
   },
   {
     path: '/maps',
-    name: 'Maps',
+    name: 'Mapas',
     component: Maps,
     meta: {
       requiresAuth: true,
@@ -36,7 +36,7 @@ const routes: Array<RouteConfig> = [
   },
   {
     path: '/sweepstakes',
-    name: 'Sweepstakes',
+    name: 'Sorteios',
     component: Sweepstakes,
     meta: {
       requiresAuth: true,
@@ -44,7 +44,7 @@ const routes: Array<RouteConfig> = [
   },
   {
     path: '/about',
-    name: 'About',
+    name: 'Sobre',
     component: About,
   },
   {
@@ -54,7 +54,7 @@ const routes: Array<RouteConfig> = [
   },
   {
     path: '/emailConfirmation',
-    name: 'EmailConfirmation',
+    name: 'Confirmação de E-mail',
     component: EmailConfirmation,
     meta: {
       emailConfirmation: true,
@@ -69,6 +69,12 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  let documentTitle = to.path === '/' ? `${process.env.VUE_APP_TITLE}` : `${to.name} - ${process.env.VUE_APP_TITLE}`;
+  if (to.params.title) {
+    documentTitle = `${to.params.title} - ${documentTitle}`;
+  }
+  document.title = documentTitle;
+
   const requiresAuth = to.matched.some((page) => page.meta.requiresAuth);
   const user = firebase.auth().currentUser;
 
