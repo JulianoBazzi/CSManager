@@ -1,22 +1,7 @@
 <template>
   <div class="about">
     <Card title="Sobre">
-      <p align="center">
-        <a href="https://github.com/JulianoBazzi" class="mr-2">
-          <img alt="Author Juliano Bazzi" src="https://img.shields.io/badge/author-Juliano%20Bazzi-%23ffb84d?color=01579b&style=for-the-badge" target="_blank">
-        </a>
-        <a href="https://github.com/JulianoBazzi/CSManager" class="mr-2">
-        <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/JulianoBazzi/CSManager?color=01579b&style=for-the-badge" target="_blank">
-        </a>
-        <a href="https://github.com/JulianoBazzi/CSManager/stargazers" class="mr-2">
-          <img alt="Stargazers" src="https://img.shields.io/github/stars/JulianoBazzi/CSManager?color=01579b&style=for-the-badge" target="_blank">
-        </a>
-        <a href="https://github.com/JulianoBazzi/CSManager/LICENSE.md" class="mr-2">
-          <img alt="License MIT" src="https://img.shields.io/badge/license-MIT-%2304D361?color=01579b&style=for-the-badge" target="_blank">
-        </a>
-      </p>
-      <hr/>
-      <p>Tecnologias utilizadas:</p>
+      <p>Tecnologias Utilizadas:</p>
       <hr/>
       <ul>
         <li>
