@@ -188,36 +188,38 @@ export default class Maps extends Base {
   maps: IMapDTO[] = [];
 
   selectedMap: IMapDTO = {
-    gameType: 'cs',
+    gameType: this.$store.state.game ? this.$store.state.game : 'cs',
     mapType: 'bomb',
     name: '',
     active: true,
   };
 
-  fields: ITableFieldsDTO[] = [{
-    key: 'gameType',
-    label: 'Tipo de Jogo',
-    sortable: true,
-  },
-  {
-    key: 'mapType',
-    label: 'Tipo de Mapa',
-    sortable: true,
-  },
-  {
-    key: 'name',
-    label: 'Mapa',
-    sortable: true,
-  },
-  {
-    key: 'active',
-    label: 'Ativo',
-    sortable: true,
-  },
-  {
-    key: 'actions',
-    label: 'Ações',
-  }];
+  fields: ITableFieldsDTO[] = [
+    {
+      key: 'name',
+      label: 'Mapa',
+      sortable: true,
+    },
+    {
+      key: 'mapType',
+      label: 'Tipo de Mapa',
+      sortable: true,
+    },
+    {
+      key: 'gameType',
+      label: 'Tipo de Jogo',
+      sortable: true,
+    },
+    {
+      key: 'active',
+      label: 'Ativo',
+      sortable: true,
+    },
+    {
+      key: 'actions',
+      label: 'Ações',
+    },
+  ];
 
   mapsCombo: IFilterComboBoxStringDTO[] = [];
 
@@ -273,6 +275,8 @@ export default class Maps extends Base {
       });
     });
 
+    this.searchGameType = this.$store.state.game ? this.$store.state.game : null;
+
     if (gamesJson) {
       gamesJson.forEach((game) => {
         this.gamesCombo.push({
@@ -297,8 +301,6 @@ export default class Maps extends Base {
 
   get itemsFiltered(): IMapDTO[] {
     let items = [];
-
-    console.log(this.searchGameType);
 
     items = this.maps.filter((item) => (
       item.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1
@@ -330,7 +332,7 @@ export default class Maps extends Base {
   cleanFilters(): void {
     this.searchText = '';
     this.searchSituation = null;
-    this.searchGameType = null;
+    this.searchGameType = this.$store.state.game ? this.$store.state.game : null;
     this.searchMapType = null;
   }
 
@@ -341,7 +343,7 @@ export default class Maps extends Base {
 
   handleHidden(): void {
     this.selectedMap = {
-      gameType: 'cs',
+      gameType: this.$store.state.game ? this.$store.state.game : 'cs',
       mapType: 'bomb',
       name: '',
       active: true,

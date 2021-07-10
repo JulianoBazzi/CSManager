@@ -211,6 +211,7 @@ export default class Login extends Base {
       });
 
       await user?.sendEmailVerification();
+
       this.$store.commit('setUser', user);
       this.isBusy = false;
 

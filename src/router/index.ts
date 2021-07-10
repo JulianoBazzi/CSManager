@@ -9,6 +9,7 @@ import Players from '../views/Players.vue';
 import Sweepstakes from '../views/Sweepstakes.vue';
 import Login from '../views/Login.vue';
 import EmailConfirmation from '../views/EmailConfirmation.vue';
+import Profile from '../views/Profile.vue';
 
 Vue.use(VueRouter);
 
@@ -59,6 +60,11 @@ const routes: Array<RouteConfig> = [
     meta: {
       emailConfirmation: true,
     },
+  },
+  {
+    path: '/profile',
+    name: 'Meu Perfil',
+    component: Profile,
   },
 ];
 

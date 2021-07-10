@@ -51,7 +51,8 @@
             <template #button-content>
               <em>{{ displayName }}</em>
             </template>
-            <b-dropdown-item to="#">Meu Perfil</b-dropdown-item>
+            <b-dropdown-item to="/profile">Meu Perfil</b-dropdown-item>
+            <b-dropdown-item to="#">Alterar Senha</b-dropdown-item>
             <b-dropdown-item @click="logOut">Sair</b-dropdown-item>
           </b-nav-item-dropdown>
           <b-nav-item to="/login" active-class="pageActive" v-else>Entrar</b-nav-item>

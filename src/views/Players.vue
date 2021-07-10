@@ -35,6 +35,7 @@
               v-model="selectedPlayer.username"
               required
               autocomplete="off"
+              spellcheck="false"
               :disabled="isBusy">
               </b-form-input>
           </b-form-group>
