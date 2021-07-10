@@ -1,6 +1,9 @@
 <template>
   <div class="manager-card">
-    <b-card header-tag="header" bg-variant="dark" text-variant="white">
+    <b-card
+      header-tag="header"
+      bg-variant="dark"
+      text-variant="white">
       <template #header>
         <div class="top">
           <h3 class="mb-0">{{ title }}</h3>

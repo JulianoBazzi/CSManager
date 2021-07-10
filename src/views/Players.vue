@@ -1,6 +1,7 @@
 <template>
   <div class="players">
     <Card
+      id="tablePlayers"
       title="Jogadores"
       :busy="isBusy"
       :displayAddButton="true"
@@ -54,8 +55,6 @@
           <b-form-checkbox
             id="checkbox-1"
             v-model="selectedPlayer.active"
-            value="true"
-            unchecked-value="false"
           >Ativo
           </b-form-checkbox>
         </b-form>
@@ -276,6 +275,14 @@ export default class Players extends Base {
 
     if (!this.selectedPlayer.patent) {
       throw new AppError('Jogador', 'A patente é obrigatória!', ToastsTypeEnum.Warning);
+    }
+
+    const existsUsername = this.players.find((player) => (
+      player.username.toLowerCase() === this.selectedPlayer.username.toLowerCase()
+      && player.id !== this.selectedPlayer.id
+    ));
+    if (existsUsername) {
+      throw new AppError('Jogador', 'Nome de usuário já cadastrado!', ToastsTypeEnum.Warning);
     }
 
     this.isBusy = true;

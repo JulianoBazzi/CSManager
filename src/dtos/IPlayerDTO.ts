@@ -5,4 +5,4 @@ export default interface IPlayerDTO {
   patent: string;
   active: boolean;
   created?: Date;
-};
+}
