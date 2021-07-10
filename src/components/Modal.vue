@@ -8,9 +8,10 @@
         body-text-variant="light"
         footer-bg-variant="dark"
         footer-text-variant="light"
-        @hidden="$emit('onClickHidden')"
-        @ok="$emit('onClickOk', $event)"
-        :title="title">
+        @hidden="$emit('handleHidden')"
+        @ok="handleOk"
+        :title="title"
+        @handleSubmit="$emit('handleSubmit')">
       <slot></slot>
       <template v-slot:modal-footer="{ hide, ok }">
         <b-button @click="hide()">Fechar</b-button>
@@ -21,7 +22,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { BvEvent } from 'bootstrap-vue';
+import { Component, Vue } from 'vue-property-decorator';
 
 @Component({
   props: {
@@ -42,7 +44,10 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
   },
 })
 export default class Modal extends Vue {
-
+  handleOk(bvModalEvent: BvEvent): void {
+    bvModalEvent.preventDefault();
+    this.$emit('handleSubmit');
+  }
 }
 </script>
 

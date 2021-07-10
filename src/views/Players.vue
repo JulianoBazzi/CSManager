@@ -8,8 +8,8 @@
       <Modal
         title="Jogador"
         :show.sync="showModal"
-        @onClickClose="handleClose"
-        @onClickOk="handleOk"
+        @handleHidden="handleClose"
+        @handleSubmit="handleSubmit"
         >
         <b-form ref="form" @submit.stop.prevent="handleSubmit">
           <b-form-group
@@ -20,6 +20,7 @@
               id="modal-name"
               v-model="selectedPlayer.name"
               required
+              autocomplete="off"
               autofocus
               :disabled="isBusy">
               </b-form-input>
@@ -33,6 +34,7 @@
               id="modal-username"
               v-model="selectedPlayer.username"
               required
+              autocomplete="off"
               :disabled="isBusy">
               </b-form-input>
           </b-form-group>
@@ -64,7 +66,7 @@
             v-model="searchText"
             placeholder="Pesquisar"
             autofocus
-            autocomplete="false"
+            autocomplete="off"
           ></b-form-input>
 
           <b-form-select
@@ -90,6 +92,7 @@
       >
         <template #cell(patent)="row">
           <img
+            v-if="row.item.patent"
             width="70"
             :alt="`${row.item.patent}`"
             :src=" require(`@/assets/cs-go/competitive/${row.item.patent}.png`) ">
@@ -262,14 +265,7 @@ export default class Players extends Base {
     this.showModal = false;
   }
 
-  handleOk(bvModalEvt: any): void {
-    // Prevent modal from closing
-    bvModalEvt.preventDefault();
-    // Trigger submit handler
-    this.handleSubmit(true);
-  }
-
-  handleSubmit(canSave: boolean): void {
+  handleSubmit(): void {
     if (!this.selectedPlayer.name) {
       throw new AppError('Jogador', 'O nome é obrigatório!', ToastsTypeEnum.Warning);
     }
@@ -283,33 +279,38 @@ export default class Players extends Base {
     }
 
     this.isBusy = true;
-    if (canSave) {
+    try {
       const user = firebase.auth().currentUser;
       const id = this.selectedPlayer?.id ? this.selectedPlayer?.id : v4();
 
-      // await firebase.firestore().collection('players')
-      //   .doc(id).set({
-      //     userId: user?.uid,
-      //     created: this.selectedPlayer?.created ? this.selectedPlayer?.created : new Date(),
-      //     updated: new Date(),
-      //     name: this.selectedPlayer?.name,
-      //     username: this.selectedPlayer?.username,
-      //     patent: this.selectedPlayer?.patent,
-      //     active: this.selectedPlayer?.active,
-      //   }, { merge: true });
-
-      // this.players = this.players.filter((player) => player.id !== id);
-      // this.players.push({
-      //   id,
-      //   name: this.selectedPlayer?.name,
-      //   username: this.selectedPlayer.username,
-      //   patent: this.selectedPlayer.patent,
-      //   active: this.selectedPlayer.active,
-      //   created: this.selectedPlayer.created,
-      // });
+      firebase.firestore().collection('players')
+        .doc(id).set({
+          userId: user?.uid,
+          created: this.selectedPlayer?.created ? this.selectedPlayer?.created : new Date(),
+          updated: new Date(),
+          name: this.selectedPlayer?.name,
+          username: this.selectedPlayer?.username,
+          patent: this.selectedPlayer?.patent,
+          active: this.selectedPlayer?.active,
+        })
+        .then(() => {
+          this.players = this.players.filter((player) => player.id !== id);
+          this.players.unshift({
+            id,
+            name: this.selectedPlayer?.name,
+            username: this.selectedPlayer.username,
+            patent: this.selectedPlayer.patent,
+            active: this.selectedPlayer.active,
+            created: this.selectedPlayer.created,
+          });
+          this.isBusy = false;
+          this.showModal = false;
+        });
+    } catch (error) {
+      this.isBusy = false;
+      this.showModal = false;
+      throw new AppError('Jogador', error.message, ToastsTypeEnum.Warning);
     }
-    this.isBusy = false;
-    this.showModal = false;
   }
 
   cleanFilters(): void {
