@@ -167,6 +167,17 @@ export default class Login extends Base {
       }
 
       this.$store.commit('setUser', user);
+
+      const doc = await firebase
+        .firestore()
+        .collection('users')
+        .doc(user?.uid)
+        .get();
+
+      if (doc.data()) {
+        this.$store.commit('setGame', doc.data()?.gameType);
+      }
+
       this.isBusy = false;
 
       if (!user?.emailVerified) {

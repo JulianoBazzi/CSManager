@@ -44,17 +44,11 @@
             id="modal-group-patent"
             label="Patente (CS:GO)"
             label-for="modal-patent">
-            <b-form-select
+            <PatentComboBox
               id="modal-patent"
-              v-model="selectedPlayer.patent"
-              :disabled="isBusy">
-             <option
-                v-bind:value="patent.value"
-                v-for="patent in patents"
-                v-bind:key="patent.value">
-                {{ patent.text }}
-              </option>
-            </b-form-select>
+              :model.sync="selectedPlayer.patent"
+              :busy="isBusy">
+            </PatentComboBox>
           </b-form-group>
 
           <b-form-checkbox v-model="selectedPlayer.active">Ativo</b-form-checkbox>
@@ -76,21 +70,15 @@
           :disabled="isBusy">
           </b-form-select>
 
-          <b-form-select
-          class="mr-3"
-          v-model="searchPatent"
-          :disabled="isBusy">
-           <option
+          <PatentComboBox
+            class="mr-3"
+            :model.sync="searchPatent"
+            :busy="isBusy">
+            <option
               value="null">
               Todas
             </option>
-           <option
-              v-bind:value="patent.value"
-              v-for="patent in patents"
-              v-bind:key="patent.value">
-              {{ patent.text }}
-            </option>
-          </b-form-select>
+          </PatentComboBox>
 
           <b-button @click="cleanFilters" :disabled="isBusy">Limpar</b-button>
       </b-form>
@@ -123,6 +111,7 @@ import { v4 } from 'uuid';
 import { Component } from 'vue-property-decorator';
 import Base from '@/views/Base';
 import Card from '@/components/Card.vue';
+import PatentComboBox from '@/components/ComboBox/Patent.vue';
 import Modal from '@/components/Modal.vue';
 import Table from '@/components/Table.vue';
 import AppError, { ToastsTypeEnum } from '@/errors/AppError';
@@ -137,6 +126,7 @@ import ITableFieldsDTO from '../dtos/ITableFieldsDTO';
     Card,
     Modal,
     Table,
+    PatentComboBox,
   },
 })
 export default class Players extends Base {

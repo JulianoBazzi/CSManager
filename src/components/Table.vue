@@ -32,13 +32,22 @@
       <template v-for="(_, slotName) of $scopedSlots" v-slot:[slotName]="scope">
         <slot :name="slotName" v-bind="scope"/>
       </template>
-      <template #cell(actions)="row" v-if="displayEditButton">
+      <template #cell(actions)="row">
         <b-button
+          v-if="displayEditButton"
           size="sm"
           variant="light"
           @click="$emit('onClickEdit', row.item)"
           title="Editar Registro">
           <b-icon class="button" icon="pencil" scale="0.9"/>
+        </b-button>
+        <b-button
+          v-if="displayDeleteButton"
+          size="sm"
+          variant="danger"
+          @click="$emit('onClickRemove', row.item)"
+          title="Remover Registro">
+          <b-icon class="button" icon="trash" scale="0.9"/>
         </b-button>
       </template>
     </b-table>
@@ -78,10 +87,14 @@ import { Component, Vue } from 'vue-property-decorator';
       type: Boolean,
       required: false,
     },
+    displayDeleteButton: {
+      type: Boolean,
+      required: false,
+    },
   },
 })
 export default class Table extends Vue {
-  perPage = 10;
+  perPage = 8;
 
   currentPage = 1;
 }

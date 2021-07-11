@@ -62,6 +62,7 @@ export default class EmailConfirmation extends Base {
     try {
       this.isBusyEmail = true;
 
+      await firebase.auth().currentUser?.reload;
       this.user = firebase.auth().currentUser;
 
       if (this.user?.emailVerified) {
@@ -84,6 +85,7 @@ export default class EmailConfirmation extends Base {
     try {
       this.isBusy = true;
 
+      await firebase.auth().currentUser?.reload;
       this.user = firebase.auth().currentUser;
 
       if (this.user?.emailVerified) {

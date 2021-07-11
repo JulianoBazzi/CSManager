@@ -387,6 +387,7 @@ export default class Maps extends Base {
           name: this.selectedMap?.name,
           gameType: this.selectedMap?.gameType,
           mapType: this.selectedMap?.mapType,
+          link: this.selectedMap?.link,
           active: this.selectedMap?.active,
         })
         .then(() => {
