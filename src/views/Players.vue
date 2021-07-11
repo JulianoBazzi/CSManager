@@ -63,12 +63,11 @@
             :disabled="isBusy"
           ></b-form-input>
 
-          <b-form-select
-          class="mr-2"
-          v-model="searchSituation"
-          :options="situationsFilter"
-          :disabled="isBusy">
-          </b-form-select>
+          <SituationComboBox
+            class="mr-2"
+            :model.sync="searchSituation"
+            :busy="isBusy">
+          </SituationComboBox>
 
           <PatentComboBox
             class="mr-3"
@@ -112,12 +111,10 @@ import { Component } from 'vue-property-decorator';
 import Base from '@/views/Base';
 import Card from '@/components/Card.vue';
 import PatentComboBox from '@/components/ComboBox/Patent.vue';
+import SituationComboBox from '@/components/ComboBox/Situation.vue';
 import Modal from '@/components/Modal.vue';
 import Table from '@/components/Table.vue';
 import AppError, { ToastsTypeEnum } from '@/errors/AppError';
-import rakingsCsGo from '../assets/cs-go/rakings.json';
-import IFilterComboBoxBooleanDTO from '../dtos/IFilterComboBoxBooleanDTO';
-import IFilterComboBoxStringDTO from '../dtos/IFilterComboBoxStringDTO';
 import IPlayerDTO from '../dtos/IPlayerDTO';
 import ITableFieldsDTO from '../dtos/ITableFieldsDTO';
 
@@ -127,6 +124,7 @@ import ITableFieldsDTO from '../dtos/ITableFieldsDTO';
     Modal,
     Table,
     PatentComboBox,
+    SituationComboBox,
   },
 })
 export default class Players extends Base {
@@ -143,24 +141,7 @@ export default class Players extends Base {
 
   searchText = '';
 
-  situationsFilter: IFilterComboBoxBooleanDTO[] = [
-    {
-      value: null,
-      text: 'Todos',
-    },
-    {
-      value: true,
-      text: 'Ativos',
-    },
-    {
-      value: false,
-      text: 'Inativos',
-    },
-  ]
-
   searchSituation: boolean | null = null;
-
-  patents: IFilterComboBoxStringDTO[] = [];
 
   searchPatent = null;
 
@@ -192,7 +173,6 @@ export default class Players extends Base {
   async created(): Promise<void> {
     this.isBusy = true;
     this.players = [];
-    this.patents = [];
 
     const user = firebase.auth().currentUser;
 
@@ -213,16 +193,6 @@ export default class Players extends Base {
         created: player.data().created,
       });
     });
-
-    const competitive = rakingsCsGo.find((rank) => rank.type === 'competitive');
-    if (competitive) {
-      competitive.items.forEach((patent) => {
-        this.patents.push({
-          value: patent.id,
-          text: patent.name['pt-BR'],
-        });
-      });
-    }
 
     this.isBusy = false;
   }

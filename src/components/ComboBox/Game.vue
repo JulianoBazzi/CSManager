@@ -1,15 +1,15 @@
 <template>
-  <div class="manager-combo-patent">
+  <div class="manager-combo-game">
     <b-form-select
       :id="id"
       v-model="modelProp"
       :disabled="busyProp">
       <slot></slot>
       <option
-        v-bind:value="patent.value"
-        v-for="patent in patents"
-        v-bind:key="patent.value">
-        {{ patent.text }}
+        v-bind:value="game.value"
+        v-for="game in games"
+        v-bind:key="game.value">
+        {{ shortText ? game.shortText : game.text }}
       </option>
     </b-form-select>
   </div>
@@ -18,7 +18,7 @@
 <script lang="ts">
 import IFilterComboBoxStringDTO from '@/dtos/IFilterComboBoxStringDTO';
 import { Component, Vue } from 'vue-property-decorator';
-import rakingsCsGo from '../../assets/cs-go/rakings.json';
+import games from '../../assets/games.json';
 
 @Component({
   props: {
@@ -34,6 +34,10 @@ import rakingsCsGo from '../../assets/cs-go/rakings.json';
       type: Boolean,
       required: false,
     },
+    shortText: {
+      type: Boolean,
+      required: false,
+    },
   },
   computed: {
     modelProp: {
@@ -46,19 +50,19 @@ import rakingsCsGo from '../../assets/cs-go/rakings.json';
     },
   },
 })
-export default class Patent extends Vue {
-  patents: IFilterComboBoxStringDTO[] = [];
+export default class Game extends Vue {
+  games: IFilterComboBoxStringDTO[] = [];
 
   async created(): Promise<void> {
     this.$emit('update:busy', true);
-    this.patents = [];
+    this.games = [];
 
-    const competitive = rakingsCsGo.find((rank) => rank.type === 'competitive');
-    if (competitive) {
-      competitive.items.forEach((patent) => {
-        this.patents.push({
-          value: patent.id,
-          text: patent.name['pt-BR'],
+    if (games) {
+      games.forEach((game) => {
+        this.games.push({
+          value: game.id,
+          text: game.name,
+          shortText: game.shortName,
         });
       });
     }

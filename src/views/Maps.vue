@@ -16,35 +16,22 @@
             id="modal-group-game-type"
             label="Tipo de Jogo"
             label-for="modal-game-type">
-            <b-form-select
+            <GameComboBox
               id="modal-game-type"
-              v-model="selectedMap.gameType"
-              autofocus
-              :disabled="isBusy">
-              <option
-                v-bind:value="game.value"
-                v-for="game in gamesCombo"
-                v-bind:key="game.value">
-                {{ game.text }}
-              </option>
-            </b-form-select>
+              :model.sync="selectedMap.gameType"
+              :busy="isBusy">
+            </GameComboBox>
           </b-form-group>
 
           <b-form-group
             id="modal-group-map-type"
             label="Tipo de Mapa"
             label-for="modal-map-type">
-            <b-form-select
+            <MapComboBox
               id="modal-map-type"
-              v-model="selectedMap.mapType"
-              :disabled="isBusy">
-              <option
-                v-bind:value="map.value"
-                v-for="map in mapsCombo"
-                v-bind:key="map.value">
-                {{ map.text }}
-              </option>
-            </b-form-select>
+              :model.sync="selectedMap.mapType"
+              :busy="isBusy">
+            </MapComboBox>
           </b-form-group>
 
           <b-form-group
@@ -87,44 +74,32 @@
             :disabled="isBusy"
           ></b-form-input>
 
-          <b-form-select
-          class="mr-2"
-          v-model="searchSituation"
-          :options="situationsFilter"
-          :disabled="isBusy">
-          </b-form-select>
+          <SituationComboBox
+            class="mr-2"
+            :model.sync="searchSituation"
+            :busy="isBusy">
+          </SituationComboBox>
 
-          <b-form-select
-          class="mr-2"
-          v-model="searchGameType"
-          :disabled="isBusy">
-           <option
+          <GameComboBox
+            class="mr-2"
+            :model.sync="searchGameType"
+            :busy="isBusy"
+            shortText="true">
+            <option
+              value="null">
+              Todas
+            </option>
+          </GameComboBox>
+
+          <MapComboBox
+            class="mr-3"
+            :model.sync="searchMapType"
+            :busy="isBusy">
+            <option
               value="null">
               Todos
             </option>
-           <option
-              v-bind:value="game.value"
-              v-for="game in gamesCombo"
-              v-bind:key="game.value">
-              {{ game.shortText }}
-            </option>
-          </b-form-select>
-
-          <b-form-select
-          class="mr-3"
-          v-model="searchMapType"
-          :disabled="isBusy">
-           <option
-              value="null">
-              Todos
-            </option>
-           <option
-              v-bind:value="map.value"
-              v-for="map in mapsCombo"
-              v-bind:key="map.value">
-              {{ map.text }}
-            </option>
-          </b-form-select>
+          </MapComboBox>
 
           <b-button @click="cleanFilters" :disabled="isBusy">Limpar</b-button>
       </b-form>
@@ -167,11 +142,13 @@ import Base from '@/views/Base';
 import Card from '@/components/Card.vue';
 import Modal from '@/components/Modal.vue';
 import Table from '@/components/Table.vue';
+import GameComboBox from '@/components/ComboBox/Game.vue';
+import MapComboBox from '@/components/ComboBox/Map.vue';
+import SituationComboBox from '@/components/ComboBox/Situation.vue';
 import IMapDTO from '@/dtos/IMapDTO';
 import ITableFieldsDTO from '@/dtos/ITableFieldsDTO';
 import AppError, { ToastsTypeEnum } from '@/errors/AppError';
 import IFilterComboBoxStringDTO from '@/dtos/IFilterComboBoxStringDTO';
-import IFilterComboBoxBooleanDTO from '@/dtos/IFilterComboBoxBooleanDTO';
 import gamesJson from '../assets/games.json';
 import mapsJson from '../assets/maps.json';
 
@@ -180,6 +157,9 @@ import mapsJson from '../assets/maps.json';
     Card,
     Modal,
     Table,
+    GameComboBox,
+    MapComboBox,
+    SituationComboBox,
   },
 })
 export default class Maps extends Base {
@@ -232,21 +212,6 @@ export default class Maps extends Base {
   searchGameType = null;
 
   searchMapType = null;
-
-  situationsFilter: IFilterComboBoxBooleanDTO[] = [
-    {
-      value: null,
-      text: 'Todos',
-    },
-    {
-      value: true,
-      text: 'Ativos',
-    },
-    {
-      value: false,
-      text: 'Inativos',
-    },
-  ]
 
   async created(): Promise<void> {
     this.isBusy = true;
@@ -387,7 +352,7 @@ export default class Maps extends Base {
           name: this.selectedMap?.name,
           gameType: this.selectedMap?.gameType,
           mapType: this.selectedMap?.mapType,
-          link: this.selectedMap?.link,
+          link: this.selectedMap?.link ? this.selectedMap?.link : '',
           active: this.selectedMap?.active,
         })
         .then(() => {

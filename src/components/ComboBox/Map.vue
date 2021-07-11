@@ -1,15 +1,15 @@
 <template>
-  <div class="manager-combo-patent">
+  <div class="manager-combo-map">
     <b-form-select
       :id="id"
       v-model="modelProp"
       :disabled="busyProp">
       <slot></slot>
       <option
-        v-bind:value="patent.value"
-        v-for="patent in patents"
-        v-bind:key="patent.value">
-        {{ patent.text }}
+        v-bind:value="map.value"
+        v-for="map in maps"
+        v-bind:key="map.value">
+        {{ map.text }}
       </option>
     </b-form-select>
   </div>
@@ -18,7 +18,7 @@
 <script lang="ts">
 import IFilterComboBoxStringDTO from '@/dtos/IFilterComboBoxStringDTO';
 import { Component, Vue } from 'vue-property-decorator';
-import rakingsCsGo from '../../assets/cs-go/rakings.json';
+import maps from '../../assets/maps.json';
 
 @Component({
   props: {
@@ -46,19 +46,18 @@ import rakingsCsGo from '../../assets/cs-go/rakings.json';
     },
   },
 })
-export default class Patent extends Vue {
-  patents: IFilterComboBoxStringDTO[] = [];
+export default class Map extends Vue {
+  maps: IFilterComboBoxStringDTO[] = [];
 
   async created(): Promise<void> {
     this.$emit('update:busy', true);
-    this.patents = [];
+    this.maps = [];
 
-    const competitive = rakingsCsGo.find((rank) => rank.type === 'competitive');
-    if (competitive) {
-      competitive.items.forEach((patent) => {
-        this.patents.push({
-          value: patent.id,
-          text: patent.name['pt-BR'],
+    if (maps) {
+      maps.forEach((map) => {
+        this.maps.push({
+          value: map.id,
+          text: map.name['pt-BR'],
         });
       });
     }
