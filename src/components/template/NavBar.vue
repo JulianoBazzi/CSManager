@@ -79,6 +79,7 @@ import { Component, Vue } from 'vue-property-decorator';
 export default class NavBar extends Vue {
   async logOut(): Promise<void> {
     await firebase.auth().signOut();
+    this.$store.commit('setGame', null);
     this.$store.commit('setUser', null);
     this.$router.push('/');
   }

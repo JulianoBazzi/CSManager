@@ -28,6 +28,10 @@
           id="profile-game-type"
           v-model="gameSelected"
           :disabled="isBusy">
+            <option
+              value="null">
+              Indefinido
+            </option>
            <option
               v-bind:value="game.value"
               v-for="game in games"
@@ -74,15 +78,7 @@ export default class Profile extends Base {
     this.isBusy = true;
     this.games = [];
 
-    const user = firebase.auth().currentUser;
-
-    const doc = await firebase
-      .firestore()
-      .collection('users')
-      .doc(user?.uid)
-      .get();
-
-    this.gameSelected = doc.data() ? doc.data()?.gameType : 'cs';
+    this.gameSelected = this.$store.state.game;
 
     if (gamesJson) {
       gamesJson.forEach((game) => {

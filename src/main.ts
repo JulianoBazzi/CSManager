@@ -43,5 +43,6 @@ firebase.auth().onAuthStateChanged((user) => {
     }).$mount('#app');
 
     app.$store.commit('setUser', user);
+    app.$store.commit('initialiseStore');
   }
 });
