@@ -24,7 +24,7 @@
             <b-form-input
               id="sweepstake-count-players"
               type="number"
-              :value="playersSelected.length"
+              :value="numberSelectedPlayers"
               disabled/>
           </b-form-group>
 
@@ -37,7 +37,7 @@
             <b-form-input
               id="sweepstake-count-maps"
               type="number"
-              :value="mapsSelected.length"
+              :value="numberSelectedMaps"
               disabled/>
           </b-form-group>
 
@@ -69,15 +69,15 @@
       <Card class="col-6 pr-0" title="Jogadores">
         <Table
           id="tablePlayers"
+          :tbodyRowClass="tbodyRowClass"
           :items="players"
           :fields="fieldsPlayer"
           :busy="isBusy"
           small
-          selectable
           :recordsPerPage=12
-          @onRowSelected="onRowPlayerSelected">
-          <template #cell(selected)="{ rowSelected }">
-            <b-icon icon="check-square-fill" v-if="rowSelected"/>
+          @onRowClicked="onRowClicked">
+          <template #cell(selected)="{ item, field: { key } }">
+            <b-icon icon="check-square-fill" v-if="item[key]"/>
             <b-icon icon="square" v-else/>
           </template>
           <template #cell(patent)="row">
@@ -92,15 +92,15 @@
       <Card class="col-6" style="padding-left: 0.5rem;" title="Mapas">
         <Table
           id="tableMaps"
+          :tbodyRowClass="tbodyRowClass"
           :items="maps"
           :fields="fieldsMap"
           :busy="isBusy"
           small
-          selectable
           :recordsPerPage=12
-          @onRowSelected="onRowMapSelected">
-          <template #cell(selected)="{ rowSelected }">
-            <b-icon icon="check-square-fill" v-if="rowSelected"/>
+          @onRowClicked="onRowClicked">
+          <template #cell(selected)="{ item, field: { key } }">
+            <b-icon icon="check-square-fill" v-if="item[key]"/>
             <b-icon icon="square" v-else/>
           </template>
           <template #cell(mapType)="row">
@@ -142,11 +142,7 @@ export default class SweepstakeNew extends Base {
 
   players: IPlayerDTO[] = [];
 
-  playersSelected: IPlayerDTO[] = [];
-
   maps: IMapDTO[] = [];
-
-  mapsSelected: IMapDTO[] = [];
 
   fieldsPlayer: ITableFieldsDTO[] = [
     {
@@ -235,7 +231,6 @@ export default class SweepstakeNew extends Base {
     }
 
     this.maps = [];
-    this.mapsSelected = [];
 
     if (value) {
       await firebase
@@ -267,28 +262,42 @@ export default class SweepstakeNew extends Base {
       throw new AppError('Novo Sorteio', 'O tipo de jogo é obrigatório!', ToastsTypeEnum.Warning);
     }
 
-    if (this.playersSelected.length <= 2) {
+    if (this.numberSelectedPlayers <= 2) {
       throw new AppError('Novo Sorteio', 'É obrigatório selecionar ao menos três jogadores!', ToastsTypeEnum.Warning);
     }
 
-    if (this.mapsSelected.length <= 0) {
+    if (this.numberSelectedMaps <= 0) {
       throw new AppError('Novo Sorteio', 'É obrigatório selecionar ao menos um mapa!', ToastsTypeEnum.Warning);
     }
 
     try {
       this.isBusy = true;
 
-      await this.user?.updateProfile({
-        displayName: this.name,
-      });
+      const doc = await firebase.firestore().collection('sweepstakes')
+        .add({
+          userId: this.user?.uid,
+          created: new Date(),
+          updated: new Date(),
+          gameType: this.gameSelected,
+          considerPatents: false,
+          considerPreviousRankings: false,
+          quantityPlayers: this.numberSelectedPlayers,
+          quantityMaps: this.numberSelectedMaps,
+        });
 
-      await firebase.auth().currentUser?.reload;
-
-      this.$router.push('sweepstakes/123456');
+      this.$router.push(`sweepstake/${doc.id}`);
       throw new AppError('Novo Sorteio', 'Sorteio realizado com sucesso!', ToastsTypeEnum.Success);
     } finally {
       this.isBusy = false;
     }
+  }
+
+  get numberSelectedPlayers(): number {
+    return this.players.filter((player) => player.selected).length;
+  }
+
+  get numberSelectedMaps(): number {
+    return this.maps.filter((map) => map.selected).length;
   }
 
   getMapName(id: string): string | undefined {
@@ -296,17 +305,30 @@ export default class SweepstakeNew extends Base {
   }
 
   cleanFilters(): void {
-    this.gameSelected = this.$store.state.game ? this.$store.state.game : 'cs';
-    this.playersSelected = [];
-    this.mapsSelected = [];
+    this.isBusy = true;
+    try {
+      this.gameSelected = this.$store.state.game ? this.$store.state.game : 'cs';
+      this.players.filter((player) => player.selected).forEach((player) => {
+        this.$set(player, 'selected', false);
+      });
+      this.maps.filter((map) => map.selected).forEach((map) => {
+        this.$set(map, 'selected', false);
+      });
+    } finally {
+      this.isBusy = false;
+    }
   }
 
-  onRowPlayerSelected(items: IPlayerDTO[]): void {
-    this.playersSelected = items;
+  tbodyRowClass(item: IPlayerDTO | IMapDTO): string[] {
+    this.isBusy = false;
+    if (item?.selected) {
+      return ['cursor-pointer', 'b-table-row-selected', 'bg-active'];
+    }
+    return ['cursor-pointer'];
   }
 
-  onRowMapSelected(items: IMapDTO[]): void {
-    this.mapsSelected = items;
+  onRowClicked(item: IPlayerDTO | IMapDTO): void {
+    this.$set(item, 'selected', !item.selected);
   }
 }
 </script>

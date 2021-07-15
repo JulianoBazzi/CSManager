@@ -8,16 +8,15 @@
       dark
       no-border-collapse
       show-empty
-      :small="small"
-      select-mode="multi"
-      :selectable="selectable"
       responsive="sm"
+      :tbody-tr-class="tbodyRowClass"
+      :small="small"
       :items="items"
       :fields="fields"
       :busy="busy"
       :current-page="currentPage"
       :per-page="perPage"
-      @row-selected="$emit('onRowSelected', $event)">
+      @row-clicked="$emit('onRowClicked', $event)">
       <template #table-busy>
         <div class="text-center text-light my-2">
           <b-spinner class="align-middle"></b-spinner>
@@ -75,6 +74,10 @@ import { Component, Vue } from 'vue-property-decorator';
       type: String,
       required: false,
     },
+    tbodyRowClass: {
+      type: [],
+      required: false,
+    },
     items: {
       type: [],
       required: true,
@@ -88,10 +91,6 @@ import { Component, Vue } from 'vue-property-decorator';
       required: true,
     },
     small: {
-      type: Boolean,
-      required: false,
-    },
-    selectable: {
       type: Boolean,
       required: false,
     },

@@ -6,6 +6,7 @@ import Home from '../views/Home.vue';
 import About from '../views/About.vue';
 import Maps from '../views/Maps.vue';
 import Players from '../views/Players.vue';
+import Sweepstake from '../views/Sweepstake.vue';
 import Sweepstakes from '../views/Sweepstakes.vue';
 import SweepstakeNew from '../views/SweepstakeNew.vue';
 import Login from '../views/Login.vue';
@@ -37,14 +38,6 @@ const routes: Array<RouteConfig> = [
     },
   },
   {
-    path: '/sweepstakes',
-    name: 'Sorteios',
-    component: Sweepstakes,
-    meta: {
-      requiresAuth: true,
-    },
-  },
-  {
     path: '/sweepstakes/new',
     name: 'Novo Sorteio',
     component: SweepstakeNew,
@@ -53,10 +46,18 @@ const routes: Array<RouteConfig> = [
     },
   },
   {
-    path: '/sweepstakes/:id',
-    name: 'Sorteio nº',
-    component: SweepstakeNew,
+    path: '/sweepstake/:id',
+    name: 'Sorteio',
+    component: Sweepstake,
     props: true,
+  },
+  {
+    path: '/sweepstakes',
+    name: 'Sorteios',
+    component: Sweepstakes,
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: '/about',

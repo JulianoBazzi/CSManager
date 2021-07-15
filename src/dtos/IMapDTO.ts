@@ -1,5 +1,6 @@
 // eslint-disable-next-line no-shadow
 interface IMapDTO {
+  selected?: boolean;
   id?: string;
   gameType: string;
   mapType: string;
