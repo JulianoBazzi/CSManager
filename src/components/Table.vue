@@ -8,12 +8,16 @@
       dark
       no-border-collapse
       show-empty
+      :small="small"
+      select-mode="multi"
+      :selectable="selectable"
       responsive="sm"
       :items="items"
       :fields="fields"
       :busy="busy"
       :current-page="currentPage"
-      :per-page="perPage">
+      :per-page="perPage"
+      @row-selected="$emit('onRowSelected', $event)">
       <template #table-busy>
         <div class="text-center text-light my-2">
           <b-spinner class="align-middle"></b-spinner>
@@ -83,6 +87,18 @@ import { Component, Vue } from 'vue-property-decorator';
       type: Boolean,
       required: true,
     },
+    small: {
+      type: Boolean,
+      required: false,
+    },
+    selectable: {
+      type: Boolean,
+      required: false,
+    },
+    recordsPerPage: {
+      type: Number,
+      required: false,
+    },
     displayEditButton: {
       type: Boolean,
       required: false,
@@ -94,7 +110,7 @@ import { Component, Vue } from 'vue-property-decorator';
   },
 })
 export default class Table extends Vue {
-  perPage = 8;
+  perPage = this.$props.recordsPerPage ?? 8;
 
   currentPage = 1;
 }

@@ -84,7 +84,7 @@
             class="mr-2"
             :model.sync="searchGameType"
             :busy="isBusy"
-            shortText="true">
+            shortText>
             <option
               value="null">
               Todas
@@ -111,10 +111,10 @@
         :busy="isBusy"
         @onClickEdit="edit">
         <template #cell(gameType)="row">
-          <p>{{getGameShortName(row.item.gameType)}}</p>
+          {{getGameShortName(row.item.gameType)}}
         </template>
         <template #cell(mapType)="row">
-          <p>{{getMapName(row.item.mapType)}}</p>
+          {{getMapName(row.item.mapType)}}
         </template>
         <template #cell(active)="row">
           <b-icon icon="check-square-fill" v-if="row.item.active"/>
@@ -171,6 +171,7 @@ export default class Maps extends Base {
     gameType: this.$store.state.game ? this.$store.state.game : 'cs',
     mapType: 'bomb',
     name: '',
+    link: '',
     active: true,
   };
 
@@ -311,6 +312,7 @@ export default class Maps extends Base {
       gameType: this.$store.state.game ? this.$store.state.game : 'cs',
       mapType: 'bomb',
       name: '',
+      link: '',
       active: true,
     };
     this.showModal = false;
@@ -336,42 +338,45 @@ export default class Maps extends Base {
       && map.id !== this.selectedMap.id
     ));
     if (existsUsername) {
-      throw new AppError('Mapa', 'Napa já cadastrado!', ToastsTypeEnum.Warning);
+      throw new AppError('Mapa', 'Mapa já cadastrado!', ToastsTypeEnum.Warning);
     }
 
     this.isBusy = true;
     try {
       const user = firebase.auth().currentUser;
       const id = this.selectedMap?.id ? this.selectedMap?.id : v4();
+      const {
+        name, gameType, mapType, link, active, created,
+      } = this.selectedMap;
 
       firebase.firestore().collection('maps')
         .doc(id).set({
           userId: user?.uid,
-          created: this.selectedMap?.created ? this.selectedMap?.created : new Date(),
+          created: created ?? new Date(),
           updated: new Date(),
-          name: this.selectedMap?.name,
-          gameType: this.selectedMap?.gameType,
-          mapType: this.selectedMap?.mapType,
-          link: this.selectedMap?.link ? this.selectedMap?.link : '',
-          active: this.selectedMap?.active,
+          name,
+          gameType,
+          mapType,
+          link,
+          active,
         })
         .then(() => {
           this.maps = this.maps.filter((map) => map.id !== id);
           this.maps.unshift({
             id,
-            name: this.selectedMap?.name,
-            gameType: this.selectedMap?.gameType,
-            mapType: this.selectedMap?.mapType,
-            active: this.selectedMap?.active,
-            created: this.selectedMap.created,
+            name,
+            gameType,
+            mapType,
+            active,
+            link,
+            created,
           });
           this.isBusy = false;
           this.showModal = false;
         });
-    } catch (error) {
+    } finally {
       this.isBusy = false;
       this.showModal = false;
-      throw new AppError('Mapa', error.message, ToastsTypeEnum.Warning);
     }
   }
 }

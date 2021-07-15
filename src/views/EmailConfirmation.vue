@@ -75,9 +75,8 @@ export default class EmailConfirmation extends Base {
 
       this.isBusyEmail = false;
       throw new AppError('Confirmação de e-mail', 'E-mail de confirmação foi enviado com sucesso!', ToastsTypeEnum.Success);
-    } catch (error) {
+    } finally {
       this.isBusyEmail = false;
-      throw new AppError('Confirmação de e-mail', error.message, ToastsTypeEnum.Warning);
     }
   }
 
@@ -95,9 +94,8 @@ export default class EmailConfirmation extends Base {
       }
 
       throw new AppError('Confirmação de e-mail', 'Opss.. E-mail ainda não verificado!', ToastsTypeEnum.Warning);
-    } catch (error) {
+    } finally {
       this.isBusy = false;
-      throw new AppError('Confirmação de e-mail', error.message, ToastsTypeEnum.Warning);
     }
   }
 }

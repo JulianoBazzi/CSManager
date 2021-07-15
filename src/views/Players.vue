@@ -251,34 +251,36 @@ export default class Players extends Base {
     try {
       const user = firebase.auth().currentUser;
       const id = this.selectedPlayer?.id ? this.selectedPlayer?.id : v4();
+      const {
+        name, username, patent, active, created,
+      } = this.selectedPlayer;
 
       firebase.firestore().collection('players')
         .doc(id).set({
           userId: user?.uid,
-          created: this.selectedPlayer?.created ? this.selectedPlayer?.created : new Date(),
+          created: created ?? new Date(),
           updated: new Date(),
-          name: this.selectedPlayer?.name,
-          username: this.selectedPlayer?.username,
-          patent: this.selectedPlayer?.patent,
-          active: this.selectedPlayer?.active,
+          name,
+          username,
+          patent,
+          active,
         })
         .then(() => {
           this.players = this.players.filter((player) => player.id !== id);
           this.players.unshift({
             id,
-            name: this.selectedPlayer?.name,
-            username: this.selectedPlayer.username,
-            patent: this.selectedPlayer.patent,
-            active: this.selectedPlayer.active,
-            created: this.selectedPlayer.created,
+            name,
+            username,
+            patent,
+            active,
+            created,
           });
           this.isBusy = false;
           this.showModal = false;
         });
-    } catch (error) {
+    } finally {
       this.isBusy = false;
       this.showModal = false;
-      throw new AppError('Jogador', error.message, ToastsTypeEnum.Warning);
     }
   }
 
