@@ -371,8 +371,6 @@ export default class Maps extends Base {
             link,
             created,
           });
-          this.isBusy = false;
-          this.showModal = false;
         });
     } finally {
       this.isBusy = false;

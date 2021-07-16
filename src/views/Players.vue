@@ -275,8 +275,6 @@ export default class Players extends Base {
             active,
             created,
           });
-          this.isBusy = false;
-          this.showModal = false;
         });
     } finally {
       this.isBusy = false;

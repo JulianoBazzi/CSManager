@@ -123,7 +123,9 @@ import AppError, { ToastsTypeEnum } from '@/errors/AppError';
 import IPlayerDTO from '@/dtos/IPlayerDTO';
 import IMapDTO from '@/dtos/IMapDTO';
 import ITableFieldsDTO from '@/dtos/ITableFieldsDTO';
+import ISweepstakeDTO from '@/dtos/ISweepstakeDTO';
 import IFilterComboBoxStringDTO from '@/dtos/IFilterComboBoxStringDTO';
+import ITeamDTO from '@/dtos/ITeamDTO';
 import mapsJson from '../assets/maps.json';
 
 @Component({
@@ -272,20 +274,43 @@ export default class SweepstakeNew extends Base {
       throw new AppError('Novo Sorteio', 'É obrigatório selecionar ao menos um mapa!', ToastsTypeEnum.Warning);
     }
 
+    if (!this.user) {
+      throw new AppError('Novo Sorteio', 'Usuário logado não localizado!', ToastsTypeEnum.Warning);
+    }
+
+    if (!this.gameSelected) {
+      throw new AppError('Novo Sorteio', 'Tipo de jogo não selecionado!', ToastsTypeEnum.Warning);
+    }
+
     try {
       this.isBusy = true;
 
-      const doc = await firebase.firestore().collection('sweepstakes')
-        .add({
-          userId: this.user?.uid,
-          created: new Date(),
-          updated: new Date(),
-          gameType: this.gameSelected,
-          considerPatents: false,
-          considerPreviousRankings: false,
-          quantityPlayers: this.numberSelectedPlayers,
-          quantityMaps: this.numberSelectedMaps,
-        });
+      const teamOne: ITeamDTO = {
+        description: 'Time 1',
+        quantityPlayers: 10,
+        players: this.players.filter((player) => player.selected),
+      };
+
+      const teamTwo: ITeamDTO = {
+        description: 'Time 2',
+        quantityPlayers: 5,
+        players: this.players.filter((player) => !player.selected),
+      };
+
+      const sweepstake: ISweepstakeDTO = {
+        userId: this.user.uid,
+        created: new Date(),
+        updated: new Date(),
+        gameType: this.gameSelected ?? 'cz',
+        considerPatents: false,
+        considerPreviousRankings: false,
+        quantityPlayers: this.numberSelectedPlayers,
+        quantityMaps: this.numberSelectedMaps,
+        teams: [teamOne, teamTwo],
+        maps: this.maps.filter((map) => map.selected),
+      };
+
+      const doc = await firebase.firestore().collection('sweepstakes').add(sweepstake);
 
       this.$router.push({ name: 'Sweepstake', params: { id: doc.id } });
       throw new AppError('Novo Sorteio', 'Sorteio realizado com sucesso!', ToastsTypeEnum.Success);

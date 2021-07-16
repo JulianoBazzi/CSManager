@@ -40,15 +40,19 @@ export default class Sweepstake extends Base {
       .then((doc) => {
         this.sweepstake = {
           id: this.id,
-          created: doc.data()?.created,
+          userId: doc.data()?.usetId,
+          created: (doc.data()?.created as firebase.firestore.Timestamp).toDate(),
+          updated: (doc.data()?.updated as firebase.firestore.Timestamp).toDate(),
           gameType: doc.data()?.gameType,
           quantityPlayers: doc.data()?.quantityPlayers,
           quantityMaps: doc.data()?.quantityMaps,
           considerPatents: doc.data()?.considerPatents,
           considerPreviousRankings: doc.data()?.considerPreviousRankings,
+          teams: [],
+          maps: [],
         };
 
-        this.title = `${this.sweepstake.gameType} - ${moment(this.sweepstake.created.toDate()).format('DD/MM/YYYY')}`;
+        this.title = `${this.sweepstake.gameType} - ${moment(this.sweepstake.created).format('DD/MM/YYYY')}`;
       });
 
     this.isBusy = false;

@@ -1,5 +1,3 @@
-import firebase from 'firebase';
-
 interface IMapDTO {
   selected?: boolean;
   id?: string;
@@ -8,7 +6,7 @@ interface IMapDTO {
   name: string;
   link?: string;
   active: boolean;
-  created?: firebase.firestore.Timestamp;
+  created?: Date;
 }
 
 export default IMapDTO;
