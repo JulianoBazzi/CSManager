@@ -111,7 +111,7 @@ export default class Sweepstakes extends Base {
   }
 
   newSweepstake(): void {
-    this.$router.push('sweepstakes/new');
+    this.$router.push({ name: 'NewSweepstake' });
   }
 
   async remove(): Promise<void> {

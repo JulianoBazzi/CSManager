@@ -1,3 +1,5 @@
+import firebase from 'firebase';
+
 interface IPlayerDTO {
   selected?: boolean;
   id?: string;
@@ -5,7 +7,7 @@ interface IPlayerDTO {
   username: string;
   patent: string;
   active: boolean;
-  created?: Date;
+  created?: firebase.firestore.Timestamp;
 }
 
 export default IPlayerDTO;

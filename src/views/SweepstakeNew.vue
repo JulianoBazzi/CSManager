@@ -230,6 +230,7 @@ export default class SweepstakeNew extends Base {
       return;
     }
 
+    this.isBusy = true;
     this.maps = [];
 
     if (value) {
@@ -255,6 +256,7 @@ export default class SweepstakeNew extends Base {
           });
         });
     }
+    this.isBusy = false;
   }
 
   async handleRaffle(): Promise<void> {
@@ -262,8 +264,8 @@ export default class SweepstakeNew extends Base {
       throw new AppError('Novo Sorteio', 'O tipo de jogo é obrigatório!', ToastsTypeEnum.Warning);
     }
 
-    if (this.numberSelectedPlayers <= 2) {
-      throw new AppError('Novo Sorteio', 'É obrigatório selecionar ao menos três jogadores!', ToastsTypeEnum.Warning);
+    if (this.numberSelectedPlayers <= 1) {
+      throw new AppError('Novo Sorteio', 'É obrigatório selecionar ao menos dois jogadores!', ToastsTypeEnum.Warning);
     }
 
     if (this.numberSelectedMaps <= 0) {
@@ -285,7 +287,7 @@ export default class SweepstakeNew extends Base {
           quantityMaps: this.numberSelectedMaps,
         });
 
-      this.$router.push(`sweepstake/${doc.id}`);
+      this.$router.push({ name: 'Sweepstake', params: { id: doc.id } });
       throw new AppError('Novo Sorteio', 'Sorteio realizado com sucesso!', ToastsTypeEnum.Success);
     } finally {
       this.isBusy = false;

@@ -1,4 +1,5 @@
-// eslint-disable-next-line no-shadow
+import firebase from 'firebase';
+
 interface IMapDTO {
   selected?: boolean;
   id?: string;
@@ -7,7 +8,7 @@ interface IMapDTO {
   name: string;
   link?: string;
   active: boolean;
-  created?: Date;
+  created?: firebase.firestore.Timestamp;
 }
 
 export default IMapDTO;

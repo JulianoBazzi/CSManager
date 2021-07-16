@@ -23,64 +23,81 @@ const routes: Array<RouteConfig> = [
   },
   {
     path: '/players',
-    name: 'Jogadores',
+    name: 'Players',
     component: Players,
     meta: {
+      title: 'Jogadores',
       requiresAuth: true,
     },
   },
   {
     path: '/maps',
-    name: 'Mapas',
+    name: 'Maps',
     component: Maps,
     meta: {
+      title: 'Mapas',
       requiresAuth: true,
     },
   },
   {
     path: '/sweepstakes/new',
-    name: 'Novo Sorteio',
+    name: 'NewSweepstake',
     component: SweepstakeNew,
     meta: {
+      title: 'Novo Sorteio',
       requiresAuth: true,
     },
   },
   {
-    path: '/sweepstake/:id',
-    name: 'Sorteio',
+    path: '/sweepstakes/:id',
+    name: 'Sweepstake',
     component: Sweepstake,
     props: true,
+    meta: {
+      title: 'Sorteio',
+    },
   },
   {
     path: '/sweepstakes',
-    name: 'Sorteios',
+    name: 'Sweepstakes',
     component: Sweepstakes,
     meta: {
+      title: 'Sorteios',
       requiresAuth: true,
     },
   },
   {
     path: '/about',
-    name: 'Sobre',
+    name: 'About',
     component: About,
+    meta: {
+      title: 'Sobre',
+    },
   },
   {
     path: '/login',
     name: 'Login',
     component: Login,
+    meta: {
+      title: 'Login',
+    },
   },
   {
     path: '/emailConfirmation',
-    name: 'Confirmação de E-mail',
+    name: 'EmailConfirmation',
     component: EmailConfirmation,
     meta: {
+      title: 'Confirmação de E-mail',
       emailConfirmation: true,
     },
   },
   {
     path: '/profile',
-    name: 'Meu Perfil',
+    name: 'Profile',
     component: Profile,
+    meta: {
+      title: 'Meu Perfil',
+    },
   },
 ];
 
@@ -91,7 +108,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  let documentTitle = to.path === '/' ? `${process.env.VUE_APP_TITLE}` : `${to.name} - ${process.env.VUE_APP_TITLE}`;
+  let documentTitle = to.path === '/' || !to.meta?.title ? `${process.env.VUE_APP_TITLE}` : `${to.meta?.title} - ${process.env.VUE_APP_TITLE}`;
   if (to.params.title) {
     documentTitle = `${to.params.title} - ${documentTitle}`;
   }

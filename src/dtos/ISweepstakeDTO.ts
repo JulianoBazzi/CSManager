@@ -1,3 +1,5 @@
+import firebase from 'firebase';
+
 interface ISweepstakeDTO {
   id?: string;
   gameType: string;
@@ -5,7 +7,7 @@ interface ISweepstakeDTO {
   considerPreviousRankings: boolean;
   quantityPlayers: number;
   quantityMaps: number;
-  created?: Date;
+  created: firebase.firestore.Timestamp;
 }
 
 export default ISweepstakeDTO;
