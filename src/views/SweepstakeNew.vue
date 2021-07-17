@@ -7,7 +7,7 @@
           <b-form-group
             id="sweepstake-group-game-type"
             class="col-sm-12 col-md-4"
-            label="Tipo de Jogo"
+            label="Jogo"
             label-for="sweepstake-game-type">
             <GameComboBox
               id="sweepstake-game-type"

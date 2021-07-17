@@ -65,43 +65,73 @@
           <b-form-checkbox v-model="selectedMap.active">Ativo</b-form-checkbox>
         </b-form>
       </Modal>
-      <b-form class="mb-3" inline>
-          <b-form-input
-            class="mr-2"
-            v-model="searchText"
-            placeholder="Pesquisar"
-            autocomplete="off"
-            :disabled="isBusy"
-          ></b-form-input>
+      <b-form class="form-group row">
+          <b-form-group
+            id="map-group-search"
+            class="col-sm-12 col-md-3"
+            label="Pesquisar"
+            label-for="map-search">
+            <b-form-input
+              id="map-search"
+              v-model="searchText"
+              placeholder="Descrição"
+              autocomplete="off"
+              :disabled="isBusy"
+            />
+          </b-form-group>
 
-          <SituationComboBox
-            class="mr-2"
-            :model.sync="searchSituation"
-            :busy="isBusy">
-          </SituationComboBox>
+          <b-form-group
+            id="map-group-situation-type"
+            class="col-sm-6 col-md-2"
+            label="Situação"
+            label-for="map-situation-type">
+            <SituationComboBox
+              id="map-situation-type"
+              :model.sync="searchSituation"
+              :busy="isBusy" />
+          </b-form-group>
 
-          <GameComboBox
-            class="mr-2"
-            :model.sync="searchGameType"
-            :busy="isBusy"
-            shortText>
-            <option
-              value="null">
-              Todas
-            </option>
-          </GameComboBox>
+          <b-form-group
+            id="map-group-game-type"
+            class="col-sm-6 col-md-2"
+            label="Jogo"
+            label-for="map-game-type">
+            <GameComboBox
+              id="map-game-type"
+              :model.sync="searchGameType"
+              :busy="isBusy"
+              shortText>
+              <option
+                value="null">
+                Todas
+              </option>
+            </GameComboBox>
+          </b-form-group>
 
-          <MapComboBox
-            class="mr-3"
-            :model.sync="searchMapType"
-            :busy="isBusy">
-            <option
-              value="null">
-              Todos
-            </option>
-          </MapComboBox>
+          <b-form-group
+            id="map-group-map-type"
+            class="col-sm-12 col-md-2"
+            label="Mapa"
+            label-for="map-map-type">
+            <MapComboBox
+              id="map-map-type"
+              :model.sync="searchMapType"
+              :busy="isBusy">
+              <option
+                value="null">
+                Todos
+              </option>
+            </MapComboBox>
+          </b-form-group>
 
-          <b-button @click="cleanFilters" :disabled="isBusy">Limpar</b-button>
+          <b-col class="mt-sm-1 mt-md-3 align-self-md-center">
+            <b-button
+              class="col-sm-12 col-md-4"
+              @click="cleanFilters"
+              :disabled="isBusy">
+              Limpar
+            </b-button>
+          </b-col>
       </b-form>
       <Table
         id="tableMaps"

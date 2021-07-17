@@ -54,32 +54,56 @@
           <b-form-checkbox v-model="selectedPlayer.active">Ativo</b-form-checkbox>
         </b-form>
       </Modal>
-      <b-form class="mb-3" inline>
-          <b-form-input
-            class="mr-2"
-            v-model="searchText"
-            placeholder="Pesquisar"
-            autocomplete="off"
-            :disabled="isBusy"
-          ></b-form-input>
+      <b-form class="form-group row">
+          <b-form-group
+            id="player-group-search"
+            class="col-sm-12 col-md-4"
+            label="Pesquisar"
+            label-for="player-search">
+            <b-form-input
+              id="player-search"
+              v-model="searchText"
+              placeholder="Nome Completo, Steam"
+              autocomplete="off"
+              :disabled="isBusy"
+            />
+          </b-form-group>
 
-          <SituationComboBox
-            class="mr-2"
-            :model.sync="searchSituation"
-            :busy="isBusy">
-          </SituationComboBox>
+          <b-form-group
+            id="player-group-situation-type"
+            class="col-sm-6 col-md-2"
+            label="Situação"
+            label-for="player-situation-type">
+            <SituationComboBox
+              id="player-situation-type"
+              :model.sync="searchSituation"
+              :busy="isBusy" />
+          </b-form-group>
 
-          <PatentComboBox
-            class="mr-3"
-            :model.sync="searchPatent"
-            :busy="isBusy">
-            <option
-              value="null">
-              Todas
-            </option>
-          </PatentComboBox>
+          <b-form-group
+            id="player-group-patent-type"
+            class="col-sm-6 col-md-2"
+            label="Patente"
+            label-for="player-patent-type">
+            <PatentComboBox
+              id="player-patent-type"
+              :model.sync="searchPatent"
+              :busy="isBusy">
+              <option
+                value="null">
+                Todas
+              </option>
+            </PatentComboBox>
+          </b-form-group>
 
-          <b-button @click="cleanFilters" :disabled="isBusy">Limpar</b-button>
+          <b-col class="mt-sm-1 mt-md-3 align-self-md-center">
+            <b-button
+              class="col-sm-12 col-md-3"
+              @click="cleanFilters"
+              :disabled="isBusy">
+              Limpar
+            </b-button>
+          </b-col>
       </b-form>
       <Table
         id="tablePlayers"
@@ -152,7 +176,7 @@ export default class Players extends Base {
   },
   {
     key: 'username',
-    label: 'Nick Steam',
+    label: 'Steam',
     sortable: true,
   },
   {
