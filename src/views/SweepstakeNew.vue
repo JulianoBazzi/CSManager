@@ -6,7 +6,7 @@
         <div class="row">
           <b-form-group
             id="sweepstake-group-game-type"
-            class="col-4"
+            class="col-sm-12 col-md-4"
             label="Tipo de Jogo"
             label-for="sweepstake-game-type">
             <GameComboBox
@@ -17,7 +17,7 @@
 
           <b-form-group
             id="sweepstake-group-count-players"
-            class="col-2"
+            class="col-sm-6 col-md-2"
             label="Qtd. Jogadores"
             title="Quantidade de Jogadores Selecionados"
             label-for="sweepstake-count-players">
@@ -30,7 +30,7 @@
 
           <b-form-group
             id="sweepstake-group-count-maps"
-            class="col-2"
+            class="col-sm-6 col-md-2"
             label="Qtd. Mapas"
             label-for="sweepstake-count-maps"
             title="Quantidade de Mapas Selecionados">
@@ -40,18 +40,6 @@
               :value="numberSelectedMaps"
               disabled/>
           </b-form-group>
-
-          <b-button
-            class="col-2 mr-2"
-            type="submit"
-            variant="success"
-            :disabled="isBusy">
-            <b-spinner small v-if="isBusy"></b-spinner>
-            <b-icon icon="people" v-else/>
-              Sortear Times
-          </b-button>
-
-          <b-button @click="cleanFilters" :disabled="isBusy">Limpar</b-button>
         </div>
         <div class="row">
           <b-form-checkbox class="ml-3" disabled>
@@ -62,11 +50,29 @@
           Considerar ranking de partidas anteriores (em breve)
           </b-form-checkbox>
         </div>
+        <div class="form-group">
+          <b-button
+            class="col-sm-12 mt-2 col-md-2 mr-2"
+            type="submit"
+            variant="success"
+            :disabled="isBusy">
+            <b-spinner small v-if="isBusy"></b-spinner>
+            <b-icon icon="people" v-else/>
+              Sortear Times
+          </b-button>
+
+          <b-button
+            class="col-sm-12 mt-2 col-md-1"
+            @click="cleanFilters"
+            :disabled="isBusy">
+            Limpar
+          </b-button>
+        </div>
       </b-form>
     </Card>
 
-    <div class="mt-2 row">
-      <Card class="col-6 pr-0" title="Jogadores">
+    <div class="row">
+      <Card class="mt-2 col-sm-12 col-md-6" title="Jogadores">
         <Table
           id="tablePlayers"
           :tbodyRowClass="tbodyRowClass"
@@ -89,7 +95,7 @@
           </template>
         </Table>
       </Card>
-      <Card class="col-6" style="padding-left: 0.5rem;" title="Mapas">
+      <Card class="mt-2 col-sm-12 col-md-6" title="Mapas">
         <Table
           id="tableMaps"
           :tbodyRowClass="tbodyRowClass"
@@ -126,6 +132,7 @@ import ITableFieldsDTO from '@/dtos/ITableFieldsDTO';
 import ISweepstakeDTO from '@/dtos/ISweepstakeDTO';
 import IFilterComboBoxStringDTO from '@/dtos/IFilterComboBoxStringDTO';
 import ITeamDTO from '@/dtos/ITeamDTO';
+import SplitArray from '@/tools/SplitArray';
 import mapsJson from '../assets/maps.json';
 
 @Component({
@@ -285,16 +292,18 @@ export default class SweepstakeNew extends Base {
     try {
       this.isBusy = true;
 
+      const divisionTeams = SplitArray(this.players.filter((player) => player.selected));
+
       const teamOne: ITeamDTO = {
         description: 'Time 1',
-        quantityPlayers: 10,
-        players: this.players.filter((player) => player.selected),
+        quantityPlayers: divisionTeams[0].length,
+        players: divisionTeams[0],
       };
 
       const teamTwo: ITeamDTO = {
         description: 'Time 2',
-        quantityPlayers: 5,
-        players: this.players.filter((player) => !player.selected),
+        quantityPlayers: divisionTeams[1].length,
+        players: divisionTeams[1],
       };
 
       const sweepstake: ISweepstakeDTO = {
