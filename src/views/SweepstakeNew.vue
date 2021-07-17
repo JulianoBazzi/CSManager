@@ -258,7 +258,7 @@ export default class SweepstakeNew extends Base {
               gameType: map.data().gameType,
               mapType: map.data().mapType,
               name: map.data().name,
-              link: map.data().link,
+              link: map.data().link ?? '',
               active: map.data().active,
               created: map.data().created,
             });
