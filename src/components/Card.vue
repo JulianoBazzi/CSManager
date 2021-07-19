@@ -6,7 +6,7 @@
       text-variant="white">
       <template #header>
         <div class="top">
-          <h3 class="mb-0">{{ title }}</h3>
+          <h3 class="mb-0"><b-icon v-if="icon" :icon="icon"/> {{ title }}</h3>
           <b-button
             size="sm"
             variant="success"
@@ -30,6 +30,10 @@ import { Component, Vue } from 'vue-property-decorator';
     title: {
       type: String,
       required: true,
+    },
+    icon: {
+      type: String,
+      required: false,
     },
     busy: {
       type: Boolean,

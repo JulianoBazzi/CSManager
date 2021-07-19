@@ -1,11 +1,12 @@
 <template>
   <div class="sweepstakes">
     <Card title="Sorteio" :busy="isBusy" v-if="isBusy">
-      <b-skeleton width="40%"></b-skeleton>
-      <b-skeleton width="60%"></b-skeleton>
+      <b-skeleton width="30%"></b-skeleton>
+      <b-skeleton width="25%"></b-skeleton>
+      <b-skeleton width="30%"></b-skeleton>
     </Card>
     <div v-else>
-      <Card :title="title" :busy="isBusy">
+      <Card :title="getGameTypeName(sweepstake.gameType)" :busy="isBusy">
         <p class="mb-0">Data/Hora do Sorteio: <strong>{{ dateTimeCreated }}</strong></p>
         <p class="mb-0">
           Quantidade de Mapas: <strong>{{ sweepstake.quantityMaps }} mapas</strong>
@@ -18,9 +19,10 @@
         <Card
           class="mt-2 col-sm-12 col-md-6"
           :busy="isBusy"
-          v-for="team in sweepstake.teams"
+          v-for="(team, index) in sweepstake.teams"
           :key="team.description"
-          :title="team.description">
+          :title="team.description"
+          :icon="index == 0 ? 'people' : 'people-fill'">
           <div v-for="(player, index) in team.players" :key="player.id">
             <p class="m-0" >
               {{ index + 1 }} - {{ player.name }} ({{ player.username }})
@@ -35,14 +37,40 @@
           </div>
         </Card>
       </div>
-      <Card class="mt-2" title="Mapas" :busy="isBusy">
+      <Card class="mt-2" title="Mapas" icon="map" :busy="isBusy">
           <!-- Fazer visual igual o utilizado no papel com nome e placares -->
-          <p
-            class="mb-0"
-            v-for="(map, index) in sweepstake.maps"
-            :key="map.id">
-            {{ index + 1 }} - <strong>{{ map.name }}</strong>
-          </p>
+          <div class="row">
+            <b-card
+              class="ml-1 mt-1"
+              header-tag="header"
+              bg-variant="dark"
+              text-variant="white"
+              v-for="map in sweepstake.maps"
+              :key="map.id">
+              <template #header>
+                <p class="mb-0 text-center"><strong>{{ map.name }}</strong></p>
+              </template>
+              <p class="text-center">{{getMapTypeName(map.mapType)}}</p>
+              <p :id="'teamOne' +map.id" class="mb-0">
+                <b-icon icon="people"/> 8 + 2
+                <b-icon icon="trophy-fill" variant="warning"/>
+              </p>
+              <b-tooltip
+                :target="'teamOne' +map.id"
+                triggers="hover"
+                placement="top">
+                Time 1
+              </b-tooltip>
+              <p :id="'teamTwo' +map.id" class="mb-0"><b-icon icon="people-fill"/> 1 + 7</p>
+              <b-tooltip
+                :target="'teamTwo' +map.id"
+                triggers="hover"
+                placement="bottom">
+                Time 2
+              </b-tooltip>
+              <!-- Icon:people-fill Começa de Terror -->
+            </b-card>
+          </div>
       </Card>
     </div>
   </div>
@@ -93,11 +121,18 @@ export default class Sweepstake extends Base {
           maps: doc.data()?.maps,
         };
 
-        this.title = `${this.sweepstake.gameType} - ${moment(this.sweepstake.created).format('DD/MM/YYYY')}`;
         this.dateTimeCreated = moment(this.sweepstake.created).format('DD/MM/YYYY HH:mm');
 
         this.isBusy = false;
       });
+  }
+
+  getGameTypeName(id: string): string | undefined {
+    return this.$store.getters.getGameTypeName(id);
+  }
+
+  getMapTypeName(id: string): string | undefined {
+    return this.$store.getters.getMapTypeName(id);
   }
 }
 </script>

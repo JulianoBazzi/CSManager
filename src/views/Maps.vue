@@ -141,10 +141,10 @@
         :busy="isBusy"
         @onClickEdit="edit">
         <template #cell(gameType)="row">
-          {{getGameShortName(row.item.gameType)}}
+          {{getGameTypeShortName(row.item.gameType)}}
         </template>
         <template #cell(mapType)="row">
-          {{getMapName(row.item.mapType)}}
+          {{getMapTypeName(row.item.mapType)}}
         </template>
         <template #cell(active)="row">
           <b-icon icon="check-square-fill" v-if="row.item.active"/>
@@ -178,9 +178,6 @@ import SituationComboBox from '@/components/ComboBox/Situation.vue';
 import IMapDTO from '@/dtos/IMapDTO';
 import ITableFieldsDTO from '@/dtos/ITableFieldsDTO';
 import AppError, { ToastsTypeEnum } from '@/errors/AppError';
-import IFilterComboBoxStringDTO from '@/dtos/IFilterComboBoxStringDTO';
-import gamesJson from '../assets/games.json';
-import mapsJson from '../assets/maps.json';
 
 @Component({
   components: {
@@ -232,10 +229,6 @@ export default class Maps extends Base {
     },
   ];
 
-  mapsCombo: IFilterComboBoxStringDTO[] = [];
-
-  gamesCombo: IFilterComboBoxStringDTO[] = [];
-
   searchText = '';
 
   searchSituation: boolean | null = null;
@@ -247,8 +240,6 @@ export default class Maps extends Base {
   async created(): Promise<void> {
     this.isBusy = true;
     this.maps = [];
-    this.mapsCombo = [];
-    this.gamesCombo = [];
 
     const user = firebase.auth().currentUser;
 
@@ -272,25 +263,6 @@ export default class Maps extends Base {
     });
 
     this.searchGameType = this.$store.state.game ? this.$store.state.game : null;
-
-    if (gamesJson) {
-      gamesJson.forEach((game) => {
-        this.gamesCombo.push({
-          value: game.id,
-          text: game.name,
-          shortText: game.shortName,
-        });
-      });
-    }
-
-    if (mapsJson) {
-      mapsJson.forEach((map) => {
-        this.mapsCombo.push({
-          value: map.id,
-          text: map.name['pt-BR'],
-        });
-      });
-    }
 
     this.isBusy = false;
   }
@@ -317,12 +289,12 @@ export default class Maps extends Base {
     return items;
   }
 
-  getGameShortName(id: string): string | undefined {
-    return this.gamesCombo.find((game) => game.value === id)?.shortText;
+  getGameTypeShortName(id: string): string | undefined {
+    return this.$store.getters.getGameTypeShortName(id);
   }
 
-  getMapName(id: string): string | undefined {
-    return this.mapsCombo.find((map) => map.value === id)?.text;
+  getMapTypeName(id: string): string | undefined {
+    return this.$store.getters.getMapTypeName(id);
   }
 
   cleanFilters(): void {

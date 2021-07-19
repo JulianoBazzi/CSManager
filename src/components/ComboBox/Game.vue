@@ -18,7 +18,6 @@
 <script lang="ts">
 import IFilterComboBoxStringDTO from '@/dtos/IFilterComboBoxStringDTO';
 import { Component, Vue } from 'vue-property-decorator';
-import games from '../../assets/games.json';
 
 @Component({
   props: {
@@ -55,17 +54,8 @@ export default class Game extends Vue {
 
   async created(): Promise<void> {
     this.$emit('update:busy', true);
-    this.games = [];
 
-    if (games) {
-      games.forEach((game) => {
-        this.games.push({
-          value: game.id,
-          text: game.name,
-          shortText: game.shortName,
-        });
-      });
-    }
+    this.games = this.$store.state.gamesType;
 
     this.$emit('update:busy', false);
   }

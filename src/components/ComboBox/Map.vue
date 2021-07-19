@@ -18,7 +18,6 @@
 <script lang="ts">
 import IFilterComboBoxStringDTO from '@/dtos/IFilterComboBoxStringDTO';
 import { Component, Vue } from 'vue-property-decorator';
-import maps from '../../assets/maps.json';
 
 @Component({
   props: {
@@ -51,16 +50,8 @@ export default class Map extends Vue {
 
   async created(): Promise<void> {
     this.$emit('update:busy', true);
-    this.maps = [];
 
-    if (maps) {
-      maps.forEach((map) => {
-        this.maps.push({
-          value: map.id,
-          text: map.name['pt-BR'],
-        });
-      });
-    }
+    this.maps = this.$store.state.mapsType;
 
     this.$emit('update:busy', false);
   }
