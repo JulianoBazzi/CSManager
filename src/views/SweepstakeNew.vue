@@ -82,7 +82,7 @@
           small
           :recordsPerPage=12
           @onRowClicked="onRowClicked">
-          <template #cell(selected)="{ item, field: { key } }">
+          <template #cell(selectedDate)="{ item, field: { key } }">
             <b-icon icon="check-square-fill" v-if="item[key]"/>
             <b-icon icon="square" v-else/>
           </template>
@@ -105,7 +105,7 @@
           small
           :recordsPerPage=12
           @onRowClicked="onRowClicked">
-          <template #cell(selected)="{ item, field: { key } }">
+          <template #cell(selectedDate)="{ item, field: { key } }">
             <b-icon icon="check-square-fill" v-if="item[key]"/>
             <b-icon icon="square" v-else/>
           </template>
@@ -133,6 +133,7 @@ import ISweepstakeDTO from '@/dtos/ISweepstakeDTO';
 import IFilterComboBoxStringDTO from '@/dtos/IFilterComboBoxStringDTO';
 import ITeamDTO from '@/dtos/ITeamDTO';
 import SplitArray from '@/tools/SplitArray';
+import _ from 'lodash';
 import mapsJson from '../assets/maps.json';
 
 @Component({
@@ -155,7 +156,7 @@ export default class SweepstakeNew extends Base {
 
   fieldsPlayer: ITableFieldsDTO[] = [
     {
-      key: 'selected',
+      key: 'selectedDate',
       label: '',
     },
     {
@@ -177,7 +178,7 @@ export default class SweepstakeNew extends Base {
 
   fieldsMap: ITableFieldsDTO[] = [
     {
-      key: 'selected',
+      key: 'selectedDate',
       label: '',
     },
     {
@@ -292,7 +293,8 @@ export default class SweepstakeNew extends Base {
     try {
       this.isBusy = true;
 
-      const divisionTeams = SplitArray(this.players.filter((player) => player.selected));
+      const divisionTeams = SplitArray(_.orderBy(this.players
+        .filter((player) => player.selectedDate), ['selectedDate'], ['asc']));
 
       const teamOne: ITeamDTO = {
         description: 'Time 1',
@@ -316,7 +318,7 @@ export default class SweepstakeNew extends Base {
         quantityPlayers: this.numberSelectedPlayers,
         quantityMaps: this.numberSelectedMaps,
         teams: [teamOne, teamTwo],
-        maps: this.maps.filter((map) => map.selected),
+        maps: _.orderBy(this.maps.filter((map) => map.selectedDate), ['selectedDate'], ['asc']),
       };
 
       const doc = await firebase.firestore().collection('sweepstakes').add(sweepstake);
@@ -329,11 +331,11 @@ export default class SweepstakeNew extends Base {
   }
 
   get numberSelectedPlayers(): number {
-    return this.players.filter((player) => player.selected).length;
+    return this.players.filter((player) => player.selectedDate).length;
   }
 
   get numberSelectedMaps(): number {
-    return this.maps.filter((map) => map.selected).length;
+    return this.maps.filter((map) => map.selectedDate).length;
   }
 
   getMapName(id: string): string | undefined {
@@ -344,11 +346,11 @@ export default class SweepstakeNew extends Base {
     this.isBusy = true;
     try {
       this.gameSelected = this.$store.state.game ? this.$store.state.game : 'cs';
-      this.players.filter((player) => player.selected).forEach((player) => {
-        this.$set(player, 'selected', false);
+      this.players.filter((player) => player.selectedDate).forEach((player) => {
+        this.$set(player, 'selectedDate', undefined);
       });
-      this.maps.filter((map) => map.selected).forEach((map) => {
-        this.$set(map, 'selected', false);
+      this.maps.filter((map) => map.selectedDate).forEach((map) => {
+        this.$set(map, 'selectedDate', undefined);
       });
     } finally {
       this.isBusy = false;
@@ -357,14 +359,14 @@ export default class SweepstakeNew extends Base {
 
   tbodyRowClass(item: IPlayerDTO | IMapDTO): string[] {
     this.isBusy = false;
-    if (item?.selected) {
+    if (item?.selectedDate) {
       return ['cursor-pointer', 'b-table-row-selected', 'bg-active'];
     }
     return ['cursor-pointer'];
   }
 
   onRowClicked(item: IPlayerDTO | IMapDTO): void {
-    this.$set(item, 'selected', !item.selected);
+    this.$set(item, 'selectedDate', item.selectedDate ? undefined : new Date());
   }
 }
 </script>

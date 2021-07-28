@@ -1,5 +1,4 @@
 interface IMapDTO {
-  selected?: boolean;
   id?: string;
   gameType: string;
   mapType: string;
@@ -7,6 +6,7 @@ interface IMapDTO {
   link?: string;
   active: boolean;
   created?: Date;
+  selectedDate?: Date;
 }
 
 export default IMapDTO;
