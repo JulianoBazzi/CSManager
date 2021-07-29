@@ -46,9 +46,10 @@
         </b-button>
         <b-button
           v-if="displayDeleteButton"
+          class="ml-2"
           size="sm"
           variant="danger"
-          @click="$emit('onClickRemove', row.item)"
+          @click="$emit('onClickRemove', row.item.id)"
           title="Remover Registro">
           <b-icon class="button" icon="trash" scale="0.9"/>
         </b-button>

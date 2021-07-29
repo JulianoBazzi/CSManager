@@ -103,7 +103,7 @@
               shortText>
               <option
                 value="null">
-                Todas
+                Todos
               </option>
             </GameComboBox>
           </b-form-group>
