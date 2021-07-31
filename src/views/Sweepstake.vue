@@ -1,10 +1,43 @@
 <template>
   <div class="sweepstakes">
-    <Card title="Sorteio" :busy="isBusy" v-if="isBusy">
-      <b-skeleton width="30%"></b-skeleton>
-      <b-skeleton width="25%"></b-skeleton>
-      <b-skeleton width="30%"></b-skeleton>
-    </Card>
+    <div v-if="isBusy">
+      <Card title="Sorteio">
+        <b-skeleton width="30%"/>
+        <b-skeleton width="25%"/>
+        <b-skeleton width="30%"/>
+      </Card>
+      <div class="row">
+        <Card
+          class="mt-2 col-sm-12 col-md-6"
+          title="Time 1"
+          icon="people">
+          <b-skeleton width="50%"/>
+          <hr class="m-1">
+          <b-skeleton width="30%"/>
+          <hr class="m-1">
+          <b-skeleton width="60%"/>
+          <hr class="m-1">
+          <b-skeleton width="40%"/>
+          <hr class="m-1">
+        </Card>
+        <Card
+          class="mt-2 col-sm-12 col-md-6"
+          title="Time 2"
+          icon="people-fill">
+          <b-skeleton width="50%"/>
+          <hr class="m-1">
+          <b-skeleton width="30%"/>
+          <hr class="m-1">
+          <b-skeleton width="60%"/>
+          <hr class="m-1">
+          <b-skeleton width="40%"/>
+          <hr class="m-1">
+        </Card>
+      </div>
+      <Card class="mt-2" title="Mapas" icon="map">
+         <b-skeleton-img no-aspect height="150px"/>
+      </Card>
+    </div>
     <div v-else>
       <Card :title="getGameTypeName(sweepstake.gameType)" :busy="isBusy">
         <p class="mb-0">Data/Hora do Sorteio: <strong>{{ dateTimeCreated }}</strong></p>
@@ -38,7 +71,6 @@
         </Card>
       </div>
       <Card class="mt-2" title="Mapas" icon="map" :busy="isBusy">
-          <!-- Fazer visual igual o utilizado no papel com nome e placares -->
           <div class="row">
             <b-card
               class="ml-1 mt-1"
@@ -51,24 +83,25 @@
                 <p class="mb-0 text-center"><strong>{{ map.name }}</strong></p>
               </template>
               <p class="text-center">{{getMapTypeName(map.mapType)}}</p>
-              <p :id="'teamOne' +map.id" class="mb-0">
-                <b-icon icon="people"/> 8 + 2
-                <b-icon icon="trophy-fill" variant="warning"/>
-              </p>
-              <b-tooltip
-                :target="'teamOne' +map.id"
-                triggers="hover"
-                placement="top">
-                Time 1
-              </b-tooltip>
-              <p :id="'teamTwo' +map.id" class="mb-0"><b-icon icon="people-fill"/> 1 + 7</p>
-              <b-tooltip
-                :target="'teamTwo' +map.id"
-                triggers="hover"
-                placement="bottom">
-                Time 2
-              </b-tooltip>
-              <!-- Icon:people-fill Começa de Terror -->
+              <div v-if="authenticatedUser">
+                <p :id="'teamOne' +map.id" class="mb-0">
+                  <b-icon icon="people"/> 8 + 2
+                  <b-icon icon="trophy-fill" variant="warning"/>
+                </p>
+                <b-tooltip
+                  :target="'teamOne' +map.id"
+                  triggers="hover"
+                  placement="top">
+                  Time 1
+                </b-tooltip>
+                <p :id="'teamTwo' +map.id" class="mb-0"><b-icon icon="people-fill"/> 1 + 7</p>
+                <b-tooltip
+                  :target="'teamTwo' +map.id"
+                  triggers="hover"
+                  placement="bottom">
+                  Time 2
+                </b-tooltip>
+              </div>
             </b-card>
           </div>
       </Card>
@@ -87,6 +120,11 @@ import moment from 'moment';
 @Component({
   components: {
     Card,
+  },
+  computed: {
+    authenticatedUser() {
+      return this.$store.state.user != null;
+    },
   },
 })
 export default class Sweepstake extends Base {
