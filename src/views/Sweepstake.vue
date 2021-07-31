@@ -83,7 +83,7 @@
                 <p class="mb-0 text-center"><strong>{{ map.name }}</strong></p>
               </template>
               <p class="text-center">{{getMapTypeName(map.mapType)}}</p>
-              <div v-if="authenticatedUser">
+              <div v-if="isFromLoggerUser">
                 <p :id="'teamOne' +map.id" class="mb-0">
                   <b-icon icon="people"/> 8 + 2
                   <b-icon icon="trophy-fill" variant="warning"/>
@@ -121,16 +121,15 @@ import moment from 'moment';
   components: {
     Card,
   },
-  computed: {
-    authenticatedUser() {
-      return this.$store.state.user != null;
-    },
-  },
 })
 export default class Sweepstake extends Base {
   id = this.$route.params.id;
 
   sweepstake: ISweepstakeDTO | null = null;
+
+  isFromLoggerUser = false;
+
+  user = firebase.auth().currentUser;
 
   title = '';
 
@@ -138,6 +137,7 @@ export default class Sweepstake extends Base {
 
   async created(): Promise<void> {
     this.isBusy = true;
+    this.isFromLoggerUser = false;
     this.sweepstake = null;
 
     await firebase
@@ -147,7 +147,7 @@ export default class Sweepstake extends Base {
       .onSnapshot((doc) => {
         this.sweepstake = {
           id: this.id,
-          userId: doc.data()?.usetId,
+          userId: doc.data()?.userId,
           created: (doc.data()?.created as firebase.firestore.Timestamp).toDate(),
           updated: (doc.data()?.updated as firebase.firestore.Timestamp).toDate(),
           gameType: doc.data()?.gameType,
@@ -160,6 +160,10 @@ export default class Sweepstake extends Base {
         };
 
         this.dateTimeCreated = moment(this.sweepstake.created).format('DD/MM/YYYY HH:mm');
+
+        if (this.user) {
+          this.isFromLoggerUser = this.sweepstake.userId === this.user.uid;
+        }
 
         this.isBusy = false;
       });

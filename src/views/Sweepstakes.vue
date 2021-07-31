@@ -8,7 +8,7 @@
       <b-form class="form-group row">
           <b-form-group
             id="player-group-search"
-            class="col-sm-12 col-md-4"
+            class="col-sm-12 col-md-3"
             label="Data do Sorteio"
             label-for="player-search">
             <b-form-input
@@ -23,7 +23,7 @@
 
           <b-form-group
             id="map-group-game-type"
-            class="col-sm-12 col-md-3"
+            class="col-sm-12 col-md-4"
             label="Jogo"
             label-for="map-game-type">
             <GameComboBox
@@ -45,6 +45,8 @@
               Limpar
             </b-button>
           </b-col>
+
+          <div class="col-md-2" />
       </b-form>
       <Table
         id="tableSweepstakes"
