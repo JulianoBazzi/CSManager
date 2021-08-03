@@ -41,7 +41,7 @@
               disabled/>
           </b-form-group>
         </div>
-        <div class="row">
+        <!-- <div class="row">
           <b-form-checkbox class="ml-3" disabled>
           Considerar patentes (em breve)
           </b-form-checkbox>
@@ -49,7 +49,7 @@
           <b-form-checkbox class="ml-3" disabled>
           Considerar ranking de partidas anteriores (em breve)
           </b-form-checkbox>
-        </div>
+        </div> -->
         <div class="form-group">
           <b-button
             class="col-sm-12 mt-2 col-md-2 mr-2"

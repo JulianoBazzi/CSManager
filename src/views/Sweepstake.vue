@@ -80,7 +80,12 @@
               v-for="map in sweepstake.maps"
               :key="map.id">
               <template #header>
-                <p class="mb-0 text-center"><strong>{{ map.name }}</strong></p>
+                <p class="mb-0 text-center">
+                  <a v-if="map.link" :href="map.link" target="_blank">
+                    <strong>{{ map.name }}</strong>
+                  </a>
+                  <strong v-else>{{ map.name }}</strong>
+                </p>
               </template>
               <p class="text-center">{{getMapTypeName(map.mapType)}}</p>
               <div v-if="isFromLoggerUser">
@@ -178,3 +183,10 @@ export default class Sweepstake extends Base {
   }
 }
 </script>
+
+<style scoped>
+  a {
+    text-decoration: none;
+    color: #FFF;
+  }
+</style>
