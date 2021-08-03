@@ -1,4 +1,4 @@
-import IMapDTO from './IMapDTO';
+import IMapResumeDTO from './IMapResumeDTO';
 import ITeamDTO from './ITeamDTO';
 
 interface ISweepstakeDTO {
@@ -12,7 +12,7 @@ interface ISweepstakeDTO {
   created: Date;
   updated: Date;
   teams: ITeamDTO[];
-  maps: IMapDTO[];
+  maps: IMapResumeDTO[];
 }
 
 export default ISweepstakeDTO;

@@ -6,7 +6,6 @@ interface IMapDTO {
   link?: string;
   active: boolean;
   created?: Date;
-  selectedDate?: Date;
 }
 
 export default IMapDTO;

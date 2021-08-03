@@ -126,8 +126,8 @@ import Card from '@/components/Card.vue';
 import Table from '@/components/Table.vue';
 import GameComboBox from '@/components/ComboBox/Game.vue';
 import AppError, { ToastsTypeEnum } from '@/errors/AppError';
-import IPlayerDTO from '@/dtos/IPlayerDTO';
-import IMapDTO from '@/dtos/IMapDTO';
+import IPlayerResumeDTO from '@/dtos/IPlayerResumeDTO';
+import IMapResumeDTO from '@/dtos/IMapResumeDTO';
 import ITableFieldsDTO from '@/dtos/ITableFieldsDTO';
 import ISweepstakeDTO from '@/dtos/ISweepstakeDTO';
 import IFilterComboBoxStringDTO from '@/dtos/IFilterComboBoxStringDTO';
@@ -150,9 +150,9 @@ export default class SweepstakeNew extends Base {
 
   gameSelected = null;
 
-  players: IPlayerDTO[] = [];
+  players: IPlayerResumeDTO[] = [];
 
-  maps: IMapDTO[] = [];
+  maps: IMapResumeDTO[] = [];
 
   fieldsPlayer: ITableFieldsDTO[] = [
     {
@@ -214,8 +214,6 @@ export default class SweepstakeNew extends Base {
             name: player.data().name,
             username: player.data().username,
             patent: player.data().patent,
-            active: player.data().active,
-            created: player.data().created,
           });
         });
       });
@@ -256,12 +254,9 @@ export default class SweepstakeNew extends Base {
           docs.forEach((map) => {
             this.maps.push({
               id: map.id,
-              gameType: map.data().gameType,
               mapType: map.data().mapType,
               name: map.data().name,
               link: map.data().link ?? '',
-              active: map.data().active,
-              created: map.data().created,
             });
           });
         });
@@ -312,7 +307,7 @@ export default class SweepstakeNew extends Base {
         userId: this.user.uid,
         created: new Date(),
         updated: new Date(),
-        gameType: this.gameSelected ?? 'cz',
+        gameType: this.gameSelected ?? 'cs',
         considerPatents: false,
         considerPreviousRankings: false,
         quantityPlayers: this.numberSelectedPlayers,
@@ -357,7 +352,7 @@ export default class SweepstakeNew extends Base {
     }
   }
 
-  tbodyRowClass(item: IPlayerDTO | IMapDTO): string[] {
+  tbodyRowClass(item: IPlayerResumeDTO | IMapResumeDTO): string[] {
     this.isBusy = false;
     if (item?.selectedDate) {
       return ['cursor-pointer', 'b-table-row-selected', 'bg-active'];
@@ -365,7 +360,7 @@ export default class SweepstakeNew extends Base {
     return ['cursor-pointer'];
   }
 
-  onRowClicked(item: IPlayerDTO | IMapDTO): void {
+  onRowClicked(item: IPlayerResumeDTO | IMapResumeDTO): void {
     this.$set(item, 'selectedDate', item.selectedDate ? undefined : new Date());
   }
 }

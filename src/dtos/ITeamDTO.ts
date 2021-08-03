@@ -1,9 +1,9 @@
-import IPlayerDTO from './IPlayerDTO';
+import IPlayerResumeDTO from './IPlayerResumeDTO';
 
 interface ITeamDTO {
   description: string;
   quantityPlayers: number;
-  players: IPlayerDTO[];
+  players: IPlayerResumeDTO[];
 }
 
 export default ITeamDTO;
