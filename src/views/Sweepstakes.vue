@@ -186,17 +186,29 @@ export default class Sweepstakes extends Base {
   }
 
   async remove(id: string): Promise<void> {
-    this.isBusy = true;
+    const { isConfirmed } = await this.$swal.fire({
+      scrollbarPadding: false,
+      title: 'Você tem certeza?',
+      text: 'Confirma a exclusão permanentemente deste registro?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sim',
+      cancelButtonText: 'Não',
+    });
 
-    await firebase
-      .firestore()
-      .collection('sweepstakes')
-      .doc(id)
-      .delete();
+    if (isConfirmed) {
+      this.isBusy = true;
 
-    this.sweepstakes = this.sweepstakes.filter((sweepstake) => sweepstake.id !== id);
+      await firebase
+        .firestore()
+        .collection('sweepstakes')
+        .doc(id)
+        .delete();
 
-    this.isBusy = false;
+      this.sweepstakes = this.sweepstakes.filter((sweepstake) => sweepstake.id !== id);
+
+      this.isBusy = false;
+    }
   }
 
   getGameTypeShortName(id: string): string | undefined {
