@@ -40,13 +40,9 @@
     </div>
     <div v-else>
       <Card :title="getGameTypeName(sweepstake.gameType)" :busy="isBusy">
-        <p class="mb-0">Data/Hora do Sorteio: <strong>{{ dateTimeCreated }}</strong></p>
-        <p class="mb-0">
-          Quantidade de Mapas: <strong>{{ sweepstake.quantityMaps }} mapas</strong>
-        </p>
-        <p class="mb-0">
-          Quantidade de Jogadores: <strong>{{ sweepstake.quantityPlayers }} jogadores</strong>
-        </p>
+        <p class="mb-0"><b-icon icon="calendar"/> {{ dateTimeCreated }}</p>
+        <p class="mb-0"><b-icon icon="map"/> {{ sweepstake.quantityMaps }} mapas</p>
+        <p class="mb-0"><b-icon icon="people"/> {{ sweepstake.quantityPlayers }} jogadores</p>
       </Card>
       <div class="row">
         <Card
@@ -57,6 +53,7 @@
           :title="team.description"
           :icon="index == 0 ? 'people' : 'people-fill'">
           <div v-for="(player, index) in team.players" :key="player.id">
+            <hr v-if="index !== 0" class="m-1">
             <p class="m-0" >
               {{ index + 1 }} - {{ player.name }} ({{ player.username }})
               &nbsp;
@@ -66,7 +63,6 @@
                 :alt="`${player.patent}`"
                 :src=" require(`@/assets/cs-go/competitive/${player.patent}.png`) " />
             </p>
-            <hr class="m-1">
           </div>
         </Card>
       </div>
@@ -88,23 +84,22 @@
                 </p>
               </template>
               <p class="text-center">{{getMapTypeName(map.mapType)}}</p>
-              <div v-if="isFromLoggerUser">
-                <p :id="'teamOne' +map.id" class="mb-0">
-                  <b-icon icon="people"/> 8 + 2
-                  <b-icon icon="trophy-fill" variant="warning"/>
-                </p>
+              <div v-for="(match, index) in map.matches" :key="index">
+                <div class="mb-0" :id="'team' +(index + 1) +map.id">
+                  <hr v-if="index !== 0" class="m-1">
+                  <div class="row">
+                    <b-icon class="ml-1 mt-1 mr-2" :icon="index == 0 ? 'people' : 'people-fill'"/>
+                    <p v-for="(score, indexScore) in match.scores" :key="indexScore">
+                    {{ indexScore !== 0 ? '+' : ''  }} {{ score }}
+                    </p>
+                    <b-icon v-if="match.winner" icon="trophy-fill" variant="warning"/>
+                  </div>
+                </div>
                 <b-tooltip
-                  :target="'teamOne' +map.id"
+                  :target="'team' +(index + 1)  +map.id"
                   triggers="hover"
                   placement="top">
-                  Time 1
-                </b-tooltip>
-                <p :id="'teamTwo' +map.id" class="mb-0"><b-icon icon="people-fill"/> 1 + 7</p>
-                <b-tooltip
-                  :target="'teamTwo' +map.id"
-                  triggers="hover"
-                  placement="bottom">
-                  Time 2
+                  {{ match.description }}
                 </b-tooltip>
               </div>
             </b-card>

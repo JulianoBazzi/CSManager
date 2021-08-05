@@ -119,9 +119,9 @@
 </template>
 
 <script lang="ts">
+import Base from '@/views/Base';
 import firebase from 'firebase';
 import { Component, Watch } from 'vue-property-decorator';
-import Base from '@/views/Base';
 import Card from '@/components/Card.vue';
 import Table from '@/components/Table.vue';
 import GameComboBox from '@/components/ComboBox/Game.vue';
@@ -257,6 +257,7 @@ export default class SweepstakeNew extends Base {
               mapType: map.data().mapType,
               name: map.data().name,
               link: map.data().link ?? '',
+              matches: [],
             });
           });
         });
@@ -265,28 +266,27 @@ export default class SweepstakeNew extends Base {
   }
 
   async handleRaffle(): Promise<void> {
-    if (!this.gameSelected) {
-      throw new AppError('Novo Sorteio', 'O tipo de jogo é obrigatório!', ToastsTypeEnum.Warning);
-    }
-
-    if (this.numberSelectedPlayers <= 1) {
-      throw new AppError('Novo Sorteio', 'É obrigatório selecionar ao menos dois jogadores!', ToastsTypeEnum.Warning);
-    }
-
-    if (this.numberSelectedMaps <= 0) {
-      throw new AppError('Novo Sorteio', 'É obrigatório selecionar ao menos um mapa!', ToastsTypeEnum.Warning);
-    }
-
-    if (!this.user) {
-      throw new AppError('Novo Sorteio', 'Usuário logado não localizado!', ToastsTypeEnum.Warning);
-    }
-
-    if (!this.gameSelected) {
-      throw new AppError('Novo Sorteio', 'Tipo de jogo não selecionado!', ToastsTypeEnum.Warning);
-    }
-
     try {
       this.isBusy = true;
+      if (!this.gameSelected) {
+        throw new AppError('Novo Sorteio', 'O tipo de jogo é obrigatório!', ToastsTypeEnum.Warning);
+      }
+
+      if (this.numberSelectedPlayers <= 1) {
+        throw new AppError('Novo Sorteio', 'É obrigatório selecionar ao menos dois jogadores!', ToastsTypeEnum.Warning);
+      }
+
+      if (this.numberSelectedMaps <= 0) {
+        throw new AppError('Novo Sorteio', 'É obrigatório selecionar ao menos um mapa!', ToastsTypeEnum.Warning);
+      }
+
+      if (!this.user) {
+        throw new AppError('Novo Sorteio', 'Usuário logado não localizado!', ToastsTypeEnum.Warning);
+      }
+
+      if (!this.gameSelected) {
+        throw new AppError('Novo Sorteio', 'Tipo de jogo não selecionado!', ToastsTypeEnum.Warning);
+      }
 
       const divisionTeams = SplitArray(_.orderBy(this.players
         .filter((player) => player.selectedDate), ['selectedDate'], ['asc']));
@@ -303,6 +303,18 @@ export default class SweepstakeNew extends Base {
         players: divisionTeams[1],
       };
 
+      const teams: ITeamDTO[] = [teamOne, teamTwo];
+
+      this.maps.filter((map) => map.selectedDate).forEach((map) => {
+        teams.forEach((team) => {
+          map.matches.push({
+            description: team.description,
+            scores: [0, 0],
+            winner: false,
+          });
+        });
+      });
+
       const sweepstake: ISweepstakeDTO = {
         userId: this.user.uid,
         created: new Date(),
@@ -312,7 +324,7 @@ export default class SweepstakeNew extends Base {
         considerPreviousRankings: false,
         quantityPlayers: this.numberSelectedPlayers,
         quantityMaps: this.numberSelectedMaps,
-        teams: [teamOne, teamTwo],
+        teams,
         maps: _.orderBy(this.maps.filter((map) => map.selectedDate), ['selectedDate'], ['asc']),
       };
 
@@ -352,8 +364,8 @@ export default class SweepstakeNew extends Base {
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
   tbodyRowClass(item: IPlayerResumeDTO | IMapResumeDTO): string[] {
-    this.isBusy = false;
     if (item?.selectedDate) {
       return ['cursor-pointer', 'b-table-row-selected', 'bg-active'];
     }
