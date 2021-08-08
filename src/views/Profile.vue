@@ -10,7 +10,7 @@
         >
           <b-form-input
             id="profile-name"
-            v-model="name"
+            v-model.trim="name"
             minlength="3"
             required
             autofocus

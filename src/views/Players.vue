@@ -18,7 +18,7 @@
             label-for="modal-name">
             <b-form-input
               id="modal-name"
-              v-model="selectedPlayer.name"
+              v-model.trim="selectedPlayer.name"
               required
               autocomplete="off"
               autofocus
@@ -32,7 +32,7 @@
             label-for="modal-username">
             <b-form-input
               id="modal-username"
-              v-model="selectedPlayer.username"
+              v-model.trim="selectedPlayer.username"
               required
               autocomplete="off"
               spellcheck="false"
@@ -62,7 +62,7 @@
             label-for="player-search">
             <b-form-input
               id="player-search"
-              v-model="searchText"
+              v-model.trim="searchText"
               placeholder="Nome Completo, Steam"
               autocomplete="off"
               :disabled="isBusy"

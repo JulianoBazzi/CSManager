@@ -9,10 +9,11 @@ interface ISweepstakeDTO {
   considerPreviousRankings: boolean;
   quantityPlayers: number;
   quantityMaps: number;
-  created: Date;
-  updated: Date;
   teams: ITeamDTO[];
   maps: IMapResumeDTO[];
+  departure: Date;
+  created: Date;
+  updated: Date;
 }
 
 export default ISweepstakeDTO;

@@ -144,6 +144,7 @@ export default class Sweepstakes extends Base {
         userId: sweepstake.data()?.usetId,
         created: (sweepstake.data()?.created as firebase.firestore.Timestamp).toDate(),
         updated: (sweepstake.data()?.updated as firebase.firestore.Timestamp).toDate(),
+        departure: (sweepstake.data()?.departure as firebase.firestore.Timestamp).toDate(),
         gameType: sweepstake.data()?.gameType,
         quantityPlayers: sweepstake.data()?.quantityPlayers,
         quantityMaps: sweepstake.data()?.quantityMaps,

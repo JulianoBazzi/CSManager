@@ -11,7 +11,7 @@
         >
           <b-form-input
             id="login-email"
-            v-model="email"
+            v-model.trim="email"
             type="email"
             required
             autofocus

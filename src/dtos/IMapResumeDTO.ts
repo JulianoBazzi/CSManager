@@ -7,6 +7,7 @@ interface IMapResumeDTO {
   link?: string;
   selectedDate?: Date;
   matches: IMatcheDTO[];
+  winner: number;
 }
 
 export default IMapResumeDTO;

@@ -16,6 +16,20 @@
           </b-form-group>
 
           <b-form-group
+            id="player-group-search"
+            class="col-sm-12 col-md-3"
+            label="Data/Hora da Partida"
+            label-for="player-search">
+            <b-form-input
+              id="player-search"
+              v-model="departureDate"
+              type="datetime-local"
+              autocomplete="off"
+              :disabled="isBusy"
+            />
+          </b-form-group>
+
+          <b-form-group
             id="sweepstake-group-count-players"
             class="col-sm-6 col-md-2"
             label="Qtd. Jogadores"
@@ -150,6 +164,8 @@ export default class SweepstakeNew extends Base {
 
   gameSelected = null;
 
+  departureDate: Date | null = null;
+
   players: IPlayerResumeDTO[] = [];
 
   maps: IMapResumeDTO[] = [];
@@ -258,6 +274,7 @@ export default class SweepstakeNew extends Base {
               name: map.data().name,
               link: map.data().link ?? '',
               matches: [],
+              winner: -2,
             });
           });
         });
@@ -288,6 +305,14 @@ export default class SweepstakeNew extends Base {
         throw new AppError('Novo Sorteio', 'Tipo de jogo não selecionado!', ToastsTypeEnum.Warning);
       }
 
+      if (!this.departureDate) {
+        throw new AppError('Novo Sorteio', 'A data/hora da partida é obrigatória!', ToastsTypeEnum.Warning);
+      }
+
+      if (new Date(this.departureDate) < new Date()) {
+        throw new AppError('Novo Sorteio', 'A data/hora da partida deve ser superior a data/hora atual!', ToastsTypeEnum.Warning);
+      }
+
       const divisionTeams = SplitArray(_.orderBy(this.players
         .filter((player) => player.selectedDate), ['selectedDate'], ['asc']));
 
@@ -310,7 +335,6 @@ export default class SweepstakeNew extends Base {
           map.matches.push({
             description: team.description,
             scores: [0, 0],
-            winner: false,
           });
         });
       });
@@ -319,6 +343,7 @@ export default class SweepstakeNew extends Base {
         userId: this.user.uid,
         created: new Date(),
         updated: new Date(),
+        departure: new Date(this.departureDate),
         gameType: this.gameSelected ?? 'cs',
         considerPatents: false,
         considerPreviousRankings: false,

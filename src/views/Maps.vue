@@ -40,7 +40,7 @@
             label-for="modal-name">
             <b-form-input
               id="modal-name"
-              v-model="selectedMap.name"
+              v-model.trim="selectedMap.name"
               required
               autocomplete="off"
               spellcheck="false"
@@ -54,7 +54,7 @@
             label-for="modal-link">
             <b-form-input
               id="modal-link"
-              v-model="selectedMap.link"
+              v-model.trim="selectedMap.link"
               required
               autocomplete="off"
               spellcheck="false"
@@ -73,7 +73,7 @@
             label-for="map-search">
             <b-form-input
               id="map-search"
-              v-model="searchText"
+              v-model.trim="searchText"
               placeholder="Descrição"
               autocomplete="off"
               :disabled="isBusy"
@@ -146,6 +146,10 @@
         <template #cell(mapType)="row">
           {{getMapTypeName(row.item.mapType)}}
         </template>
+        <template #cell(link)="row">
+          <b-icon icon="check-square-fill" v-if="row.item.link"/>
+          <b-icon icon="square" v-else/>
+        </template>
         <template #cell(active)="row">
           <b-icon icon="check-square-fill" v-if="row.item.active"/>
           <b-icon icon="square" v-else/>
@@ -216,6 +220,11 @@ export default class Maps extends Base {
     {
       key: 'gameType',
       label: 'Tipo de Jogo',
+      sortable: true,
+    },
+    {
+      key: 'link',
+      label: 'Link',
       sortable: true,
     },
     {

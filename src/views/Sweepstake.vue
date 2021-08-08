@@ -1,5 +1,49 @@
 <template>
   <div class="sweepstakes">
+    <Modal
+      title="Atualizar Placares"
+      :show.sync="showModal"
+      @handleHidden="handleHidden"
+      @handleSubmit="handleSubmit">
+      <b-form ref="form" @submit.stop.prevent="handleSubmit">
+        <div class="row">
+          <b-card
+            class="ml-1 mt-1"
+            header-tag="header"
+            bg-variant="dark"
+            text-variant="white"
+            small
+            v-for="map in maps"
+            :key="map.id">
+            <template #header>
+              <p class="mb-0 text-center">
+                <strong>{{ map.name }}</strong>
+              </p>
+            </template>
+            <div v-for="(match, matchIndex) in map.matches" :key="matchIndex">
+              <hr v-if="matchIndex !== 0" class="m-1">
+              <div class="row ml-1 d-flex align-items-center">
+                <b-icon class="align-middle" :icon="matchIndex == 0 ? 'people' : 'people-fill'"/>
+                <div class="ml-2" v-for="(score, scoreIndex) in match.scores" :key="scoreIndex">
+                  <b-form-input
+                    class="col-sm"
+                    v-model.number="match.scores[scoreIndex]"
+                    required
+                    type="number"
+                    min="0"
+                    max="99"
+                    pattern="\d*"
+                    onfocus="this.select();"
+                    :disabled="isBusy"
+                  />
+                </div>
+              </div>
+            </div>
+            <hr class="m-1">
+          </b-card>
+        </div>
+      </b-form>
+    </Modal>
     <div v-if="isBusy">
       <Card title="Sorteio">
         <b-skeleton width="30%"/>
@@ -40,9 +84,18 @@
     </div>
     <div v-else>
       <Card :title="getGameTypeName(sweepstake.gameType)" :busy="isBusy">
-        <p class="mb-0"><b-icon icon="calendar"/> {{ dateTimeCreated }}</p>
-        <p class="mb-0"><b-icon icon="map"/> {{ sweepstake.quantityMaps }} mapas</p>
-        <p class="mb-0"><b-icon icon="people"/> {{ sweepstake.quantityPlayers }} jogadores</p>
+        <p class="mb-0">
+          <b-icon class="mr-2" icon="calendar"/>
+          {{ departureDate }}
+        </p>
+        <p class="mb-0">
+          <b-icon class="mr-2" icon="map"/>
+          {{ sweepstake.quantityMaps }} mapas
+        </p>
+        <p class="mb-0">
+          <b-icon class="mr-2" icon="people"/>
+          {{ sweepstake.quantityPlayers }} jogadores
+        </p>
       </Card>
       <div class="row">
         <Card
@@ -66,44 +119,64 @@
           </div>
         </Card>
       </div>
-      <Card class="mt-2" title="Mapas" icon="map" :busy="isBusy">
-          <div class="row">
-            <b-card
-              class="ml-1 mt-1"
-              header-tag="header"
-              bg-variant="dark"
-              text-variant="white"
-              v-for="map in sweepstake.maps"
-              :key="map.id">
-              <template #header>
-                <p class="mb-0 text-center">
-                  <a v-if="map.link" :href="map.link" target="_blank">
-                    <strong>{{ map.name }}</strong>
-                  </a>
-                  <strong v-else>{{ map.name }}</strong>
-                </p>
-              </template>
-              <p class="text-center">{{getMapTypeName(map.mapType)}}</p>
-              <div v-for="(match, index) in map.matches" :key="index">
-                <div class="mb-0" :id="'team' +(index + 1) +map.id">
-                  <hr v-if="index !== 0" class="m-1">
-                  <div class="row">
-                    <b-icon class="ml-1 mt-1 mr-2" :icon="index == 0 ? 'people' : 'people-fill'"/>
-                    <p v-for="(score, indexScore) in match.scores" :key="indexScore">
-                    {{ indexScore !== 0 ? '+' : ''  }} {{ score }}
-                    </p>
-                    <b-icon v-if="match.winner" icon="trophy-fill" variant="warning"/>
-                  </div>
+      <Card
+        class="mt-2"
+        title="Mapas"
+        icon="map"
+        :busy="isBusy"
+        :displayAddButton="isFromLoggerUser"
+        @onClickAdd="updateMatch">
+        <div class="row">
+          <b-card
+            class="ml-1 mt-1"
+            header-tag="header"
+            bg-variant="dark"
+            text-variant="white"
+            v-for="map in sweepstake.maps"
+            :key="map.id">
+            <template #header>
+              <p class="mb-0 text-center">
+                <a v-if="map.link" :href="map.link" target="_blank">
+                  <strong>{{ map.name }}</strong>
+                  <b-icon class="ml-2" icon="download" variant="secondary"/>
+                </a>
+                <strong v-else>{{ map.name }}</strong>
+              </p>
+            </template>
+            <p class="text-center">{{getMapTypeName(map.mapType)}}</p>
+            <div v-for="(match, index) in map.matches" :key="index">
+              <div class="mb-0" :id="'team' +(index + 1) +map.id">
+                <hr v-if="index !== 0" class="m-1">
+                <div class="row m-0">
+                  <b-icon class="ml-1 mt-1 mr-2" :icon="index == 0 ? 'people' : 'people-fill'"/>
+                  <p class="m-0" v-for="(score, indexScore) in match.scores" :key="indexScore">
+                  {{ indexScore === 0 ? '' : '+'  }}&nbsp;{{ score }}&nbsp;
+                  </p>
+                  <b-icon
+                    v-if="map.winner === -1"
+                    class="ml-1 mt-1 mr-2"
+                    icon="trophy-fill"
+                    variant="secondary"
+                     scale="0.9"
+                  />
+                  <b-icon
+                    v-else-if="map.winner === index"
+                    class="ml-1 mt-1 mr-2"
+                    icon="trophy-fill"
+                    variant="warning"
+                     scale="0.9"
+                  />
                 </div>
-                <b-tooltip
-                  :target="'team' +(index + 1)  +map.id"
-                  triggers="hover"
-                  placement="top">
-                  {{ match.description }}
-                </b-tooltip>
               </div>
-            </b-card>
-          </div>
+              <b-tooltip
+                :target="'team' +(index + 1)  +map.id"
+                triggers="hover"
+                placement="top">
+                {{ match.description }}
+              </b-tooltip>
+            </div>
+          </b-card>
+        </div>
       </Card>
     </div>
   </div>
@@ -113,16 +186,24 @@
 import { Component } from 'vue-property-decorator';
 import Base from '@/views/Base';
 import Card from '@/components/Card.vue';
+import Modal from '@/components/Modal.vue';
 import ISweepstakeDTO from '@/dtos/ISweepstakeDTO';
 import firebase from 'firebase';
 import moment from 'moment';
+import IMapResumeDTO from '@/dtos/IMapResumeDTO';
+import AppError, { ToastsTypeEnum } from '@/errors/AppError';
+import CloneObject from '@/tools/CloneObject';
+import _ from 'lodash';
 
 @Component({
   components: {
     Card,
+    Modal,
   },
 })
 export default class Sweepstake extends Base {
+  showModal = false;
+
   id = this.$route.params.id;
 
   sweepstake: ISweepstakeDTO | null = null;
@@ -133,9 +214,15 @@ export default class Sweepstake extends Base {
 
   title = '';
 
-  dateTimeCreated = '';
+  departureDate = '';
+
+  maps: IMapResumeDTO[] = [];
 
   async created(): Promise<void> {
+    await this.loadSweepstake();
+  }
+
+  async loadSweepstake(): Promise<void> {
     this.isBusy = true;
     this.isFromLoggerUser = false;
     this.sweepstake = null;
@@ -150,16 +237,17 @@ export default class Sweepstake extends Base {
           userId: doc.data()?.userId,
           created: (doc.data()?.created as firebase.firestore.Timestamp).toDate(),
           updated: (doc.data()?.updated as firebase.firestore.Timestamp).toDate(),
+          departure: (doc.data()?.departure as firebase.firestore.Timestamp).toDate(),
           gameType: doc.data()?.gameType,
           quantityPlayers: doc.data()?.quantityPlayers,
           quantityMaps: doc.data()?.quantityMaps,
           considerPatents: doc.data()?.considerPatents,
           considerPreviousRankings: doc.data()?.considerPreviousRankings,
           teams: doc.data()?.teams,
-          maps: doc.data()?.maps,
+          maps: doc.data()?.maps as IMapResumeDTO[],
         };
 
-        this.dateTimeCreated = moment(this.sweepstake.created).format('DD/MM/YYYY HH:mm');
+        this.departureDate = moment(this.sweepstake.departure).format('DD/MM/YYYY HH:mm');
 
         if (this.user) {
           this.isFromLoggerUser = this.sweepstake.userId === this.user.uid;
@@ -175,6 +263,67 @@ export default class Sweepstake extends Base {
 
   getMapTypeName(id: string): string | undefined {
     return this.$store.getters.getMapTypeName(id);
+  }
+
+  async updateMatch(): Promise<void> {
+    if (!this.sweepstake) {
+      return;
+    }
+
+    this.maps = CloneObject(this.sweepstake.maps);
+
+    this.showModal = true;
+  }
+
+  async handleHidden(): Promise<void> {
+    try {
+      // await this.loadSweepstake();
+    } finally {
+      this.maps = [];
+      this.showModal = false;
+    }
+  }
+
+  async handleSubmit(): Promise<void> {
+    try {
+      this.isBusy = true;
+
+      if (!this.sweepstake) {
+        return;
+      }
+
+      const updatedMaps: IMapResumeDTO[] = [];
+
+      this.maps.forEach((map) => {
+        let winner = -2;
+        let previousScore = 0;
+        map.matches.forEach((match, index) => {
+          const score = _.sum(match.scores);
+          if (score > previousScore) {
+            winner = index;
+          } else if (score > 0 && score === previousScore) {
+            winner = -1;
+          }
+
+          previousScore = score;
+        });
+
+        updatedMaps.push({
+          ...map,
+          winner,
+        });
+      });
+
+      this.sweepstake.maps = updatedMaps;
+
+      await firebase.firestore().collection('sweepstakes').doc(this.sweepstake.id).set(this.sweepstake);
+
+      throw new AppError('Sorteio', 'Placar atualizado com sucesso!', ToastsTypeEnum.Success);
+    } finally {
+      this.isBusy = false;
+      this.showModal = false;
+      this.maps = [];
+    }
   }
 }
 </script>
