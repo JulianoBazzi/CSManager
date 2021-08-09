@@ -3,6 +3,7 @@
     <Modal
       title="Atualizar Placares"
       :show.sync="showModal"
+      :busy="isBusy"
       @handleHidden="handleHidden"
       @handleSubmit="handleSubmit">
       <b-form ref="form" @submit.stop.prevent="handleSubmit">

@@ -8,6 +8,7 @@
       <Modal
         title="Jogador"
         :show.sync="showModal"
+        :busy="isBusy"
         @handleHidden="handleHidden"
         @handleSubmit="handleSubmit"
         >
@@ -51,7 +52,11 @@
             </PatentComboBox>
           </b-form-group>
 
-          <b-form-checkbox v-model="selectedPlayer.active">Ativo</b-form-checkbox>
+          <b-form-checkbox
+            v-model="selectedPlayer.active"
+            :disabled="isBusy">
+            Ativo
+          </b-form-checkbox>
         </b-form>
       </Modal>
       <b-form class="form-group row">

@@ -8,6 +8,7 @@
       <Modal
         title="Mapa"
         :show.sync="showModal"
+        :busy="isBusy"
         @handleHidden="handleHidden"
         @handleSubmit="handleSubmit"
         >
@@ -62,7 +63,11 @@
               </b-form-input>
           </b-form-group>
 
-          <b-form-checkbox v-model="selectedMap.active">Ativo</b-form-checkbox>
+          <b-form-checkbox
+            v-model="selectedMap.active"
+            :disabled="isBusy">
+            Ativo
+            </b-form-checkbox>
         </b-form>
       </Modal>
       <b-form class="form-group row">
