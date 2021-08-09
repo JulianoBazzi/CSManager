@@ -282,15 +282,20 @@ export default class Sweepstake extends Base {
 
         this.$meta().addApp('sweepstake').set({
           title: `${this.getGameTypeShortName(this.sweepstake?.gameType)} - ${this.departureDate} (CS Manager)`,
-          // meta: [{
-          //   name: 'metaNameTeste',
-          //   content: 'dddd',
-          // },
-          // {
-          //   name: 'og:title',
-          //   content: ''
-          // }
-          // ],
+          meta: [
+            {
+              name: 'description',
+              content: `Partida de ${this.getGameTypeName(this.sweepstake?.gameType)}, com ${this.sweepstake.quantityPlayers} jogadores e ${this.sweepstake.quantityMaps} mapas, realizada em: ${this.departureDate}.`,
+            },
+            {
+              name: 'og:title',
+              content: `${this.getGameTypeShortName(this.sweepstake?.gameType)} - ${this.departureDate} (CS Manager)`,
+            },
+            {
+              name: 'og:description',
+              content: `Partida de ${this.getGameTypeName(this.sweepstake?.gameType)}, com ${this.sweepstake.quantityPlayers} jogadores e ${this.sweepstake.quantityMaps} mapas, realizada em: ${this.departureDate}.`,
+            },
+          ],
         });
 
         this.isBusy = false;
