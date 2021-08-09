@@ -288,12 +288,16 @@ export default class Sweepstake extends Base {
               content: `Partida de ${this.getGameTypeName(this.sweepstake?.gameType)}, com ${this.sweepstake.quantityPlayers} jogadores e ${this.sweepstake.quantityMaps} mapas, realizada em: ${this.departureDate}.`,
             },
             {
+              name: 'og:site_name',
+              content: 'CS Manager',
+            },
+            {
               name: 'og:title',
-              content: `${this.getGameTypeShortName(this.sweepstake?.gameType)} - ${this.departureDate} (CS Manager)`,
+              content: `${this.getGameTypeShortName(this.sweepstake?.gameType)} - ${this.departureDate}`,
             },
             {
               name: 'og:description',
-              content: `Partida de ${this.getGameTypeName(this.sweepstake?.gameType)}, com ${this.sweepstake.quantityPlayers} jogadores e ${this.sweepstake.quantityMaps} mapas, realizada em: ${this.departureDate}.`,
+              content: `Partida de ${this.getGameTypeShortName(this.sweepstake?.gameType)}, com ${this.sweepstake.quantityPlayers} jogadores e ${this.sweepstake.quantityMaps} mapas.`,
             },
           ],
         });
