@@ -8,13 +8,22 @@
           <a href="https://vuejs.org/" target="_blank">Vue.js 2</a>
         </li>
         <li>
+          <a href="https://vuex.vuejs.org/" target="_blank">Vuex</a>
+        </li>
+        <li>
           <a href="https://www.typescriptlang.org/" target="_blank">TypeScript</a>
         </li>
         <li>
           <a href="https://bootstrap-vue.org/" target="_blank">BootstrapVue</a>
         </li>
         <li>
-          <a href="https://firebase.google.com/" target="_blank">Firebase (Auth and Firestore)</a>
+          <a href="https://firebase.google.com/" target="_blank">Firebase (Auth, Firestore)</a>
+        </li>
+        <li>
+          <a href="https://lodash.com/" target="_blank">Lodash</a>
+        </li>
+        <li>
+          <a href="https://sweetalert2.github.io/" target="_blank">SweetAlert 2</a>
         </li>
       </ul>
       <hr/>

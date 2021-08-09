@@ -83,7 +83,21 @@
       </Card>
     </div>
     <div v-else>
-      <Card :title="getGameTypeName(sweepstake.gameType)" :busy="isBusy">
+      <Card
+        :title="getGameTypeName(sweepstake.gameType)"
+        :busy="isBusy">
+        <template v-slot:button>
+          <b-button
+            size="sm"
+            variant="light"
+            @click="sweepstakeAgain"
+            :disabled="isBusy"
+            v-if="isFromLoggerUser"
+            v-b-tooltip.hover
+            title="Sortear Times Novamente">
+            <b-icon icon="people"/>
+          </b-button>
+        </template>
         <p class="mb-0">
           <b-icon class="mr-2" icon="calendar"/>
           {{ departureDate }}
@@ -123,9 +137,19 @@
         class="mt-2"
         title="Mapas"
         icon="map"
-        :busy="isBusy"
-        :displayAddButton="isFromLoggerUser"
-        @onClickAdd="updateMatch">
+        :busy="isBusy">
+        <template v-slot:button>
+          <b-button
+            size="sm"
+            variant="light"
+            @click="updateMatch"
+            :disabled="isBusy"
+            v-if="isFromLoggerUser"
+            v-b-tooltip.hover
+            title="Atualizar Placares">
+            <b-icon icon="pencil"/>
+          </b-button>
+        </template>
         <div class="row">
           <b-card
             class="ml-1 mt-1"
@@ -194,6 +218,8 @@ import IMapResumeDTO from '@/dtos/IMapResumeDTO';
 import AppError, { ToastsTypeEnum } from '@/errors/AppError';
 import CloneObject from '@/tools/CloneObject';
 import _ from 'lodash';
+import SplitArray from '@/tools/SplitArray';
+import ITeamDTO from '@/dtos/ITeamDTO';
 
 @Component({
   components: {
@@ -265,6 +291,57 @@ export default class Sweepstake extends Base {
     return this.$store.getters.getMapTypeName(id);
   }
 
+  async sweepstakeAgain(): Promise<void> {
+    if (!this.sweepstake) {
+      return;
+    }
+
+    const { isConfirmed } = await this.$swal.fire({
+      scrollbarPadding: false,
+      title: 'Sortear Times Novamente',
+      text: 'Confirma o novo sorteio dos times?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sim',
+      cancelButtonText: 'Não',
+    });
+
+    if (!isConfirmed) {
+      return;
+    }
+
+    try {
+      this.isBusy = true;
+
+      const players = _.union(this.sweepstake.teams[0].players, this.sweepstake.teams[1].players);
+
+      const divisionTeams = SplitArray(_.orderBy(players
+        .filter((player) => player.selectedDate), ['selectedDate'], ['asc']));
+
+      const teamOne: ITeamDTO = {
+        description: 'Time 1',
+        quantityPlayers: divisionTeams[0].length,
+        players: divisionTeams[0],
+      };
+
+      const teamTwo: ITeamDTO = {
+        description: 'Time 2',
+        quantityPlayers: divisionTeams[1].length,
+        players: divisionTeams[1],
+      };
+
+      const teams: ITeamDTO[] = [teamOne, teamTwo];
+
+      this.sweepstake.teams = teams;
+
+      await firebase.firestore().collection('sweepstakes').doc(this.sweepstake.id).set(this.sweepstake);
+
+      throw new AppError('Sorteio', 'Times atualizados com sucesso!', ToastsTypeEnum.Success);
+    } finally {
+      this.isBusy = false;
+    }
+  }
+
   async updateMatch(): Promise<void> {
     if (!this.sweepstake) {
       return;
@@ -276,12 +353,8 @@ export default class Sweepstake extends Base {
   }
 
   async handleHidden(): Promise<void> {
-    try {
-      // await this.loadSweepstake();
-    } finally {
-      this.maps = [];
-      this.showModal = false;
-    }
+    this.maps = [];
+    this.showModal = false;
   }
 
   async handleSubmit(): Promise<void> {
@@ -318,7 +391,7 @@ export default class Sweepstake extends Base {
 
       await firebase.firestore().collection('sweepstakes').doc(this.sweepstake.id).set(this.sweepstake);
 
-      throw new AppError('Sorteio', 'Placar atualizado com sucesso!', ToastsTypeEnum.Success);
+      throw new AppError('Sorteio', 'Placares atualizados com sucesso!', ToastsTypeEnum.Success);
     } finally {
       this.isBusy = false;
       this.showModal = false;

@@ -15,6 +15,7 @@
             v-if="displayAddButton">
             <b-icon icon="plus" scale="1.5"/>
           </b-button>
+          <slot name="button"></slot>
         </div>
       </template>
       <slot></slot>
