@@ -32,7 +32,7 @@
             Sorteios
           </b-nav-item>
           <b-nav-item
-            to="/rankings"
+            to="/ranking"
             active-class="pageActive"
             v-if="authenticatedUser">
             Classificação

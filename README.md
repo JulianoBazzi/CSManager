@@ -22,15 +22,17 @@ Coming soon.
 - [Demo on Netlify](https://csmanager.netlify.app/)
 
 ## Technologies
-
 - [Vue.js 2](https://vuejs.org/)
+- [Vuex](https://vuex.vuejs.org/)
 - [Typescript](https://www.typescriptlang.org/)
 - [BootstrapVue](https://bootstrap-vue.org/)
-- [Firebase (Auth and Firestore)](https://firebase.google.com/)
+- [Firebase (Auth, Firestore)](https://firebase.google.com/)
+- [Lodash](https://lodash.com/)
+- [SweetAlert 2](https://sweetalert2.github.io/)
 
 ## Installation
 
-1. Clone the repository: `git@github.com:Julibazzi/CSManager.git`
+1. Clone the repository: `git@github.com:JulianoBazzi/CSManager.git`
 2. Access the directory: `cd CSManager`
 3. Configure the firebase in: `.env.example`
 4. Run the Vue: `npm run serve`
