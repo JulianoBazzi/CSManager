@@ -315,8 +315,7 @@ export default class Sweepstake extends Base {
 
       const players = _.union(this.sweepstake.teams[0].players, this.sweepstake.teams[1].players);
 
-      const divisionTeams = SplitArray(_.orderBy(players
-        .filter((player) => player.selectedDate), ['selectedDate'], ['asc']));
+      const divisionTeams = SplitArray(players);
 
       const teamOne: ITeamDTO = {
         description: 'Time 1',
