@@ -280,8 +280,25 @@ export default class Sweepstake extends Base {
           this.isFromLoggerUser = this.sweepstake.userId === this.user.uid;
         }
 
+        this.$meta().addApp('sweepstake').set({
+          title: `${this.getGameTypeShortName(this.sweepstake?.gameType)} - ${this.departureDate} (CS Manager)`,
+          // meta: [{
+          //   name: 'metaNameTeste',
+          //   content: 'dddd',
+          // },
+          // {
+          //   name: 'og:title',
+          //   content: ''
+          // }
+          // ],
+        });
+
         this.isBusy = false;
       });
+  }
+
+  getGameTypeShortName(id: string): string | undefined {
+    return this.$store.getters.getGameTypeShortName(id);
   }
 
   getGameTypeName(id: string): string | undefined {
