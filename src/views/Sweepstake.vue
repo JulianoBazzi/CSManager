@@ -161,11 +161,10 @@
             :key="map.id">
             <template #header>
               <p class="mb-0 text-center">
+                <strong>{{ map.name }}</strong>
                 <a v-if="map.link" :href="map.link" target="_blank">
-                  <strong>{{ map.name }}</strong>
                   <b-icon class="ml-2" icon="download" variant="secondary"/>
                 </a>
-                <strong v-else>{{ map.name }}</strong>
               </p>
             </template>
             <p class="text-center">{{getMapTypeName(map.mapType)}}</p>
@@ -259,6 +258,10 @@ export default class Sweepstake extends Base {
       .collection('sweepstakes')
       .doc(this.id)
       .onSnapshot((doc) => {
+        if (!doc.data()) {
+          this.$router.push('/');
+        }
+
         this.sweepstake = {
           id: this.id,
           userId: doc.data()?.userId,
@@ -286,6 +289,14 @@ export default class Sweepstake extends Base {
             {
               name: 'description',
               content: `Partida de ${this.getGameTypeName(this.sweepstake?.gameType)}, com ${this.sweepstake.quantityPlayers} jogadores e ${this.sweepstake.quantityMaps} mapas, realizada em: ${this.departureDate}.`,
+            },
+            {
+              name: 'og:type',
+              content: 'website',
+            },
+            {
+              name: 'og:locale',
+              content: 'pt_BR',
             },
             {
               name: 'og:site_name',
@@ -361,8 +372,6 @@ export default class Sweepstake extends Base {
       this.sweepstake.teams = teams;
 
       await firebase.firestore().collection('sweepstakes').doc(this.sweepstake.id).set(this.sweepstake);
-
-      throw new AppError('Sorteio', 'Times atualizados com sucesso!', ToastsTypeEnum.Success);
     } finally {
       this.isBusy = false;
     }
