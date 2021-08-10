@@ -172,7 +172,10 @@
               <div class="mb-0" :id="'team' +(index + 1) +map.id">
                 <hr v-if="index !== 0" class="m-1">
                 <div class="row m-0">
-                  <b-icon class="ml-1 mt-1 mr-2" :icon="index == 0 ? 'people' : 'people-fill'"/>
+                  <b-icon
+                    class="ml-1 mt-1 mr-2"
+                    :icon="index == 0 ? 'people' : 'people-fill'"
+                    :variant="index == map.startFromTerrorist ? 'danger' : 'light'"/>
                   <p class="m-0" v-for="(score, indexScore) in match.scores" :key="indexScore">
                   {{ indexScore === 0 ? '' : '+'  }}&nbsp;{{ score }}&nbsp;
                   </p>
@@ -201,6 +204,18 @@
             </div>
           </b-card>
         </div>
+        <p class="mt-1">
+          <b-icon icon="people" variant="danger"/>
+          <b-icon icon="dot" scale="0.5"/>
+          <b-icon icon="people-fill" variant="danger"/>
+          <b-icon icon="chevron-right" scale="0.5"/>Terrorista
+          |
+          <b-icon icon="trophy-fill" variant="secondary"/>
+          <b-icon icon="chevron-right" scale="0.5"/>Empate
+          |
+          <b-icon icon="trophy-fill" variant="warning"/>
+          <b-icon icon="chevron-right" scale="0.5"/>Vencedor
+        </p>
       </Card>
     </div>
   </div>

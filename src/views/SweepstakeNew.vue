@@ -148,6 +148,7 @@ import IFilterComboBoxStringDTO from '@/dtos/IFilterComboBoxStringDTO';
 import ITeamDTO from '@/dtos/ITeamDTO';
 import SplitArray from '@/tools/SplitArray';
 import _ from 'lodash';
+import RandomUnique from '@/tools/RandomUnique';
 import mapsJson from '../assets/maps.json';
 
 @Component({
@@ -273,6 +274,7 @@ export default class SweepstakeNew extends Base {
               mapType: map.data().mapType,
               name: map.data().name,
               link: map.data().link ?? '',
+              startFromTerrorist: RandomUnique(2, 1)[0] - 1,
               matches: [],
               winner: -2,
             });

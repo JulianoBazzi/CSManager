@@ -6,6 +6,7 @@ interface IMapResumeDTO {
   name: string;
   link?: string;
   selectedDate?: Date;
+  startFromTerrorist: number;
   matches: IMatcheDTO[];
   winner: number;
 }
