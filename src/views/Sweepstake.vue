@@ -135,7 +135,7 @@
         </Card>
       </div>
       <Card
-        class="mt-2"
+        class="mt-2 mb-2"
         title="Mapas"
         icon="map"
         :busy="isBusy">
@@ -204,7 +204,7 @@
             </div>
           </b-card>
         </div>
-        <p class="mt-1">
+        <p class="mt-1 mb-0">
           <b-icon icon="people" variant="danger"/>
           <b-icon icon="dot" scale="0.5"/>
           <b-icon icon="people-fill" variant="danger"/>
