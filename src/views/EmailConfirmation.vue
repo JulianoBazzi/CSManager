@@ -53,7 +53,7 @@ export default class EmailConfirmation extends Base {
   user = firebase.auth().currentUser;
 
   created(): void {
-    if (this.user?.emailVerified) {
+    if (!this.user || this.user?.emailVerified) {
       this.$router.push('/');
     }
   }

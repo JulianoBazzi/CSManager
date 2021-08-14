@@ -33,14 +33,30 @@
           ></b-form-input>
         </b-form-group>
 
-        <b-button type="submit" variant="success" :disabled="isBusy">
+        <b-button
+          class="mt-2 mr-2 col-sm-12 col-md-2"
+          type="submit"
+          variant="success"
+          :disabled="isBusy">
           <b-spinner small v-if="isBusy"></b-spinner>
           <b-icon icon="box-arrow-in-right" v-else/>
             Entrar
         </b-button>
-        <b-button class="ml-2" @click="toggleButton" variant="info" :disabled="isBusy">
+        <b-button
+          class="mt-2 mr-2 col-sm-12 col-md-2"
+          @click="toggleButton"
+          variant="info"
+          :disabled="isBusy">
           <b-icon icon="person-plus"/>
             Registrar-se
+        </b-button>
+        <b-button
+          class="mt-2 col-sm-12 col-md-3"
+          @click="handleForgotMyPassword"
+          variant="secondary"
+          :disabled="isBusy">
+          <b-icon icon="key"/>
+            Esqueci Minha Senha
         </b-button>
       </b-form>
 
@@ -240,6 +256,10 @@ export default class Login extends Base {
       }
       throw new AppError(this.title, error.message, ToastsTypeEnum.Warning);
     }
+  }
+
+  async handleForgotMyPassword(): Promise<void> {
+    this.$router.push('/forgotMyPassword');
   }
 }
 </script>

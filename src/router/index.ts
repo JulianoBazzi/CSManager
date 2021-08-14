@@ -11,6 +11,8 @@ import Sweepstakes from '../views/Sweepstakes.vue';
 import SweepstakeNew from '../views/SweepstakeNew.vue';
 import Login from '../views/Login.vue';
 import EmailConfirmation from '../views/EmailConfirmation.vue';
+import ChangePassword from '../views/ChangePassword.vue';
+import ForgotMyPassword from '../views/ForgotMyPassword.vue';
 import Profile from '../views/Profile.vue';
 
 Vue.use(VueRouter);
@@ -67,6 +69,24 @@ const routes: Array<RouteConfig> = [
     },
   },
   {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile,
+    meta: {
+      title: 'Meu Perfil',
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/changePassword',
+    name: 'ChangePassword',
+    component: ChangePassword,
+    meta: {
+      title: 'Alterar Senha',
+      requiresAuth: true,
+    },
+  },
+  {
     path: '/about',
     name: 'About',
     component: About,
@@ -92,11 +112,11 @@ const routes: Array<RouteConfig> = [
     },
   },
   {
-    path: '/profile',
-    name: 'Profile',
-    component: Profile,
+    path: '/forgotMyPassword',
+    name: 'ForgotMyPassword',
+    component: ForgotMyPassword,
     meta: {
-      title: 'Meu Perfil',
+      title: 'Esqueci Minha Senha',
     },
   },
 ];
