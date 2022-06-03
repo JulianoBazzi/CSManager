@@ -5,7 +5,6 @@ interface IMapDTO {
   name: string;
   link?: string;
   active: boolean;
-  created?: Date;
 }
 
 export default IMapDTO;

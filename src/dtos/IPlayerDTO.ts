@@ -4,7 +4,6 @@ interface IPlayerDTO {
   username: string;
   patent: string;
   active: boolean;
-  created?: Date;
 }
 
 export default IPlayerDTO;

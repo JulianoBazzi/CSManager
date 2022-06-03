@@ -220,7 +220,6 @@ export default class Players extends Base {
           username: player.username,
           patent: player.patent,
           active: player.active,
-          created: player.created,
         });
       });
     }
@@ -282,7 +281,7 @@ export default class Players extends Base {
     try {
       const user = supabase.auth.user();
       const {
-        id = v4(), name, username, patent, active, created,
+        id = v4(), name, username, patent, active,
       } = this.selectedPlayer;
 
       const { data, error } = await supabase.from('players').upsert({
@@ -292,7 +291,6 @@ export default class Players extends Base {
         username,
         patent,
         active,
-
       });
 
       if (error) {
@@ -307,7 +305,6 @@ export default class Players extends Base {
           username,
           patent,
           active,
-          created,
         });
         this.showModal = false;
       }
