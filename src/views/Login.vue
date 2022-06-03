@@ -132,7 +132,7 @@
 </template>
 
 <script lang="ts">
-import firebase from 'firebase';
+import supabase from '@/services/supabase';
 import { Component } from 'vue-property-decorator';
 import Base from '@/views/Base';
 import Card from '@/components/Card.vue';
@@ -174,9 +174,14 @@ export default class Login extends Base {
 
     this.isBusy = true;
     try {
-      const { user } = await firebase
-        .auth()
-        .signInWithEmailAndPassword(this.email, this.password);
+      const { user, error } = await supabase.auth.signIn({
+        email: this.email,
+        password: this.password,
+      });
+
+      if (error) {
+        throw new AppError(this.title, error.message, ToastsTypeEnum.Warning);
+      }
 
       if (!user) {
         throw new AppError(this.title, 'Usuário não encontrado!', ToastsTypeEnum.Warning);
@@ -184,36 +189,24 @@ export default class Login extends Base {
 
       this.$store.commit('setUser', user);
 
-      const doc = await firebase
-        .firestore()
-        .collection('users')
-        .doc(user?.uid)
-        .get();
+      // const doc = await firebase
+      //   .firestore()
+      //   .collection('users')
+      //   .doc(user?.uid)
+      //   .get();
 
-      if (doc.data()) {
-        this.$store.commit('setGame', doc.data()?.gameType);
-      }
+      // if (doc.data()) {
+      //   this.$store.commit('setGame', doc.data()?.gameType);
+      // }
 
-      this.isBusy = false;
-
-      if (!user?.emailVerified) {
+      if (!user?.email_confirmed_at) {
         this.$router.push('/emailConfirmation');
         return;
       }
 
       this.$router.push('/');
-    } catch (error) {
+    } finally {
       this.isBusy = false;
-      if (error.code === 'auth/invalid-email') {
-        throw new AppError(this.title, 'E-mail inválido!', ToastsTypeEnum.Warning);
-      } else if (error.code === 'auth/too-many-requests') {
-        throw new AppError(this.title, 'Você enviou muitas solicitações, aguarde alguns minutos e tente novamente.', ToastsTypeEnum.Secondary);
-      } else if ((error.code === 'auth/user-disabled')
-                 || (error.code === 'auth/user-not-found')
-                 || (error.code === 'auth/wrong-password')) {
-        throw new AppError(this.title, 'E-mail ou senha inválido!', ToastsTypeEnum.Warning);
-      }
-      throw new AppError(this.title, error.message, ToastsTypeEnum.Warning);
     }
   }
 
@@ -229,32 +222,24 @@ export default class Login extends Base {
     try {
       this.isBusy = true;
 
-      const { user } = await firebase
-        .auth()
-        .createUserWithEmailAndPassword(this.email, this.password);
-
-      await user?.updateProfile({
-        displayName: this.name,
+      const { user, error } = await supabase.auth.signUp({
+        email: this.email,
+        password: this.password,
+      },
+      {
+        data: {
+          name: this.name,
+        },
       });
 
-      await user?.sendEmailVerification();
+      if (error) {
+        throw new AppError(this.title, error.message, ToastsTypeEnum.Warning);
+      }
 
       this.$store.commit('setUser', user);
-      this.isBusy = false;
-
       this.$router.push('/emailConfirmation');
-    } catch (error) {
+    } finally {
       this.isBusy = false;
-      if (error.code === 'auth/too-many-requests') {
-        throw new AppError(this.title, 'Você enviou muitas solicitações, aguarde alguns minutos e tente novamente.', ToastsTypeEnum.Secondary);
-      } else if ((error.code === 'auth/email-already-in-use') || (error.code === 'auth/email-already-exists')) {
-        throw new AppError(this.title, 'E-mail já registrado!', ToastsTypeEnum.Warning);
-      } else if (error.code === 'auth/invalid-email') {
-        throw new AppError(this.title, 'E-mail inválido!', ToastsTypeEnum.Warning);
-      } else if (error.code === 'auth/weak-password') {
-        throw new AppError(this.title, 'A senha deve ter pelo menos 6 caracteres!', ToastsTypeEnum.Warning);
-      }
-      throw new AppError(this.title, error.message, ToastsTypeEnum.Warning);
     }
   }
 

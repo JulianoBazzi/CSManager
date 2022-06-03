@@ -134,8 +134,7 @@
 </template>
 
 <script lang="ts">
-import firebase from 'firebase';
-import { v4 } from 'uuid';
+import supabase from '@/services/supabase';
 import { Component } from 'vue-property-decorator';
 import Base from '@/views/Base';
 import Card from '@/components/Card.vue';
@@ -144,6 +143,7 @@ import SituationComboBox from '@/components/ComboBox/Situation.vue';
 import Modal from '@/components/Modal.vue';
 import Table from '@/components/Table.vue';
 import AppError, { ToastsTypeEnum } from '@/errors/AppError';
+import { v4 } from 'uuid';
 import IPlayerDTO from '../dtos/IPlayerDTO';
 import ITableFieldsDTO from '../dtos/ITableFieldsDTO';
 
@@ -203,25 +203,27 @@ export default class Players extends Base {
     this.isBusy = true;
     this.players = [];
 
-    const user = firebase.auth().currentUser;
+    const { data, error } = await supabase
+      .from('players')
+      .select()
+      .order('updated_at', { ascending: false });
 
-    const docs = await firebase
-      .firestore()
-      .collection('players')
-      .where('userId', '==', user?.uid)
-      .orderBy('updated', 'desc')
-      .get();
+    if (error) {
+      throw new AppError('Jogadores', error.message, ToastsTypeEnum.Warning);
+    }
 
-    docs.forEach((player) => {
-      this.players.push({
-        id: player.id,
-        name: player.data().name,
-        username: player.data().username,
-        patent: player.data().patent,
-        active: player.data().active,
-        created: player.data().created,
+    if (data && data.length > 0) {
+      data.forEach((player) => {
+        this.players.push({
+          id: player.id,
+          name: player.name,
+          username: player.username,
+          patent: player.patent,
+          active: player.active,
+          created: player.created,
+        });
       });
-    });
+    }
 
     this.isBusy = false;
   }
@@ -255,7 +257,7 @@ export default class Players extends Base {
     this.showModal = false;
   }
 
-  handleSubmit(): void {
+  async handleSubmit(): Promise<void> {
     if (!this.selectedPlayer.name) {
       throw new AppError('Jogador', 'O nome é obrigatório!', ToastsTypeEnum.Warning);
     }
@@ -278,36 +280,39 @@ export default class Players extends Base {
 
     this.isBusy = true;
     try {
-      const user = firebase.auth().currentUser;
-      const id = this.selectedPlayer?.id ? this.selectedPlayer?.id : v4();
+      const user = supabase.auth.user();
       const {
-        name, username, patent, active, created,
+        id = v4(), name, username, patent, active, created,
       } = this.selectedPlayer;
 
-      firebase.firestore().collection('players')
-        .doc(id).set({
-          userId: user?.uid,
-          created: created ?? new Date(),
-          updated: new Date(),
+      const { data, error } = await supabase.from('players').upsert({
+        id,
+        user_id: user?.id,
+        name,
+        username,
+        patent,
+        active,
+
+      });
+
+      if (error) {
+        throw new AppError('Jogador', error.message, ToastsTypeEnum.Warning);
+      }
+
+      if (data) {
+        this.players = this.players.filter((player) => player.id !== id);
+        this.players.unshift({
+          id,
           name,
           username,
           patent,
           active,
-        })
-        .then(() => {
-          this.players = this.players.filter((player) => player.id !== id);
-          this.players.unshift({
-            id,
-            name,
-            username,
-            patent,
-            active,
-            created,
-          });
+          created,
         });
+        this.showModal = false;
+      }
     } finally {
       this.isBusy = false;
-      this.showModal = false;
     }
   }
 

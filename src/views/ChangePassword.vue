@@ -46,7 +46,7 @@ import { Component } from 'vue-property-decorator';
 import Base from '@/views/Base';
 import Card from '@/components/Card.vue';
 import AppError, { ToastsTypeEnum } from '@/errors/AppError';
-import firebase from 'firebase';
+import supabase from '@/services/supabase';
 
 @Component({
   components: {
@@ -66,21 +66,22 @@ export default class ChangePassword extends Base {
         throw new AppError('Alterar Senha', 'A nova senha informada não confere!', ToastsTypeEnum.Warning);
       }
 
-      const user = firebase.auth().currentUser;
+      const { user, error } = await supabase.auth.update({
+        password: this.newPassword,
+      });
+
+      if (error) {
+        throw new AppError('Alterar Senha', error.message, ToastsTypeEnum.Warning);
+      }
 
       if (!user) {
         throw new AppError('Alterar Senha', 'Usuário não localizado!', ToastsTypeEnum.Warning);
       }
 
-      await user.updatePassword(this.newPassword).then(async () => {
-        await firebase.auth().signOut();
-        this.isBusy = false;
-        this.$store.commit('setGame', null);
-        this.$store.commit('setUser', null);
-        this.$router.push('/');
-      });
-    } catch (error) {
-      throw new AppError('Alterar Senha', error.message, ToastsTypeEnum.Warning);
+      await supabase.auth.signOut();
+      this.$store.commit('setGame', null);
+      this.$store.commit('setUser', null);
+      this.$router.push('/');
     } finally {
       this.isBusy = false;
     }

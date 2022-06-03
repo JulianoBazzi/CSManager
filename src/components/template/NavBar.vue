@@ -69,7 +69,7 @@
 </template>
 
 <script lang="ts">
-import firebase from 'firebase';
+import supabase from '@/services/supabase';
 import { Component, Vue } from 'vue-property-decorator';
 
 @Component({
@@ -78,13 +78,13 @@ import { Component, Vue } from 'vue-property-decorator';
       return this.$store.state.user != null;
     },
     displayName() {
-      return this.$store.state.user == null ? 'Usuário' : this.$store.state.user.displayName;
+      return this.$store.state.user == null ? 'Usuário' : this.$store.state.user.user_metadata.name;
     },
   },
 })
 export default class NavBar extends Vue {
   async logOut(): Promise<void> {
-    await firebase.auth().signOut();
+    await supabase.auth.signOut();
     this.$store.commit('setGame', null);
     this.$store.commit('setUser', null);
     this.$router.push('/');

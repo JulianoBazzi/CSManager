@@ -1,8 +1,8 @@
-import firebase from 'firebase';
+import { User } from '@supabase/supabase-js';
 import IFilterComboBoxStringDTO from './IFilterComboBoxStringDTO';
 
 interface IStoreDTO {
-  user: firebase.User | null;
+  user: User | null;
   game: string | null;
   gamesType: IFilterComboBoxStringDTO[];
   mapsType: IFilterComboBoxStringDTO[];

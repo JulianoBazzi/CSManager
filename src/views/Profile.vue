@@ -52,13 +52,13 @@
 </template>
 
 <script lang="ts">
-import firebase from 'firebase';
+import supabase from '@/services/supabase';
 import { Component } from 'vue-property-decorator';
 import Base from '@/views/Base';
 import Card from '@/components/Card.vue';
 import AppError, { ToastsTypeEnum } from '@/errors/AppError';
 import IFilterComboBoxStringDTO from '@/dtos/IFilterComboBoxStringDTO';
-import gamesJson from '../assets/games.json';
+import gamesJson from '@/assets/games.json';
 
 @Component({
   components: {
@@ -66,9 +66,9 @@ import gamesJson from '../assets/games.json';
   },
 })
 export default class Profile extends Base {
-  user = firebase.auth().currentUser;
+  user = supabase.auth.user();
 
-  name = this.user?.displayName;
+  name = this.user?.user_metadata?.name ?? '';
 
   games: IFilterComboBoxStringDTO[] = [];
 
@@ -101,19 +101,18 @@ export default class Profile extends Base {
     try {
       this.isBusy = true;
 
-      await this.user?.updateProfile({
-        displayName: this.name,
+      const { user, error } = await supabase.auth.update({
+        data: {
+          name: this.name,
+          gameType: this.gameSelected,
+        },
       });
 
-      await firebase.firestore().collection('users')
-        .doc(this.user?.uid).set({
-          updated: new Date(),
-          gameType: this.gameSelected,
-        });
+      if (error) {
+        throw new AppError('Meu Perfil', error.message, ToastsTypeEnum.Warning);
+      }
 
-      await firebase.auth().currentUser?.reload;
-
-      this.$store.commit('setUser', firebase.auth().currentUser);
+      this.$store.commit('setUser', user);
       this.$store.commit('setGame', this.gameSelected);
 
       throw new AppError('Meu Perfil', 'Perfil atualizado com sucesso!', ToastsTypeEnum.Success);
