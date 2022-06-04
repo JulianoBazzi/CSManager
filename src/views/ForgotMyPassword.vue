@@ -11,6 +11,7 @@
             v-model="email"
             type="email"
             required
+            autocomplete="off"
             :disabled="isBusy"
           ></b-form-input>
         </b-form-group>
@@ -63,6 +64,7 @@ export default class ForgotMyPassword extends Base {
       }
 
       this.$router.push('/');
+      throw new AppError('Esqueci Minha Senha', 'E-mail de recuperação de senha enviado com sucesso!', ToastsTypeEnum.Success);
     } finally {
       this.isBusy = false;
     }

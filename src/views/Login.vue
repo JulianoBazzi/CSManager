@@ -15,7 +15,7 @@
             type="email"
             required
             autofocus
-            autocomplete="email"
+            autocomplete="off"
             :disabled="isBusy"
           ></b-form-input>
         </b-form-group>
@@ -29,6 +29,7 @@
             v-model="password"
             type="password"
             required
+            autocomplete="off"
             :disabled="isBusy"
           ></b-form-input>
         </b-form-group>
@@ -73,7 +74,7 @@
             minlength="3"
             required
             autofocus
-            autocomplete="name"
+            autocomplete="off"
             :disabled="isBusy"
           ></b-form-input>
         </b-form-group>
@@ -88,7 +89,7 @@
             v-model="email"
             type="email"
             required
-            autocomplete="email"
+            autocomplete="off"
             :disabled="isBusy"
           ></b-form-input>
         </b-form-group>
@@ -103,6 +104,7 @@
             type="password"
             minlength="6"
             required
+            autocomplete="off"
             :disabled="isBusy"
           ></b-form-input>
         </b-form-group>
@@ -117,6 +119,7 @@
             type="password"
             minlength="6"
             required
+            autocomplete="off"
             :disabled="isBusy"
           ></b-form-input>
         </b-form-group>
@@ -222,7 +225,7 @@ export default class Login extends Base {
     try {
       this.isBusy = true;
 
-      const { user, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email: this.email,
         password: this.password,
       },
@@ -236,8 +239,7 @@ export default class Login extends Base {
         throw new AppError(this.title, error.message, ToastsTypeEnum.Warning);
       }
 
-      this.$store.commit('setUser', user);
-      this.$router.push('/emailConfirmation');
+      this.toggleButton();
     } finally {
       this.isBusy = false;
     }
