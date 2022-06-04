@@ -120,7 +120,7 @@
           icon="people">
           <div
             v-for="(sweepstakePlayer, index) in
-              sweepstakePlayer.filter(player => player.team === 0)"
+              sweepstakePlayers.filter(player => player.team === 0)"
             :key="sweepstakePlayer.id"
           >
             <hr v-if="index !== 0" class="m-1">
@@ -143,7 +143,7 @@
           icon="people-fill">
           <div
             v-for="(sweepstakePlayer, index) in
-              sweepstakePlayer.filter(player => player.team === 1)"
+              sweepstakePlayers.filter(player => player.team === 1)"
             :key="sweepstakePlayer.id"
           >
             <hr v-if="index !== 0" class="m-1">
@@ -183,50 +183,51 @@
             header-tag="header"
             bg-variant="dark"
             text-variant="white"
-            v-for="map in sweepstake.maps"
-            :key="map.id">
+            v-for="sweepstakeMap in sweepstakeMaps"
+            :key="sweepstakeMap.id">
             <template #header>
               <p class="mb-0 text-center">
-                <strong>{{ map.name }}</strong>
-                <a v-if="map.link" :href="map.link" target="_blank">
+                <strong>{{ sweepstakeMap.maps.name }}</strong>
+                <a v-if="sweepstakeMap.maps.link" :href="sweepstakeMap.maps.link" target="_blank">
                   <b-icon class="ml-2" icon="download" variant="secondary"/>
                 </a>
               </p>
             </template>
-            <p class="text-center">{{getMapTypeName(map.mapType)}}</p>
-            <div v-for="(match, index) in map.matches" :key="index">
-              <div class="mb-0" :id="'team' +(index + 1) +map.id">
-                <hr v-if="index !== 0" class="m-1">
-                <div class="row m-0">
-                  <b-icon
-                    class="ml-1 mt-1 mr-2"
-                    :icon="index == 0 ? 'people' : 'people-fill'"
-                    :variant="index == map.startFromTerrorist ? 'danger' : 'light'"/>
-                  <p class="m-0" v-for="(score, indexScore) in match.scores" :key="indexScore">
-                  {{ indexScore === 0 ? '' : '+'  }}&nbsp;{{ score }}&nbsp;
-                  </p>
-                  <b-icon
-                    v-if="map.winner === -1"
-                    class="ml-1 mt-1 mr-2"
-                    icon="trophy-fill"
-                    variant="secondary"
-                     scale="0.9"
-                  />
-                  <b-icon
-                    v-else-if="map.winner === index"
-                    class="ml-1 mt-1 mr-2"
-                    icon="trophy-fill"
-                    variant="warning"
-                     scale="0.9"
-                  />
-                </div>
+            <p class="text-center">{{getMapTypeName(sweepstakeMap.maps.map_type)}}</p>
+            <div>
+              <div class="row m-0" :id="`teamOne-${sweepstakeMap.id}`">
+                <b-icon
+                  class="ml-1 mt-1 mr-2"
+                  icon="people"
+                  :variant="sweepstakeMap.team_start_from_terrorist === 0 ? 'danger' : 'light'"
+                />
+                <p class="m-0">
+                  {{ sweepstakeMap.team_one_score_1 }} + {{ sweepstakeMap.team_one_score_2 }}
+                </p>
+                <b-icon
+                  class="ml-1 mt-1 mr-2"
+                  icon="trophy-fill"
+                  scale="0.9"
+                  :style="getWinnerStyle(0, sweepstakeMap)"
+                />
               </div>
-              <b-tooltip
-                :target="'team' +(index + 1)  +map.id"
-                triggers="hover"
-                placement="top">
-                {{ match.description }}
-              </b-tooltip>
+              <hr class="m-1">
+              <div class="row m-0" :id="`teamTwo-${sweepstakeMap.id}`">
+                <b-icon
+                  class="ml-1 mt-1 mr-2"
+                  icon="people-fill"
+                  :variant="sweepstakeMap.team_start_from_terrorist === 1 ? 'danger' : 'light'"
+                />
+                <p class="m-0">
+                  {{ sweepstakeMap.team_two_score_1 }} + {{ sweepstakeMap.team_two_score_2 }}
+                </p>
+                <b-icon
+                  class="ml-1 mt-1 mr-2"
+                  icon="trophy-fill"
+                  scale="0.9"
+                  :style="getWinnerStyle(1, sweepstakeMap)"
+                />
+              </div>
             </div>
           </b-card>
         </div>
@@ -258,6 +259,7 @@ import moment from 'moment';
 import IMapResumeDTO from '@/dtos/IMapResumeDTO';
 import AppError, { ToastsTypeEnum } from '@/errors/AppError';
 import supabase from '@/services/supabase';
+import ISweepstakeMapDTO from '@/dtos/ISweepstakeMapDTO';
 
 @Component({
   components: {
@@ -272,7 +274,9 @@ export default class Sweepstake extends Base {
 
   sweepstake: ISweepstakeDTO | null = null;
 
-  sweepstakePlayer: ISweepstakePlayerDTO[] = [];
+  sweepstakePlayers: ISweepstakePlayerDTO[] = [];
+
+  sweepstakeMaps: ISweepstakeMapDTO[] = [];
 
   isFromLoggerUser = false;
 
@@ -320,7 +324,7 @@ export default class Sweepstake extends Base {
     }
 
     if (dataPlayer && dataPlayer.length > 0) {
-      this.handleSweepstakePlayerUpdate(dataPlayer);
+      this.sweepstakePlayers = dataPlayer;
     }
 
     supabase
@@ -331,6 +335,30 @@ export default class Sweepstake extends Base {
         }
 
         this.handleSweepstakePlayerUpdate(payload?.new);
+      })
+      .subscribe();
+
+    const { data: dataMap, error: errorMap } = await supabase
+      .from('sweepstake_maps')
+      .select('*, maps (*)')
+      .eq('sweepstake_id', this.id);
+
+    if (errorMap) {
+      throw new AppError('Mapas', errorMap.message, ToastsTypeEnum.Warning);
+    }
+
+    if (dataMap && dataMap.length > 0) {
+      this.sweepstakeMaps = dataMap;
+    }
+
+    supabase
+      .from(`sweepstake_maps:sweepstake_id=eq.${this.id}`)
+      .on('UPDATE', (payload) => {
+        if (!payload) {
+          this.$router.push('/');
+        }
+
+        this.handleSweepstakeMapUpdate(payload?.new);
       })
       .subscribe();
 
@@ -350,8 +378,31 @@ export default class Sweepstake extends Base {
     }
   }
 
-  handleSweepstakePlayerUpdate(sweepstakePlayer: ISweepstakePlayerDTO[]): void {
-    this.sweepstakePlayer = sweepstakePlayer;
+  handleSweepstakePlayerUpdate(sweepstakePlayer: ISweepstakePlayerDTO): void {
+    const index = this.sweepstakePlayers.findIndex((player) => (
+      player.id === sweepstakePlayer.id
+    ));
+
+    if (index > -1) {
+      this.sweepstakePlayers[index].team = sweepstakePlayer.team;
+    }
+  }
+
+  handleSweepstakeMapUpdate(sweepstakeMap: ISweepstakeMapDTO): void {
+    const index = this.sweepstakeMaps.findIndex((map) => (
+      map.id === sweepstakeMap.id
+    ));
+
+    if (index > -1) {
+      this.sweepstakeMaps[index]
+        .team_start_from_terrorist = sweepstakeMap.team_start_from_terrorist;
+      this.sweepstakeMaps[index].team_one_score_1 = sweepstakeMap.team_one_score_1;
+      this.sweepstakeMaps[index].team_two_score_1 = sweepstakeMap.team_two_score_1;
+      this.sweepstakeMaps[index].team_one_score_2 = sweepstakeMap.team_one_score_2;
+      this.sweepstakeMaps[index].team_two_score_2 = sweepstakeMap.team_two_score_2;
+    } else {
+      this.sweepstakeMaps.push(sweepstakeMap);
+    }
   }
 
   getGameTypeShortName(id: string): string | undefined {
@@ -471,6 +522,26 @@ export default class Sweepstake extends Base {
       this.showModal = false;
       this.maps = [];
     }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getWinnerStyle(index: number, sweepstakeMap: ISweepstakeMapDTO): string {
+    if (index < 0 || !sweepstakeMap) {
+      return 'display: none;';
+    }
+
+    const sumTeamOne = sweepstakeMap.team_one_score_1 + sweepstakeMap.team_one_score_2;
+    const sumTeamTwo = sweepstakeMap.team_two_score_1 + sweepstakeMap.team_two_score_2;
+
+    if ((index === 0 && sumTeamOne > sumTeamTwo) || (index === 1 && sumTeamOne < sumTeamTwo)) {
+      return 'color: #ffc107 !important;';
+    }
+
+    if (sumTeamOne > 0 && sumTeamOne === sumTeamTwo) {
+      return 'color: #6c757d !important;';
+    }
+
+    return 'display: none;';
   }
 }
 </script>

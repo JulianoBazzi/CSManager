@@ -96,7 +96,7 @@
           small
           :recordsPerPage=12
           @onRowClicked="onRowClicked">
-          <template #cell(selectedDate)="{ item, field: { key } }">
+          <template #cell(selected_date)="{ item, field: { key } }">
             <b-icon icon="check-square-fill" v-if="item[key]"/>
             <b-icon icon="square" v-else/>
           </template>
@@ -119,7 +119,7 @@
           small
           :recordsPerPage=12
           @onRowClicked="onRowClicked">
-          <template #cell(selectedDate)="{ item, field: { key } }">
+          <template #cell(selected_date)="{ item, field: { key } }">
             <b-icon icon="check-square-fill" v-if="item[key]"/>
             <b-icon icon="square" v-else/>
           </template>
@@ -167,7 +167,7 @@ export default class SweepstakeNew extends Base {
 
   fieldsPlayer: ITableFieldsDTO[] = [
     {
-      key: 'selectedDate',
+      key: 'selected_date',
       label: '',
     },
     {
@@ -189,7 +189,7 @@ export default class SweepstakeNew extends Base {
 
   fieldsMap: ITableFieldsDTO[] = [
     {
-      key: 'selectedDate',
+      key: 'selected_date',
       label: '',
     },
     {
@@ -271,11 +271,10 @@ export default class SweepstakeNew extends Base {
         data.forEach((map) => {
           this.maps.push({
             id: map.id,
-            mapType: map.map_type,
+            map_type: map.map_type,
             name: map.name,
             link: map.link,
-            startFromTerrorist: RandomUnique(2, 1)[0] - 1,
-            winner: -2,
+            team_start_from_terrorist: RandomUnique(2, 1)[0] - 1,
           });
         });
       }
@@ -311,7 +310,7 @@ export default class SweepstakeNew extends Base {
       }
 
       const divisionTeams = SplitArray(orderBy(this.players
-        .filter((player) => player.selectedDate), ['selectedDate'], ['asc']));
+        .filter((player) => player.selected_date), ['selected_date'], ['asc']));
 
       const user = supabase.auth.user();
 
@@ -352,13 +351,13 @@ export default class SweepstakeNew extends Base {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const maps: any = [];
-        orderBy(this.maps.filter((map) => map.selectedDate), ['selectedDate'], ['asc']).forEach((map) => {
+        orderBy(this.maps.filter((map) => map.selected_date), ['selected_date'], ['asc']).forEach((map) => {
           maps.push({
             user_id: user?.id,
             sweepstake_id: id,
             map_id: map.id,
-            team_start_from_terrorist: map.startFromTerrorist,
-            selected_at: map.selectedDate,
+            team_start_from_terrorist: map.team_start_from_terrorist,
+            selected_at: map.selected_date,
           });
         });
 
@@ -373,11 +372,11 @@ export default class SweepstakeNew extends Base {
   }
 
   get numberSelectedPlayers(): number {
-    return this.players.filter((player) => player.selectedDate).length;
+    return this.players.filter((player) => player.selected_date).length;
   }
 
   get numberSelectedMaps(): number {
-    return this.maps.filter((map) => map.selectedDate).length;
+    return this.maps.filter((map) => map.selected_date).length;
   }
 
   getMapName(id: string): string | undefined {
@@ -388,11 +387,11 @@ export default class SweepstakeNew extends Base {
     this.isBusy = true;
     try {
       this.gameSelected = this.$store.state.game ? this.$store.state.game : 'cs';
-      this.players.filter((player) => player.selectedDate).forEach((player) => {
-        this.$set(player, 'selectedDate', undefined);
+      this.players.filter((player) => player.selected_date).forEach((player) => {
+        this.$set(player, 'selected_date', undefined);
       });
-      this.maps.filter((map) => map.selectedDate).forEach((map) => {
-        this.$set(map, 'selectedDate', undefined);
+      this.maps.filter((map) => map.selected_date).forEach((map) => {
+        this.$set(map, 'selected_date', undefined);
       });
     } finally {
       this.isBusy = false;
@@ -401,14 +400,14 @@ export default class SweepstakeNew extends Base {
 
   // eslint-disable-next-line class-methods-use-this
   tbodyRowClass(item: IPlayerResumeDTO | IMapResumeDTO): string[] {
-    if (item?.selectedDate) {
+    if (item?.selected_date) {
       return ['cursor-pointer', 'b-table-row-selected', 'bg-active'];
     }
     return ['cursor-pointer'];
   }
 
   onRowClicked(item: IPlayerResumeDTO | IMapResumeDTO): void {
-    this.$set(item, 'selectedDate', item.selectedDate ? undefined : new Date());
+    this.$set(item, 'selected_date', item.selected_date ? undefined : new Date());
   }
 }
 </script>

@@ -1,11 +1,11 @@
+/* eslint-disable camelcase */
 interface IMapResumeDTO {
   id?: string;
-  mapType: string;
+  map_type: string;
   name: string;
   link?: string;
-  selectedDate?: Date;
-  startFromTerrorist: number;
-  winner: number;
+  selected_date?: Date;
+  team_start_from_terrorist: number;
 }
 
 export default IMapResumeDTO;
