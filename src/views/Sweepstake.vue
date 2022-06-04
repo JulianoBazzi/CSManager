@@ -3,7 +3,7 @@
     <Modal
       title="Atualizar Placares"
       :show.sync="showModal"
-      :busy="isBusy"
+      :busy="isBusyModal"
       @handleHidden="handleHidden"
       @handleSubmit="handleSubmit">
       <b-form ref="form" @submit.stop.prevent="handleSubmit">
@@ -14,31 +14,63 @@
             bg-variant="dark"
             text-variant="white"
             small
-            v-for="map in maps"
-            :key="map.id">
+            v-for="sweepstakeMap in cloneSweepstakeMaps"
+            :key="sweepstakeMap.id">
             <template #header>
               <p class="mb-0 text-center">
-                <strong>{{ map.name }}</strong>
+                <strong>{{ sweepstakeMap.maps.name }}</strong>
               </p>
             </template>
-            <div v-for="(match, matchIndex) in map.matches" :key="matchIndex">
-              <hr v-if="matchIndex !== 0" class="m-1">
-              <div class="row ml-1 d-flex align-items-center">
-                <b-icon class="align-middle" :icon="matchIndex == 0 ? 'people' : 'people-fill'"/>
-                <div class="ml-2" v-for="(score, scoreIndex) in match.scores" :key="scoreIndex">
-                  <b-form-input
-                    class="col-sm"
-                    v-model.number="match.scores[scoreIndex]"
-                    required
-                    type="number"
-                    min="0"
-                    max="99"
-                    pattern="\d*"
-                    onfocus="this.select();"
-                    :disabled="isBusy"
-                  />
-                </div>
-              </div>
+            <div class="row ml-1 d-flex align-items-center">
+              <b-icon class="align-middle" icon="people"/>
+              <b-form-input
+                class="col-sm ml-2"
+                v-model.number="sweepstakeMap.team_one_score_1"
+                required
+                type="number"
+                min="0"
+                max="99"
+                pattern="\d*"
+                onfocus="this.select();"
+                :disabled="isBusyModal"
+              />
+              <b-form-input
+                class="col-sm ml-2"
+                v-model.number="sweepstakeMap.team_one_score_2"
+                required
+                type="number"
+                min="0"
+                max="99"
+                pattern="\d*"
+                onfocus="this.select();"
+                :disabled="isBusyModal"
+              />
+            </div>
+            <hr class="m-1">
+            <div class="row ml-1 d-flex align-items-center">
+              <b-icon class="align-middle" icon="people-fill"/>
+              <b-form-input
+                class="col-sm ml-2"
+                v-model.number="sweepstakeMap.team_two_score_1"
+                required
+                type="number"
+                min="0"
+                max="99"
+                pattern="\d*"
+                onfocus="this.select();"
+                :disabled="isBusyModal"
+              />
+              <b-form-input
+                class="col-sm ml-2"
+                v-model.number="sweepstakeMap.team_two_score_2"
+                required
+                type="number"
+                min="0"
+                max="99"
+                pattern="\d*"
+                onfocus="this.select();"
+                :disabled="isBusyModal"
+              />
             </div>
             <hr class="m-1">
           </b-card>
@@ -261,6 +293,7 @@ import AppError, { ToastsTypeEnum } from '@/errors/AppError';
 import supabase from '@/services/supabase';
 import ISweepstakeMapDTO from '@/dtos/ISweepstakeMapDTO';
 import SplitArray from '@/tools/SplitArray';
+import CloneObject from '@/tools/CloneObject';
 
 @Component({
   components: {
@@ -271,6 +304,8 @@ import SplitArray from '@/tools/SplitArray';
 export default class Sweepstake extends Base {
   showModal = false;
 
+  isBusyModal = false;
+
   id = this.$route.params.id;
 
   sweepstake: ISweepstakeDTO | null = null;
@@ -278,6 +313,8 @@ export default class Sweepstake extends Base {
   sweepstakePlayers: ISweepstakePlayerDTO[] = [];
 
   sweepstakeMaps: ISweepstakeMapDTO[] = [];
+
+  cloneSweepstakeMaps: ISweepstakeMapDTO[] = [];
 
   isFromLoggerUser = false;
 
@@ -504,7 +541,7 @@ export default class Sweepstake extends Base {
       return;
     }
 
-    // this.maps = CloneObject(this.sweepstake.maps);
+    this.cloneSweepstakeMaps = CloneObject(this.sweepstakeMaps);
 
     this.showModal = true;
   }
@@ -516,43 +553,39 @@ export default class Sweepstake extends Base {
 
   async handleSubmit(): Promise<void> {
     try {
-      this.isBusy = true;
+      this.isBusyModal = true;
 
       if (!this.sweepstake) {
         return;
       }
 
-      // const updatedMaps: IMapResumeDTO[] = [];
+      const updatedMaps: ISweepstakeMapDTO[] = [];
 
-      // this.maps.forEach((map) => {
-      //   let winner = -2;
-      //   let previousScore = 0;
-      //   map.matches.forEach((match, index) => {
-      //     const score = sum(match.scores);
-      //     if (score > previousScore) {
-      //       winner = index;
-      //     } else if (score > 0 && score === previousScore) {
-      //       winner = -1;
-      //     }
+      this.cloneSweepstakeMaps.forEach((sweepstakeMap) => {
+        updatedMaps.push({
+          id: sweepstakeMap.id,
+          user_id: sweepstakeMap.user_id,
+          sweepstake_id: sweepstakeMap.sweepstake_id,
+          map_id: sweepstakeMap.map_id,
+          team_start_from_terrorist: sweepstakeMap.team_start_from_terrorist,
+          team_one_score_1: sweepstakeMap.team_one_score_1,
+          team_one_score_2: sweepstakeMap.team_one_score_2,
+          team_two_score_1: sweepstakeMap.team_two_score_1,
+          team_two_score_2: sweepstakeMap.team_two_score_2,
+          selected_at: sweepstakeMap.selected_at,
+        });
+      });
 
-      //     previousScore = score;
-      //   });
+      const { error } = await supabase.from('sweepstake_maps').upsert(updatedMaps);
 
-      //   updatedMaps.push({
-      //     ...map,
-      //     winner,
-      //   });
-      // });
+      if (error) {
+        throw new AppError('Sortear Times', error.message, ToastsTypeEnum.Warning);
+      }
 
-      // this.sweepstake.maps = updatedMaps;
-
-      // await firebase.firestore().collection('sweepstakes').doc(this.sweepstake.id)
-      // .set(this.sweepstake);
-
+      this.showModal = false;
       throw new AppError('Sorteio', 'Placares atualizados com sucesso!', ToastsTypeEnum.Success);
     } finally {
-      this.isBusy = false;
-      this.showModal = false;
+      this.isBusyModal = false;
       this.maps = [];
     }
   }
