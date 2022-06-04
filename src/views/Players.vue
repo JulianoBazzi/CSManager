@@ -203,9 +203,12 @@ export default class Players extends Base {
     this.isBusy = true;
     this.players = [];
 
+    const user = supabase.auth.user();
+
     const { data, error } = await supabase
       .from('players')
       .select()
+      .eq('user_id', user?.id)
       .order('updated_at', { ascending: false });
 
     if (error) {

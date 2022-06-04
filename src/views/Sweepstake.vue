@@ -260,6 +260,7 @@ import IMapResumeDTO from '@/dtos/IMapResumeDTO';
 import AppError, { ToastsTypeEnum } from '@/errors/AppError';
 import supabase from '@/services/supabase';
 import ISweepstakeMapDTO from '@/dtos/ISweepstakeMapDTO';
+import SplitArray from '@/tools/SplitArray';
 
 @Component({
   components: {
@@ -290,18 +291,10 @@ export default class Sweepstake extends Base {
 
   async created(): Promise<void> {
     this.isBusy = true;
-    const { data, error } = await supabase
-      .from('sweepstakes')
-      .select()
-      .eq('id', this.id);
 
-    if (error) {
-      throw new AppError('Sorteio', error.message, ToastsTypeEnum.Warning);
-    }
-
-    if (data && data.length > 0) {
-      this.handleSweepstakeUpdate(data[0]);
-    }
+    await this.loadSweepstake();
+    await this.loadSweepstakePlayer();
+    await this.loadSweepstakeMap();
 
     supabase
       .from(`sweepstakes:id=eq.${this.id}`)
@@ -314,19 +307,6 @@ export default class Sweepstake extends Base {
       })
       .subscribe();
 
-    const { data: dataPlayer, error: errorPlayer } = await supabase
-      .from('sweepstake_players')
-      .select('*, players (*)')
-      .eq('sweepstake_id', this.id);
-
-    if (errorPlayer) {
-      throw new AppError('Jogadores', errorPlayer.message, ToastsTypeEnum.Warning);
-    }
-
-    if (dataPlayer && dataPlayer.length > 0) {
-      this.sweepstakePlayers = dataPlayer;
-    }
-
     supabase
       .from(`sweepstake_players:sweepstake_id=eq.${this.id}`)
       .on('UPDATE', (payload) => {
@@ -337,19 +317,6 @@ export default class Sweepstake extends Base {
         this.handleSweepstakePlayerUpdate(payload?.new);
       })
       .subscribe();
-
-    const { data: dataMap, error: errorMap } = await supabase
-      .from('sweepstake_maps')
-      .select('*, maps (*)')
-      .eq('sweepstake_id', this.id);
-
-    if (errorMap) {
-      throw new AppError('Mapas', errorMap.message, ToastsTypeEnum.Warning);
-    }
-
-    if (dataMap && dataMap.length > 0) {
-      this.sweepstakeMaps = dataMap;
-    }
 
     supabase
       .from(`sweepstake_maps:sweepstake_id=eq.${this.id}`)
@@ -365,6 +332,21 @@ export default class Sweepstake extends Base {
     this.isBusy = false;
   }
 
+  async loadSweepstake(): Promise<void> {
+    const { data, error } = await supabase
+      .from('sweepstakes')
+      .select()
+      .eq('id', this.id);
+
+    if (error) {
+      throw new AppError('Sorteio', error.message, ToastsTypeEnum.Warning);
+    }
+
+    if (data && data.length > 0) {
+      this.handleSweepstakeUpdate(data[0]);
+    }
+  }
+
   handleSweepstakeUpdate(sweepstake: ISweepstakeDTO): void {
     this.isFromLoggerUser = false;
     this.sweepstake = null;
@@ -378,6 +360,21 @@ export default class Sweepstake extends Base {
     }
   }
 
+  async loadSweepstakePlayer(): Promise<void> {
+    const { data, error } = await supabase
+      .from('sweepstake_players')
+      .select('*, players (*)')
+      .eq('sweepstake_id', this.id);
+
+    if (error) {
+      throw new AppError('Jogadores', error.message, ToastsTypeEnum.Warning);
+    }
+
+    if (data && data.length > 0) {
+      this.sweepstakePlayers = data;
+    }
+  }
+
   handleSweepstakePlayerUpdate(sweepstakePlayer: ISweepstakePlayerDTO): void {
     const index = this.sweepstakePlayers.findIndex((player) => (
       player.id === sweepstakePlayer.id
@@ -385,6 +382,21 @@ export default class Sweepstake extends Base {
 
     if (index > -1) {
       this.sweepstakePlayers[index].team = sweepstakePlayer.team;
+    }
+  }
+
+  async loadSweepstakeMap(): Promise<void> {
+    const { data, error } = await supabase
+      .from('sweepstake_maps')
+      .select('*, maps (*)')
+      .eq('sweepstake_id', this.id);
+
+    if (error) {
+      throw new AppError('Mapas', error.message, ToastsTypeEnum.Warning);
+    }
+
+    if (data && data.length > 0) {
+      this.sweepstakeMaps = data;
     }
   }
 
@@ -417,6 +429,26 @@ export default class Sweepstake extends Base {
     return this.$store.getters.getMapTypeName(id);
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  getWinnerStyle(index: number, sweepstakeMap: ISweepstakeMapDTO): string {
+    if (index < 0 || !sweepstakeMap) {
+      return 'display: none;';
+    }
+
+    const sumTeamOne = sweepstakeMap.team_one_score_1 + sweepstakeMap.team_one_score_2;
+    const sumTeamTwo = sweepstakeMap.team_two_score_1 + sweepstakeMap.team_two_score_2;
+
+    if ((index === 0 && sumTeamOne > sumTeamTwo) || (index === 1 && sumTeamOne < sumTeamTwo)) {
+      return 'color: #ffc107 !important;';
+    }
+
+    if (sumTeamOne > 0 && sumTeamOne === sumTeamTwo) {
+      return 'color: #6c757d !important;';
+    }
+
+    return 'display: none;';
+  }
+
   async sweepstakeAgain(): Promise<void> {
     if (!this.sweepstake) {
       return;
@@ -439,28 +471,29 @@ export default class Sweepstake extends Base {
     try {
       this.isBusy = true;
 
-      // const players = union(this.sweepstake.teams[0].players, this.sweepstake.teams[1].players);
+      const divisionTeams = SplitArray(this.sweepstakePlayers);
+      const newTeams: ISweepstakePlayerDTO[] = [];
 
-      // const divisionTeams = SplitArray(players);
+      for (let i = 0; i < divisionTeams.length;) {
+        divisionTeams[i].forEach((sweepstakePlayer) => {
+          newTeams.push({
+            id: sweepstakePlayer.id,
+            user_id: sweepstakePlayer.user_id,
+            sweepstake_id: sweepstakePlayer.sweepstake_id,
+            player_id: sweepstakePlayer.player_id,
+            team: i,
+          });
+        });
+        i += 1;
+      }
 
-      // const teamOne: ITeamDTO = {
-      //   description: 'Time 1',
-      //   quantityPlayers: divisionTeams[0].length,
-      //   players: divisionTeams[0],
-      // };
+      const { error } = await supabase.from('sweepstake_players').upsert(newTeams);
 
-      // const teamTwo: ITeamDTO = {
-      //   description: 'Time 2',
-      //   quantityPlayers: divisionTeams[1].length,
-      //   players: divisionTeams[1],
-      // };
+      if (error) {
+        throw new AppError('Sortear Times', error.message, ToastsTypeEnum.Warning);
+      }
 
-      // const teams: ITeamDTO[] = [teamOne, teamTwo];
-
-      // this.sweepstake.teams = teams;
-
-      // await firebase.firestore().collection('sweepstakes').doc(this.sweepstake.id)
-      // .set(this.sweepstake);
+      await this.loadSweepstakePlayer();
     } finally {
       this.isBusy = false;
     }
@@ -522,26 +555,6 @@ export default class Sweepstake extends Base {
       this.showModal = false;
       this.maps = [];
     }
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  getWinnerStyle(index: number, sweepstakeMap: ISweepstakeMapDTO): string {
-    if (index < 0 || !sweepstakeMap) {
-      return 'display: none;';
-    }
-
-    const sumTeamOne = sweepstakeMap.team_one_score_1 + sweepstakeMap.team_one_score_2;
-    const sumTeamTwo = sweepstakeMap.team_two_score_1 + sweepstakeMap.team_two_score_2;
-
-    if ((index === 0 && sumTeamOne > sumTeamTwo) || (index === 1 && sumTeamOne < sumTeamTwo)) {
-      return 'color: #ffc107 !important;';
-    }
-
-    if (sumTeamOne > 0 && sumTeamOne === sumTeamTwo) {
-      return 'color: #6c757d !important;';
-    }
-
-    return 'display: none;';
   }
 }
 </script>

@@ -148,6 +148,7 @@ import { orderBy } from 'lodash';
 import RandomUnique from '@/tools/RandomUnique';
 import supabase from '@/services/supabase';
 import mapsJson from '@/assets/maps.json';
+import ISweepstakePlayerDTO from '@/dtos/ISweepstakePlayerDTO';
 
 @Component({
   components: {
@@ -333,8 +334,7 @@ export default class SweepstakeNew extends Base {
       if (data) {
         const { id } = data[0];
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const players: any = [];
+        const players: ISweepstakePlayerDTO[] = [];
         for (let i = 0; i < divisionTeams.length;) {
           divisionTeams[i].forEach((player) => {
             players.push({

@@ -130,9 +130,12 @@ export default class Sweepstakes extends Base {
     this.isBusy = true;
     this.sweepstakes = [];
 
+    const user = supabase.auth.user();
+
     const { data, error } = await supabase
       .from('sweepstakes')
       .select()
+      .eq('user_id', user?.id)
       .order('updated_at', { ascending: false });
 
     if (error) {

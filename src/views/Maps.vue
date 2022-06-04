@@ -255,9 +255,12 @@ export default class Maps extends Base {
     this.isBusy = true;
     this.maps = [];
 
+    const user = supabase.auth.user();
+
     const { data, error } = await supabase
       .from('maps')
       .select()
+      .eq('user_id', user?.id)
       .order('updated_at', { ascending: false });
 
     if (error) {
