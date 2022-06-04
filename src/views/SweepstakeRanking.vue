@@ -86,92 +86,94 @@
             {{ index + 1 }} - {{ sweepstakePlayer.players.name }}
             ({{ sweepstakePlayer.players.username }})
           </p>
-          <div
-            class="row ml-1 d-flex align-items-center"
-            v-for="(rank, indexRank) in
-              ranking.filter(score => score.player_id === sweepstakePlayer.player_id)"
-            :key="`${rank.player_id}-${indexRank}`"
-          >
-            <b-icon
-              class="align-middle"
-              icon="people"
-              :variant="rank.side === 'tr' ? 'danger' : 'light'"
-            />
-            <div class="ml-2">
-              <b-form-group
-                :id="`input-kill-group-${rank.player_id}-${indexRank}`"
-                label-size="sm"
-                label="Vitimas"
-                :label-for="`input-kill-${rank.player_id}-${indexRank}`">
-                <b-form-input
-                  :id="`input-kill-${rank.player_id}-${indexRank}`"
-                  v-model.number="rank.kill"
-                  required
-                  type="number"
-                  min="0"
-                  max="999"
-                  pattern="\d*"
-                  onfocus="this.select();"
-                  :disabled="isBusySubmit"
-                />
-              </b-form-group>
-            </div>
-            <div class="ml-2">
-              <b-form-group
-                :id="`input-assistance-group-${rank.player_id}-${indexRank}`"
-                label-size="sm"
-                label="Assistências"
-                :label-for="`input-assistance-${rank.player_id}-${indexRank}`">
-                <b-form-input
-                  :id="`input-assistance-${rank.player_id}-${indexRank}`"
-                  v-model.number="rank.assistance"
-                  required
-                  type="number"
-                  min="0"
-                  max="999"
-                  pattern="\d*"
-                  onfocus="this.select();"
-                  :disabled="isBusySubmit"
-                />
-              </b-form-group>
-            </div>
-            <div class="ml-2">
-              <b-form-group
-                :id="`input-death-group-${rank.player_id}-${indexRank}`"
-                label-size="sm"
-                label="Mortes"
-                :label-for="`input-death-${rank.player_id}-${indexRank}`">
-                <b-form-input
-                  :id="`input-death-${rank.player_id}-${indexRank}`"
-                  v-model.number="rank.death"
-                  required
-                  type="number"
-                  min="0"
-                  max="999"
-                  pattern="\d*"
-                  onfocus="this.select();"
-                  :disabled="isBusySubmit"
-                />
-              </b-form-group>
-            </div>
-            <div class="ml-2">
-              <b-form-group
-                :id="`input-score-group-${rank.player_id}-${indexRank}`"
-                label-size="sm"
-                label="Pontos"
-                :label-for="`input-score-${rank.player_id}-${indexRank}`">
-                <b-form-input
-                  :id="`input-score-${rank.player_id}-${indexRank}`"
-                  v-model.number="rank.score"
-                  required
-                  type="number"
-                  min="0"
-                  max="999"
-                  pattern="\d*"
-                  onfocus="this.select();"
-                  :disabled="isBusySubmit"
-                />
-              </b-form-group>
+          <div class="row d-flex justify-content-around">
+            <div
+              class="d-flex align-items-center"
+              v-for="(rank, indexRank) in
+                ranking.filter(score => score.player_id === sweepstakePlayer.player_id)"
+              :key="`${rank.player_id}-${indexRank}`"
+            >
+              <b-icon
+                class="mt-4"
+                icon="people"
+                :variant="rank.side === 'tr' ? 'danger' : 'light'"
+              />
+              <div class="ml-2">
+                <b-form-group
+                  :id="`input-kill-group-${rank.player_id}-${indexRank}`"
+                  label-size="sm"
+                  label="Vítimas"
+                  :label-for="`input-kill-${rank.player_id}-${indexRank}`">
+                  <b-form-input
+                    :id="`input-kill-${rank.player_id}-${indexRank}`"
+                    v-model.number="rank.kill"
+                    required
+                    type="number"
+                    min="0"
+                    max="999"
+                    pattern="\d*"
+                    onfocus="this.select();"
+                    :disabled="isBusySubmit"
+                  />
+                </b-form-group>
+              </div>
+              <div class="ml-2">
+                <b-form-group
+                  :id="`input-assistance-group-${rank.player_id}-${indexRank}`"
+                  label-size="sm"
+                  label="Assistências"
+                  :label-for="`input-assistance-${rank.player_id}-${indexRank}`">
+                  <b-form-input
+                    :id="`input-assistance-${rank.player_id}-${indexRank}`"
+                    v-model.number="rank.assistance"
+                    required
+                    type="number"
+                    min="0"
+                    max="999"
+                    pattern="\d*"
+                    onfocus="this.select();"
+                    :disabled="isBusySubmit"
+                  />
+                </b-form-group>
+              </div>
+              <div class="ml-2">
+                <b-form-group
+                  :id="`input-death-group-${rank.player_id}-${indexRank}`"
+                  label-size="sm"
+                  label="Mortes"
+                  :label-for="`input-death-${rank.player_id}-${indexRank}`">
+                  <b-form-input
+                    :id="`input-death-${rank.player_id}-${indexRank}`"
+                    v-model.number="rank.death"
+                    required
+                    type="number"
+                    min="0"
+                    max="999"
+                    pattern="\d*"
+                    onfocus="this.select();"
+                    :disabled="isBusySubmit"
+                  />
+                </b-form-group>
+              </div>
+              <div class="ml-2">
+                <b-form-group
+                  :id="`input-score-group-${rank.player_id}-${indexRank}`"
+                  label-size="sm"
+                  label="Pontos"
+                  :label-for="`input-score-${rank.player_id}-${indexRank}`">
+                  <b-form-input
+                    :id="`input-score-${rank.player_id}-${indexRank}`"
+                    v-model.number="rank.score"
+                    required
+                    type="number"
+                    min="0"
+                    max="999"
+                    pattern="\d*"
+                    onfocus="this.select();"
+                    :disabled="isBusySubmit"
+                  />
+                </b-form-group>
+              </div>
             </div>
           </div>
         </div>
