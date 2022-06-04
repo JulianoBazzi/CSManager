@@ -19,7 +19,7 @@
             label-for="modal-game-type">
             <GameComboBox
               id="modal-game-type"
-              :model.sync="selectedMap.gameType"
+              :model.sync="selectedMap.game_type"
               :busy="isBusy">
             </GameComboBox>
           </b-form-group>
@@ -30,7 +30,7 @@
             label-for="modal-map-type">
             <MapComboBox
               id="modal-map-type"
-              :model.sync="selectedMap.mapType"
+              :model.sync="selectedMap.map_type"
               :busy="isBusy">
             </MapComboBox>
           </b-form-group>
@@ -145,11 +145,11 @@
         :fields="fields"
         :busy="isBusy"
         @onClickEdit="edit">
-        <template #cell(gameType)="row">
-          {{getGameTypeShortName(row.item.gameType)}}
+        <template #cell(game_type)="row">
+          {{getGameTypeShortName(row.item.game_type)}}
         </template>
-        <template #cell(mapType)="row">
-          {{getMapTypeName(row.item.mapType)}}
+        <template #cell(map_type)="row">
+          {{getMapTypeName(row.item.map_type)}}
         </template>
         <template #cell(link)="row">
           <b-icon icon="check-square-fill" v-if="row.item.link"/>
@@ -204,8 +204,8 @@ export default class Maps extends Base {
   maps: IMapDTO[] = [];
 
   selectedMap: IMapDTO = {
-    gameType: this.$store.state.game ? this.$store.state.game : 'cs',
-    mapType: 'bomb',
+    game_type: this.$store.state.game ? this.$store.state.game : 'cs',
+    map_type: 'bomb',
     name: '',
     link: '',
     active: true,
@@ -218,12 +218,12 @@ export default class Maps extends Base {
       sortable: true,
     },
     {
-      key: 'mapType',
+      key: 'map_type',
       label: 'Tipo de Mapa',
       sortable: true,
     },
     {
-      key: 'gameType',
+      key: 'game_type',
       label: 'Tipo de Jogo',
       sortable: true,
     },
@@ -265,16 +265,7 @@ export default class Maps extends Base {
     }
 
     if (data && data.length > 0) {
-      data.forEach((map) => {
-        this.maps.push({
-          id: map.id,
-          gameType: map.game_type,
-          mapType: map.map_type,
-          name: map.name,
-          link: map.link,
-          active: map.active,
-        });
-      });
+      this.maps = data;
     }
 
     this.searchGameType = this.$store.state.game ? this.$store.state.game : null;
@@ -295,11 +286,11 @@ export default class Maps extends Base {
 
     items = items.filter((item) => (this.searchGameType === null || this.searchGameType === 'null'
       ? item
-      : item.gameType === this.searchGameType));
+      : item.game_type === this.searchGameType));
 
     items = items.filter((item) => (this.searchMapType === null || this.searchMapType === 'null'
       ? item
-      : item.mapType === this.searchMapType));
+      : item.map_type === this.searchMapType));
 
     return items;
   }
@@ -326,8 +317,8 @@ export default class Maps extends Base {
 
   handleHidden(): void {
     this.selectedMap = {
-      gameType: this.$store.state.game ? this.$store.state.game : 'cs',
-      mapType: 'bomb',
+      game_type: this.$store.state.game ? this.$store.state.game : 'cs',
+      map_type: 'bomb',
       name: '',
       link: '',
       active: true,
@@ -340,17 +331,17 @@ export default class Maps extends Base {
       throw new AppError('Mapa', 'O nome é obrigatório!', ToastsTypeEnum.Warning);
     }
 
-    if (!this.selectedMap.gameType) {
+    if (!this.selectedMap.game_type) {
       throw new AppError('Mapa', 'O tipo de jogo é obrigatório!', ToastsTypeEnum.Warning);
     }
 
-    if (!this.selectedMap.mapType) {
+    if (!this.selectedMap.map_type) {
       throw new AppError('Mapa', 'O tipo de mapa é obrigatório!', ToastsTypeEnum.Warning);
     }
 
     const existsUsername = this.maps.find((map) => (
-      map.gameType === this.selectedMap.gameType
-      && map.mapType === this.selectedMap.mapType
+      map.game_type === this.selectedMap.game_type
+      && map.map_type === this.selectedMap.map_type
       && map.name.toLowerCase() === this.selectedMap.name.toLowerCase()
       && map.id !== this.selectedMap.id
     ));
@@ -362,15 +353,16 @@ export default class Maps extends Base {
     try {
       const user = supabase.auth.user();
       const {
-        id = v4(), name, gameType, mapType, link, active,
+        // eslint-disable-next-line camelcase
+        id = v4(), name, game_type, map_type, link, active,
       } = this.selectedMap;
 
       const { data, error } = await supabase.from('maps').upsert({
         id,
         user_id: user?.id,
         name,
-        game_type: gameType,
-        map_type: mapType,
+        game_type,
+        map_type,
         link,
         active,
       });
@@ -384,8 +376,8 @@ export default class Maps extends Base {
         this.maps.unshift({
           id,
           name,
-          gameType,
-          mapType,
+          game_type,
+          map_type,
           active,
           link,
         });

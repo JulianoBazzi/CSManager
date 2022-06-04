@@ -213,15 +213,7 @@ export default class Players extends Base {
     }
 
     if (data && data.length > 0) {
-      data.forEach((player) => {
-        this.players.push({
-          id: player.id,
-          name: player.name,
-          username: player.username,
-          patent: player.patent,
-          active: player.active,
-        });
-      });
+      this.players = data;
     }
 
     this.isBusy = false;

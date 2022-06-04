@@ -1,7 +1,8 @@
+/* eslint-disable camelcase */
 interface IMapDTO {
   id?: string;
-  gameType: string;
-  mapType: string;
+  game_type: string;
+  map_type: string;
   name: string;
   link?: string;
   active: boolean;

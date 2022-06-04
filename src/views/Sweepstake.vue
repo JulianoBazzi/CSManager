@@ -85,7 +85,7 @@
     </div>
     <div v-else>
       <Card
-        :title="getGameTypeName(sweepstake.gameType)"
+        :title="getGameTypeName(sweepstake.game_type)"
         :busy="isBusy">
         <template v-slot:button>
           <b-button
@@ -116,20 +116,46 @@
         <Card
           class="mt-2 col-sm-12 col-md-6"
           :busy="isBusy"
-          v-for="(team, index) in sweepstake.teams"
-          :key="team.description"
-          :title="team.description"
-          :icon="index == 0 ? 'people' : 'people-fill'">
-          <div v-for="(player, index) in team.players" :key="player.id">
+          title="Time 1"
+          icon="people">
+          <div
+            v-for="(sweepstakePlayer, index) in
+              sweepstakePlayer.filter(player => player.team === 0)"
+            :key="sweepstakePlayer.id"
+          >
             <hr v-if="index !== 0" class="m-1">
             <p class="m-0" >
-              {{ index + 1 }} - {{ player.name }} ({{ player.username }})
-              &nbsp;
+              {{ index + 1 }} - {{ sweepstakePlayer.players.name }}
+              ({{ sweepstakePlayer.players.username }})
               <img
-                v-if="player.patent"
+                v-if="sweepstakePlayer.players.patent"
                 width="50"
-                :alt="`${player.patent}`"
-                :src=" require(`@/assets/cs-go/competitive/${player.patent}.png`) " />
+                :alt="`${sweepstakePlayer.players.patent}`"
+                :src="require(`@/assets/cs-go/competitive/${sweepstakePlayer.players.patent}.png`)"
+              />
+            </p>
+          </div>
+        </Card>
+        <Card
+          class="mt-2 col-sm-12 col-md-6"
+          :busy="isBusy"
+          title="Time 2"
+          icon="people-fill">
+          <div
+            v-for="(sweepstakePlayer, index) in
+              sweepstakePlayer.filter(player => player.team === 1)"
+            :key="sweepstakePlayer.id"
+          >
+            <hr v-if="index !== 0" class="m-1">
+            <p class="m-0" >
+              {{ index + 1 }} - {{ sweepstakePlayer.players.name }}
+              ({{ sweepstakePlayer.players.username }})
+              <img
+                v-if="sweepstakePlayer.players.patent"
+                width="50"
+                :alt="`${sweepstakePlayer.players.patent}`"
+                :src="require(`@/assets/cs-go/competitive/${sweepstakePlayer.players.patent}.png`)"
+              />
             </p>
           </div>
         </Card>
@@ -227,13 +253,10 @@ import Base from '@/views/Base';
 import Card from '@/components/Card.vue';
 import Modal from '@/components/Modal.vue';
 import ISweepstakeDTO from '@/dtos/ISweepstakeDTO';
+import ISweepstakePlayerDTO from '@/dtos/ISweepstakePlayerDTO';
 import moment from 'moment';
 import IMapResumeDTO from '@/dtos/IMapResumeDTO';
 import AppError, { ToastsTypeEnum } from '@/errors/AppError';
-import CloneObject from '@/tools/CloneObject';
-import { union, sum } from 'lodash';
-import SplitArray from '@/tools/SplitArray';
-import ITeamDTO from '@/dtos/ITeamDTO';
 import supabase from '@/services/supabase';
 
 @Component({
@@ -249,6 +272,8 @@ export default class Sweepstake extends Base {
 
   sweepstake: ISweepstakeDTO | null = null;
 
+  sweepstakePlayer: ISweepstakePlayerDTO[] = [];
+
   isFromLoggerUser = false;
 
   user = supabase.auth.user();
@@ -260,13 +285,14 @@ export default class Sweepstake extends Base {
   maps: IMapResumeDTO[] = [];
 
   async created(): Promise<void> {
+    this.isBusy = true;
     const { data, error } = await supabase
       .from('sweepstakes')
       .select()
       .eq('id', this.id);
 
     if (error) {
-      throw new AppError('Sorteios', error.message, ToastsTypeEnum.Warning);
+      throw new AppError('Sorteio', error.message, ToastsTypeEnum.Warning);
     }
 
     if (data && data.length > 0) {
@@ -275,7 +301,7 @@ export default class Sweepstake extends Base {
 
     supabase
       .from(`sweepstakes:id=eq.${this.id}`)
-      .on('*', (payload) => {
+      .on('UPDATE', (payload) => {
         if (!payload) {
           this.$router.push('/');
         }
@@ -283,13 +309,37 @@ export default class Sweepstake extends Base {
         this.handleSweepstakeUpdate(payload?.new);
       })
       .subscribe();
+
+    const { data: dataPlayer, error: errorPlayer } = await supabase
+      .from('sweepstake_players')
+      .select('*, players (*)')
+      .eq('sweepstake_id', this.id);
+
+    if (errorPlayer) {
+      throw new AppError('Jogadores', errorPlayer.message, ToastsTypeEnum.Warning);
+    }
+
+    if (dataPlayer && dataPlayer.length > 0) {
+      this.handleSweepstakePlayerUpdate(dataPlayer);
+    }
+
+    supabase
+      .from(`sweepstake_players:sweepstake_id=eq.${this.id}`)
+      .on('UPDATE', (payload) => {
+        if (!payload) {
+          this.$router.push('/');
+        }
+
+        this.handleSweepstakePlayerUpdate(payload?.new);
+      })
+      .subscribe();
+
+    this.isBusy = false;
   }
 
-  async handleSweepstakeUpdate(sweepstake: ISweepstakeDTO): Promise<void> {
-    this.isBusy = true;
+  handleSweepstakeUpdate(sweepstake: ISweepstakeDTO): void {
     this.isFromLoggerUser = false;
     this.sweepstake = null;
-    console.log('sweepstake', sweepstake);
 
     this.sweepstake = sweepstake;
 
@@ -298,7 +348,10 @@ export default class Sweepstake extends Base {
     if (this.sweepstake && this.user) {
       this.isFromLoggerUser = this.sweepstake.user_id === this.user.id;
     }
-    this.isBusy = false;
+  }
+
+  handleSweepstakePlayerUpdate(sweepstakePlayer: ISweepstakePlayerDTO[]): void {
+    this.sweepstakePlayer = sweepstakePlayer;
   }
 
   getGameTypeShortName(id: string): string | undefined {
