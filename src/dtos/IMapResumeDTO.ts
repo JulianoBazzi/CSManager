@@ -1,5 +1,3 @@
-import IMatcheDTO from './IMatcheDTO';
-
 interface IMapResumeDTO {
   id?: string;
   mapType: string;
@@ -7,7 +5,6 @@ interface IMapResumeDTO {
   link?: string;
   selectedDate?: Date;
   startFromTerrorist: number;
-  matches: IMatcheDTO[];
   winner: number;
 }
 

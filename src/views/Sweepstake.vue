@@ -105,11 +105,11 @@
         </p>
         <p class="mb-0">
           <b-icon class="mr-2" icon="map"/>
-          {{ sweepstake.quantityMaps }} mapas
+          {{ sweepstake.quantity_maps }} mapas
         </p>
         <p class="mb-0">
           <b-icon class="mr-2" icon="people"/>
-          {{ sweepstake.quantityPlayers }} jogadores
+          {{ sweepstake.quantity_players }} jogadores
         </p>
       </Card>
       <div class="row">
@@ -227,14 +227,14 @@ import Base from '@/views/Base';
 import Card from '@/components/Card.vue';
 import Modal from '@/components/Modal.vue';
 import ISweepstakeDTO from '@/dtos/ISweepstakeDTO';
-import firebase from 'firebase';
 import moment from 'moment';
 import IMapResumeDTO from '@/dtos/IMapResumeDTO';
 import AppError, { ToastsTypeEnum } from '@/errors/AppError';
 import CloneObject from '@/tools/CloneObject';
-import _ from 'lodash';
+import { union, sum } from 'lodash';
 import SplitArray from '@/tools/SplitArray';
 import ITeamDTO from '@/dtos/ITeamDTO';
+import supabase from '@/services/supabase';
 
 @Component({
   components: {
@@ -251,7 +251,7 @@ export default class Sweepstake extends Base {
 
   isFromLoggerUser = false;
 
-  user = firebase.auth().currentUser;
+  user = supabase.auth.user();
 
   title = '';
 
@@ -260,76 +260,45 @@ export default class Sweepstake extends Base {
   maps: IMapResumeDTO[] = [];
 
   async created(): Promise<void> {
-    await this.loadSweepstake();
-  }
+    const { data, error } = await supabase
+      .from('sweepstakes')
+      .select()
+      .eq('id', this.id);
 
-  async loadSweepstake(): Promise<void> {
-    this.isBusy = true;
-    this.isFromLoggerUser = false;
-    this.sweepstake = null;
+    if (error) {
+      throw new AppError('Sorteios', error.message, ToastsTypeEnum.Warning);
+    }
 
-    await firebase
-      .firestore()
-      .collection('sweepstakes')
-      .doc(this.id)
-      .onSnapshot((doc) => {
-        if (!doc.data()) {
+    if (data && data.length > 0) {
+      this.handleSweepstakeUpdate(data[0]);
+    }
+
+    supabase
+      .from(`sweepstakes:id=eq.${this.id}`)
+      .on('*', (payload) => {
+        if (!payload) {
           this.$router.push('/');
         }
 
-        this.sweepstake = {
-          id: this.id,
-          userId: doc.data()?.userId,
-          created: (doc.data()?.created as firebase.firestore.Timestamp).toDate(),
-          updated: (doc.data()?.updated as firebase.firestore.Timestamp).toDate(),
-          departure: (doc.data()?.departure as firebase.firestore.Timestamp).toDate(),
-          gameType: doc.data()?.gameType,
-          quantityPlayers: doc.data()?.quantityPlayers,
-          quantityMaps: doc.data()?.quantityMaps,
-          considerPatents: doc.data()?.considerPatents,
-          considerPreviousRankings: doc.data()?.considerPreviousRankings,
-          teams: doc.data()?.teams,
-          maps: doc.data()?.maps as IMapResumeDTO[],
-        };
+        this.handleSweepstakeUpdate(payload?.new);
+      })
+      .subscribe();
+  }
 
-        this.departureDate = moment(this.sweepstake.departure).format('DD/MM/YYYY HH:mm');
+  async handleSweepstakeUpdate(sweepstake: ISweepstakeDTO): Promise<void> {
+    this.isBusy = true;
+    this.isFromLoggerUser = false;
+    this.sweepstake = null;
+    console.log('sweepstake', sweepstake);
 
-        if (this.user) {
-          this.isFromLoggerUser = this.sweepstake.userId === this.user.uid;
-        }
+    this.sweepstake = sweepstake;
 
-        this.$meta().addApp('sweepstake').set({
-          title: `${this.getGameTypeShortName(this.sweepstake?.gameType)} - ${this.departureDate} (CS Manager)`,
-          meta: [
-            {
-              name: 'description',
-              content: `Partida de ${this.getGameTypeName(this.sweepstake?.gameType)}, com ${this.sweepstake.quantityPlayers} jogadores e ${this.sweepstake.quantityMaps} mapas, realizada em: ${this.departureDate}.`,
-            },
-            {
-              name: 'og:type',
-              content: 'website',
-            },
-            {
-              name: 'og:locale',
-              content: 'pt_BR',
-            },
-            {
-              name: 'og:site_name',
-              content: 'CS Manager',
-            },
-            {
-              name: 'og:title',
-              content: `${this.getGameTypeShortName(this.sweepstake?.gameType)} - ${this.departureDate}`,
-            },
-            {
-              name: 'og:description',
-              content: `Partida de ${this.getGameTypeShortName(this.sweepstake?.gameType)}, com ${this.sweepstake.quantityPlayers} jogadores e ${this.sweepstake.quantityMaps} mapas.`,
-            },
-          ],
-        });
+    this.departureDate = moment(this.sweepstake.departure_at).format('DD/MM/YYYY HH:mm');
 
-        this.isBusy = false;
-      });
+    if (this.sweepstake && this.user) {
+      this.isFromLoggerUser = this.sweepstake.user_id === this.user.id;
+    }
+    this.isBusy = false;
   }
 
   getGameTypeShortName(id: string): string | undefined {
@@ -366,27 +335,28 @@ export default class Sweepstake extends Base {
     try {
       this.isBusy = true;
 
-      const players = _.union(this.sweepstake.teams[0].players, this.sweepstake.teams[1].players);
+      // const players = union(this.sweepstake.teams[0].players, this.sweepstake.teams[1].players);
 
-      const divisionTeams = SplitArray(players);
+      // const divisionTeams = SplitArray(players);
 
-      const teamOne: ITeamDTO = {
-        description: 'Time 1',
-        quantityPlayers: divisionTeams[0].length,
-        players: divisionTeams[0],
-      };
+      // const teamOne: ITeamDTO = {
+      //   description: 'Time 1',
+      //   quantityPlayers: divisionTeams[0].length,
+      //   players: divisionTeams[0],
+      // };
 
-      const teamTwo: ITeamDTO = {
-        description: 'Time 2',
-        quantityPlayers: divisionTeams[1].length,
-        players: divisionTeams[1],
-      };
+      // const teamTwo: ITeamDTO = {
+      //   description: 'Time 2',
+      //   quantityPlayers: divisionTeams[1].length,
+      //   players: divisionTeams[1],
+      // };
 
-      const teams: ITeamDTO[] = [teamOne, teamTwo];
+      // const teams: ITeamDTO[] = [teamOne, teamTwo];
 
-      this.sweepstake.teams = teams;
+      // this.sweepstake.teams = teams;
 
-      await firebase.firestore().collection('sweepstakes').doc(this.sweepstake.id).set(this.sweepstake);
+      // await firebase.firestore().collection('sweepstakes').doc(this.sweepstake.id)
+      // .set(this.sweepstake);
     } finally {
       this.isBusy = false;
     }
@@ -397,7 +367,7 @@ export default class Sweepstake extends Base {
       return;
     }
 
-    this.maps = CloneObject(this.sweepstake.maps);
+    // this.maps = CloneObject(this.sweepstake.maps);
 
     this.showModal = true;
   }
@@ -415,31 +385,32 @@ export default class Sweepstake extends Base {
         return;
       }
 
-      const updatedMaps: IMapResumeDTO[] = [];
+      // const updatedMaps: IMapResumeDTO[] = [];
 
-      this.maps.forEach((map) => {
-        let winner = -2;
-        let previousScore = 0;
-        map.matches.forEach((match, index) => {
-          const score = _.sum(match.scores);
-          if (score > previousScore) {
-            winner = index;
-          } else if (score > 0 && score === previousScore) {
-            winner = -1;
-          }
+      // this.maps.forEach((map) => {
+      //   let winner = -2;
+      //   let previousScore = 0;
+      //   map.matches.forEach((match, index) => {
+      //     const score = sum(match.scores);
+      //     if (score > previousScore) {
+      //       winner = index;
+      //     } else if (score > 0 && score === previousScore) {
+      //       winner = -1;
+      //     }
 
-          previousScore = score;
-        });
+      //     previousScore = score;
+      //   });
 
-        updatedMaps.push({
-          ...map,
-          winner,
-        });
-      });
+      //   updatedMaps.push({
+      //     ...map,
+      //     winner,
+      //   });
+      // });
 
-      this.sweepstake.maps = updatedMaps;
+      // this.sweepstake.maps = updatedMaps;
 
-      await firebase.firestore().collection('sweepstakes').doc(this.sweepstake.id).set(this.sweepstake);
+      // await firebase.firestore().collection('sweepstakes').doc(this.sweepstake.id)
+      // .set(this.sweepstake);
 
       throw new AppError('Sorteio', 'Placares atualizados com sucesso!', ToastsTypeEnum.Success);
     } finally {

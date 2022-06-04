@@ -1,19 +1,15 @@
-import IMapResumeDTO from './IMapResumeDTO';
-import ITeamDTO from './ITeamDTO';
-
+/* eslint-disable camelcase */
 interface ISweepstakeDTO {
   id?: string;
-  userId: string;
-  gameType: string;
-  considerPatents: boolean;
-  considerPreviousRankings: boolean;
-  quantityPlayers: number;
-  quantityMaps: number;
-  teams: ITeamDTO[];
-  maps: IMapResumeDTO[];
-  departure: Date;
-  created: Date;
-  updated: Date;
+  user_id?: string;
+  game_type: string;
+  consider_patents: boolean;
+  consider_previous_rankings: boolean;
+  quantity_players: number;
+  quantity_maps: number;
+  departure_at: Date;
+  created_at: Date;
+  updated_at: Date;
 }
 
 export default ISweepstakeDTO;

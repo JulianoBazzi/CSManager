@@ -37,7 +37,7 @@
 
 <script lang="ts">
 import AppError, { ToastsTypeEnum } from '@/errors/AppError';
-import firebase from 'firebase';
+import supabase from '@/services/supabase';
 import { Component } from 'vue-property-decorator';
 import Base from '@/views/Base';
 import Card from '@/components/Card.vue';
@@ -50,10 +50,10 @@ import Card from '@/components/Card.vue';
 export default class EmailConfirmation extends Base {
   isBusyEmail = false;
 
-  user = firebase.auth().currentUser;
+  user = supabase.auth.user();
 
   created(): void {
-    if (!this.user || this.user?.emailVerified) {
+    if (!this.user || this.user?.email_confirmed_at) {
       this.$router.push('/');
     }
   }
@@ -62,16 +62,15 @@ export default class EmailConfirmation extends Base {
     try {
       this.isBusyEmail = true;
 
-      await firebase.auth().currentUser?.reload;
-      this.user = firebase.auth().currentUser;
+      this.user = supabase.auth.user();
 
-      if (this.user?.emailVerified) {
+      if (this.user?.email_confirmed_at) {
         this.isBusyEmail = false;
         this.$router.push('/');
         throw new AppError('Confirmação de e-mail', 'E-mail verificado com sucesso!', ToastsTypeEnum.Info);
       }
 
-      await this.user?.sendEmailVerification();
+      // await this.user?.sendEmailVerification();
 
       this.isBusyEmail = false;
       throw new AppError('Confirmação de e-mail', 'E-mail de confirmação foi enviado com sucesso!', ToastsTypeEnum.Success);
@@ -84,10 +83,9 @@ export default class EmailConfirmation extends Base {
     try {
       this.isBusy = true;
 
-      await firebase.auth().currentUser?.reload;
-      this.user = firebase.auth().currentUser;
+      this.user = supabase.auth.user();
 
-      if (this.user?.emailVerified) {
+      if (this.user?.email_confirmed_at) {
         this.isBusy = false;
         this.$router.push('/');
         throw new AppError('Confirmação de e-mail', 'E-mail verificado com sucesso!', ToastsTypeEnum.Info);

@@ -261,7 +261,7 @@ export default class Maps extends Base {
       .order('updated_at', { ascending: false });
 
     if (error) {
-      throw new AppError('Jogadores', error.message, ToastsTypeEnum.Warning);
+      throw new AppError('Mapas', error.message, ToastsTypeEnum.Warning);
     }
 
     if (data && data.length > 0) {

@@ -29,7 +29,7 @@
 import { Component } from 'vue-property-decorator';
 import Base from '@/views/Base';
 import Card from '@/components/Card.vue';
-import firebase from 'firebase';
+import supabase from '@/services/supabase';
 import AppError, { ToastsTypeEnum } from '@/errors/AppError';
 
 @Component({
@@ -40,7 +40,7 @@ import AppError, { ToastsTypeEnum } from '@/errors/AppError';
 export default class ForgotMyPassword extends Base {
   email = '';
 
-  user = firebase.auth().currentUser;
+  user = supabase.auth.user();
 
   created(): void {
     if (this.user) {
@@ -56,11 +56,13 @@ export default class ForgotMyPassword extends Base {
         throw new AppError('Esqueci Minha Senha', 'O e-mail é obrigatório!', ToastsTypeEnum.Warning);
       }
 
-      await firebase.auth().sendPasswordResetEmail(this.email);
+      const { error } = await supabase.auth.api.resetPasswordForEmail(this.email);
+
+      if (error) {
+        throw new AppError('Esqueci Minha Senha', error.message, ToastsTypeEnum.Warning);
+      }
 
       this.$router.push('/');
-    } catch (error) {
-      throw new AppError('Esqueci Minha Senha', error.message, ToastsTypeEnum.Warning);
     } finally {
       this.isBusy = false;
     }
