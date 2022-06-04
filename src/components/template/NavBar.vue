@@ -31,12 +31,12 @@
             v-if="authenticatedUser">
             Sorteios
           </b-nav-item>
-          <b-nav-item
+          <!-- <b-nav-item
             to="/ranking"
             active-class="pageActive"
             v-if="authenticatedUser">
             Classificação
-          </b-nav-item>
+          </b-nav-item> -->
           <b-nav-item
             to="/about"
             active-class="pageActive">
@@ -44,7 +44,6 @@
           </b-nav-item>
         </b-navbar-nav>
 
-        <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
           <b-nav-item-dropdown text="Language" right style="display:none">
             <b-dropdown-item href="#">English</b-dropdown-item>
@@ -53,7 +52,6 @@
           </b-nav-item-dropdown>
 
           <b-nav-item-dropdown right v-if="authenticatedUser">
-            <!-- Using 'button-content' slot -->
             <template #button-content>
               <em>{{ displayName }}</em>
             </template>

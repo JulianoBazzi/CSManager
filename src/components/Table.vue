@@ -55,14 +55,24 @@
         </b-button>
       </template>
     </b-table>
-    <b-pagination
-      v-model="currentPage"
-      :total-rows="items.length"
-      :per-page="perPage"
-      :aria-controls="id"
-      align="right"
-      variant="danger"
-    ></b-pagination>
+    <div class="d-flex justify-content-between">
+      <label v-if="items && !small">
+        Exibindo de
+        {{ currentPage ===  1 ? 1 : ((currentPage - 1) * perPage + 1) }}
+        até
+        {{ (currentPage * perPage) > items.length ? items.length : currentPage * perPage }}.
+        Total: {{ items.length }} registros.
+      </label>
+      <label v-else />
+      <b-pagination
+        v-model="currentPage"
+        :total-rows="items.length"
+        :per-page="perPage"
+        :aria-controls="id"
+        align="right"
+        variant="danger"
+      />
+    </div>
   </div>
 </template>
 

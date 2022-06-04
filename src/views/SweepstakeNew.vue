@@ -123,8 +123,8 @@
             <b-icon icon="check-square-fill" v-if="item[key]"/>
             <b-icon icon="square" v-else/>
           </template>
-          <template #cell(mapType)="row">
-            {{getMapName(row.item.mapType)}}
+          <template #cell(map_type)="row">
+            {{getMapName(row.item.map_type)}}
           </template>
         </Table>
       </Card>
@@ -199,7 +199,7 @@ export default class SweepstakeNew extends Base {
       sortable: true,
     },
     {
-      key: 'mapType',
+      key: 'map_type',
       label: 'Tipo de Mapa',
       sortable: true,
     },
@@ -216,7 +216,7 @@ export default class SweepstakeNew extends Base {
       .from('players')
       .select()
       .eq('active', true)
-      .order('updated_at', { ascending: false });
+      .order('name', { ascending: true });
 
     if (error) {
       throw new AppError('Jogadores', error.message, ToastsTypeEnum.Warning);
@@ -262,7 +262,7 @@ export default class SweepstakeNew extends Base {
         .select()
         .eq('game_type', value)
         .eq('active', true)
-        .order('updated_at', { ascending: false });
+        .order('name', { ascending: true });
 
       if (error) {
         throw new AppError('Mapas', error.message, ToastsTypeEnum.Warning);
