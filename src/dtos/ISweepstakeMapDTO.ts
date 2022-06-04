@@ -1,4 +1,5 @@
 import IMapDTO from '@/dtos/IMapDTO';
+import ISweepstakeDTO from '@/dtos/ISweepstakeDTO';
 
 /* eslint-disable camelcase */
 interface ISweepstakeMapDTO {
@@ -12,7 +13,8 @@ interface ISweepstakeMapDTO {
   team_two_score_1: number;
   team_two_score_2: number;
   selected_at?: string;
-  map?: IMapDTO;
+  maps?: IMapDTO;
+  sweepstakes?: ISweepstakeDTO;
 }
 
 export default ISweepstakeMapDTO;

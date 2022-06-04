@@ -1,4 +1,3 @@
-}
 <template>
   <div>
     <Card title="Novo Sorteio">

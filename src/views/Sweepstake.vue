@@ -462,10 +462,6 @@ export default class Sweepstake extends Base {
     }
   }
 
-  getGameTypeShortName(id: string): string | undefined {
-    return this.$store.getters.getGameTypeShortName(id);
-  }
-
   getGameTypeName(id: string): string | undefined {
     return this.$store.getters.getGameTypeName(id);
   }
