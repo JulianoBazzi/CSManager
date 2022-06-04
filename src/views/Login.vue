@@ -192,16 +192,6 @@ export default class Login extends Base {
 
       this.$store.commit('setUser', user);
 
-      // const doc = await firebase
-      //   .firestore()
-      //   .collection('users')
-      //   .doc(user?.uid)
-      //   .get();
-
-      // if (doc.data()) {
-      //   this.$store.commit('setGame', doc.data()?.gameType);
-      // }
-
       if (!user?.email_confirmed_at) {
         this.$router.push('/emailConfirmation');
         return;

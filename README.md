@@ -34,5 +34,5 @@ Coming soon.
 
 1. Clone the repository: `git@github.com:JulianoBazzi/CSManager.git`
 2. Access the directory: `cd CSManager`
-3. Configure the firebase in: `.env.example`
+3. Configure the Supabase in: `.env.example`
 4. Run the Vue: `npm run serve`
