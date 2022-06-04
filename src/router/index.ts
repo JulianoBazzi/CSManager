@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 
-import firebase from 'firebase';
+import supabase from '@/services/supabase';
 import Home from '../views/Home.vue';
 import About from '../views/About.vue';
 import Maps from '../views/Maps.vue';
@@ -135,13 +135,13 @@ router.beforeEach((to, from, next) => {
   document.title = documentTitle;
 
   const requiresAuth = to.matched.some((page) => page.meta.requiresAuth);
-  const user = firebase.auth().currentUser;
+  const user = supabase.auth.user();
 
   if (requiresAuth && !user) {
     next('/login');
   }
 
-  if (user && !user.emailVerified) {
+  if (user && !user.email_confirmed_at) {
     const emailConfirmation = to.matched.some((page) => page.meta.emailConfirmation);
     if (!emailConfirmation) {
       next('/emailConfirmation');

@@ -2,6 +2,7 @@
   <div class="manager-modal">
     <b-modal
         v-model="showProp"
+        :no-close-on-backdrop="true"
         header-bg-variant="dark"
         header-text-variant="light"
         body-bg-variant="dark"

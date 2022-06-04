@@ -57,14 +57,14 @@
         :busy="isBusy"
         @onClickEdit="edit"
         @onClickRemove="remove">
-        <template #cell(created)="row">
-          {{ getDateFormat(row.item.created) }}
+        <template #cell(created_at)="row">
+          {{ getDateFormat(row.item.created_at) }}
         </template>
-        <template #cell(gameType)="row">
-          {{ getGameTypeShortName(row.item.gameType) }}
+        <template #cell(game_type)="row">
+          {{ getGameTypeShortName(row.item.game_type) }}
         </template>
-        <template #cell(considerPatents)="row">
-          <b-icon icon="check-square-fill" v-if="row.item.considerPatents"/>
+        <template #cell(consider_patents)="row">
+          <b-icon icon="check-square-fill" v-if="row.item.consider_patents"/>
           <b-icon icon="square" v-else/>
         </template>
       </Table>
@@ -80,8 +80,9 @@ import Table from '@/components/Table.vue';
 import GameComboBox from '@/components/ComboBox/Game.vue';
 import ITableFieldsDTO from '@/dtos/ITableFieldsDTO';
 import ISweepstakeDTO from '@/dtos/ISweepstakeDTO';
-import firebase from 'firebase';
 import moment from 'moment';
+import supabase from '@/services/supabase';
+import AppError, { ToastsTypeEnum } from '@/errors/AppError';
 
 @Component({
   components: {
@@ -94,26 +95,26 @@ export default class Sweepstakes extends Base {
   sweepstakes: ISweepstakeDTO[] = [];
 
   fields: ITableFieldsDTO[] = [{
-    key: 'created',
+    key: 'created_at',
     label: 'Data/Hora Sorteio',
     sortable: true,
   },
   {
-    key: 'gameType',
+    key: 'game_type',
     label: 'Tipo de Jogo',
     sortable: true,
   },
   {
-    key: 'considerPatents',
+    key: 'consider_patents',
     label: 'Considerar Patentes',
     sortable: true,
   },
   {
-    key: 'quantityPlayers',
+    key: 'quantity_players',
     label: 'Qtd Jogadores',
   },
   {
-    key: 'quantityMaps',
+    key: 'quantity_maps',
     label: 'Qtd Mapas',
   },
   {
@@ -129,31 +130,23 @@ export default class Sweepstakes extends Base {
     this.isBusy = true;
     this.sweepstakes = [];
 
-    const user = firebase.auth().currentUser;
+    const user = supabase.auth.user();
 
-    const docs = await firebase
-      .firestore()
-      .collection('sweepstakes')
-      .where('userId', '==', user?.uid)
-      .orderBy('updated', 'desc')
-      .get();
+    const { data, error } = await supabase
+      .from('sweepstakes')
+      .select()
+      .eq('user_id', user?.id)
+      .order('updated_at', { ascending: false });
 
-    docs.forEach((sweepstake) => {
-      this.sweepstakes.push({
-        id: sweepstake.id,
-        userId: sweepstake.data()?.usetId,
-        created: (sweepstake.data()?.created as firebase.firestore.Timestamp).toDate(),
-        updated: (sweepstake.data()?.updated as firebase.firestore.Timestamp).toDate(),
-        departure: (sweepstake.data()?.departure as firebase.firestore.Timestamp).toDate(),
-        gameType: sweepstake.data()?.gameType,
-        quantityPlayers: sweepstake.data()?.quantityPlayers,
-        quantityMaps: sweepstake.data()?.quantityMaps,
-        considerPatents: sweepstake.data()?.considerPatents,
-        considerPreviousRankings: sweepstake.data()?.considerPreviousRankings,
-        teams: sweepstake.data()?.teams,
-        maps: sweepstake.data()?.maps,
+    if (error) {
+      throw new AppError('Sorteios', error.message, ToastsTypeEnum.Warning);
+    }
+
+    if (data && data.length > 0) {
+      data.forEach((sweepstake) => {
+        this.sweepstakes.push(sweepstake);
       });
-    });
+    }
 
     this.isBusy = false;
   }
@@ -162,11 +155,11 @@ export default class Sweepstakes extends Base {
     let items = this.sweepstakes;
 
     items = items.filter((item) => this.searchDate === null
-      || moment(item.created).format('DD/MM/YYYY') === moment(this.searchDate).format('DD/MM/YYYY'));
+      || moment(item.created_at).format('DD/MM/YYYY') === moment(this.searchDate).format('DD/MM/YYYY'));
 
     items = items.filter((item) => (this.searchGameType === null || this.searchGameType === 'null'
       ? item
-      : item.gameType === this.searchGameType));
+      : item.game_type === this.searchGameType));
 
     return items;
   }
@@ -200,11 +193,29 @@ export default class Sweepstakes extends Base {
     if (isConfirmed) {
       this.isBusy = true;
 
-      await firebase
-        .firestore()
-        .collection('sweepstakes')
-        .doc(id)
-        .delete();
+      const { error: errorMap } = await supabase.from('sweepstake_maps')
+        .delete()
+        .match({ sweepstake_id: id });
+
+      if (errorMap) {
+        throw new AppError('Mapas - Sorteio', errorMap.message, ToastsTypeEnum.Warning);
+      }
+
+      const { error: errorPlayer } = await supabase.from('sweepstake_players')
+        .delete()
+        .match({ sweepstake_id: id });
+
+      if (errorPlayer) {
+        throw new AppError('Jogadores - Sorteio', errorPlayer.message, ToastsTypeEnum.Warning);
+      }
+
+      const { error } = await supabase.from('sweepstakes')
+        .delete()
+        .match({ id });
+
+      if (error) {
+        throw new AppError('Sorteio', error.message, ToastsTypeEnum.Warning);
+      }
 
       this.sweepstakes = this.sweepstakes.filter((sweepstake) => sweepstake.id !== id);
 

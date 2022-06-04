@@ -96,7 +96,7 @@
           small
           :recordsPerPage=12
           @onRowClicked="onRowClicked">
-          <template #cell(selectedDate)="{ item, field: { key } }">
+          <template #cell(selected_date)="{ item, field: { key } }">
             <b-icon icon="check-square-fill" v-if="item[key]"/>
             <b-icon icon="square" v-else/>
           </template>
@@ -119,12 +119,12 @@
           small
           :recordsPerPage=12
           @onRowClicked="onRowClicked">
-          <template #cell(selectedDate)="{ item, field: { key } }">
+          <template #cell(selected_date)="{ item, field: { key } }">
             <b-icon icon="check-square-fill" v-if="item[key]"/>
             <b-icon icon="square" v-else/>
           </template>
-          <template #cell(mapType)="row">
-            {{getMapName(row.item.mapType)}}
+          <template #cell(map_type)="row">
+            {{getMapName(row.item.map_type)}}
           </template>
         </Table>
       </Card>
@@ -134,7 +134,6 @@
 
 <script lang="ts">
 import Base from '@/views/Base';
-import firebase from 'firebase';
 import { Component, Watch } from 'vue-property-decorator';
 import Card from '@/components/Card.vue';
 import Table from '@/components/Table.vue';
@@ -143,13 +142,13 @@ import AppError, { ToastsTypeEnum } from '@/errors/AppError';
 import IPlayerResumeDTO from '@/dtos/IPlayerResumeDTO';
 import IMapResumeDTO from '@/dtos/IMapResumeDTO';
 import ITableFieldsDTO from '@/dtos/ITableFieldsDTO';
-import ISweepstakeDTO from '@/dtos/ISweepstakeDTO';
 import IFilterComboBoxStringDTO from '@/dtos/IFilterComboBoxStringDTO';
-import ITeamDTO from '@/dtos/ITeamDTO';
 import SplitArray from '@/tools/SplitArray';
-import _ from 'lodash';
+import { orderBy } from 'lodash';
 import RandomUnique from '@/tools/RandomUnique';
-import mapsJson from '../assets/maps.json';
+import supabase from '@/services/supabase';
+import mapsJson from '@/assets/maps.json';
+import ISweepstakePlayerDTO from '@/dtos/ISweepstakePlayerDTO';
 
 @Component({
   components: {
@@ -159,10 +158,6 @@ import mapsJson from '../assets/maps.json';
   },
 })
 export default class SweepstakeNew extends Base {
-  user = firebase.auth().currentUser;
-
-  name = this.user?.displayName;
-
   gameSelected = null;
 
   departureDate: Date | null = null;
@@ -173,7 +168,7 @@ export default class SweepstakeNew extends Base {
 
   fieldsPlayer: ITableFieldsDTO[] = [
     {
-      key: 'selectedDate',
+      key: 'selected_date',
       label: '',
     },
     {
@@ -195,7 +190,7 @@ export default class SweepstakeNew extends Base {
 
   fieldsMap: ITableFieldsDTO[] = [
     {
-      key: 'selectedDate',
+      key: 'selected_date',
       label: '',
     },
     {
@@ -204,7 +199,7 @@ export default class SweepstakeNew extends Base {
       sortable: true,
     },
     {
-      key: 'mapType',
+      key: 'map_type',
       label: 'Tipo de Mapa',
       sortable: true,
     },
@@ -217,23 +212,26 @@ export default class SweepstakeNew extends Base {
 
     this.players = [];
 
-    await firebase
-      .firestore()
-      .collection('players')
-      .where('userId', '==', this.user?.uid)
-      .where('active', '==', true)
-      .orderBy('name', 'asc')
-      .get()
-      .then((docs) => {
-        docs.forEach((player) => {
-          this.players.push({
-            id: player.id,
-            name: player.data().name,
-            username: player.data().username,
-            patent: player.data().patent,
-          });
+    const { data, error } = await supabase
+      .from('players')
+      .select()
+      .eq('active', true)
+      .order('name', { ascending: true });
+
+    if (error) {
+      throw new AppError('Jogadores', error.message, ToastsTypeEnum.Warning);
+    }
+
+    if (data && data.length > 0) {
+      data.forEach((player) => {
+        this.players.push({
+          id: player.id,
+          name: player.name,
+          username: player.username,
+          patent: player.patent,
         });
       });
+    }
 
     if (mapsJson) {
       mapsJson.forEach((map) => {
@@ -259,27 +257,28 @@ export default class SweepstakeNew extends Base {
     this.maps = [];
 
     if (value) {
-      await firebase
-        .firestore()
-        .collection('maps')
-        .where('userId', '==', this.user?.uid)
-        .where('active', '==', true)
-        .where('gameType', '==', value)
-        .orderBy('name', 'asc')
-        .get()
-        .then((docs) => {
-          docs.forEach((map) => {
-            this.maps.push({
-              id: map.id,
-              mapType: map.data().mapType,
-              name: map.data().name,
-              link: map.data().link ?? '',
-              startFromTerrorist: RandomUnique(2, 1)[0] - 1,
-              matches: [],
-              winner: -2,
-            });
+      const { data, error } = await supabase
+        .from('maps')
+        .select()
+        .eq('game_type', value)
+        .eq('active', true)
+        .order('name', { ascending: true });
+
+      if (error) {
+        throw new AppError('Mapas', error.message, ToastsTypeEnum.Warning);
+      }
+
+      if (data && data.length > 0) {
+        data.forEach((map) => {
+          this.maps.push({
+            id: map.id,
+            map_type: map.map_type,
+            name: map.name,
+            link: map.link,
+            team_start_from_terrorist: RandomUnique(2, 1)[0] - 1,
           });
         });
+      }
     }
     this.isBusy = false;
   }
@@ -299,10 +298,6 @@ export default class SweepstakeNew extends Base {
         throw new AppError('Novo Sorteio', 'É obrigatório selecionar ao menos um mapa!', ToastsTypeEnum.Warning);
       }
 
-      if (!this.user) {
-        throw new AppError('Novo Sorteio', 'Usuário logado não localizado!', ToastsTypeEnum.Warning);
-      }
-
       if (!this.gameSelected) {
         throw new AppError('Novo Sorteio', 'Tipo de jogo não selecionado!', ToastsTypeEnum.Warning);
       }
@@ -315,61 +310,73 @@ export default class SweepstakeNew extends Base {
         throw new AppError('Novo Sorteio', 'A data/hora da partida deve ser superior a data/hora atual!', ToastsTypeEnum.Warning);
       }
 
-      const divisionTeams = SplitArray(_.orderBy(this.players
-        .filter((player) => player.selectedDate), ['selectedDate'], ['asc']));
+      const divisionTeams = SplitArray(orderBy(this.players
+        .filter((player) => player.selected_date), ['selected_date'], ['asc']));
 
-      const teamOne: ITeamDTO = {
-        description: 'Time 1',
-        quantityPlayers: divisionTeams[0].length,
-        players: divisionTeams[0],
-      };
+      const user = supabase.auth.user();
 
-      const teamTwo: ITeamDTO = {
-        description: 'Time 2',
-        quantityPlayers: divisionTeams[1].length,
-        players: divisionTeams[1],
-      };
+      const { data, error } = await supabase
+        .from('sweepstakes')
+        .insert({
+          user_id: user?.id,
+          game_type: this.gameSelected ?? 'cs',
+          departure_at: this.departureDate,
+          consider_patents: false,
+          consider_previous_rankings: false,
+          quantity_players: this.numberSelectedPlayers,
+          quantity_maps: this.numberSelectedMaps,
+        });
 
-      const teams: ITeamDTO[] = [teamOne, teamTwo];
+      if (error) {
+        throw new AppError('Novo Sorteio', error.message, ToastsTypeEnum.Warning);
+      }
 
-      this.maps.filter((map) => map.selectedDate).forEach((map) => {
-        teams.forEach((team) => {
-          map.matches.push({
-            description: team.description,
-            scores: [0, 0],
+      if (data) {
+        const { id } = data[0];
+
+        const players: ISweepstakePlayerDTO[] = [];
+        for (let i = 0; i < divisionTeams.length;) {
+          divisionTeams[i].forEach((player) => {
+            players.push({
+              user_id: user?.id,
+              sweepstake_id: id,
+              player_id: player.id,
+              team: i,
+            });
+          });
+          i += 1;
+        }
+
+        await supabase.from('sweepstake_players').insert(players);
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const maps: any = [];
+        orderBy(this.maps.filter((map) => map.selected_date), ['selected_date'], ['asc']).forEach((map) => {
+          maps.push({
+            user_id: user?.id,
+            sweepstake_id: id,
+            map_id: map.id,
+            team_start_from_terrorist: map.team_start_from_terrorist,
+            selected_at: map.selected_date,
           });
         });
-      });
 
-      const sweepstake: ISweepstakeDTO = {
-        userId: this.user.uid,
-        created: new Date(),
-        updated: new Date(),
-        departure: new Date(this.departureDate),
-        gameType: this.gameSelected ?? 'cs',
-        considerPatents: false,
-        considerPreviousRankings: false,
-        quantityPlayers: this.numberSelectedPlayers,
-        quantityMaps: this.numberSelectedMaps,
-        teams,
-        maps: _.orderBy(this.maps.filter((map) => map.selectedDate), ['selectedDate'], ['asc']),
-      };
+        await supabase.from('sweepstake_maps').insert(maps);
 
-      const doc = await firebase.firestore().collection('sweepstakes').add(sweepstake);
-
-      this.$router.push({ name: 'Sweepstake', params: { id: doc.id } });
-      throw new AppError('Novo Sorteio', 'Sorteio realizado com sucesso!', ToastsTypeEnum.Success);
+        this.$router.push({ name: 'Sweepstake', params: { id } });
+        throw new AppError('Novo Sorteio', 'Sorteio realizado com sucesso!', ToastsTypeEnum.Success);
+      }
     } finally {
       this.isBusy = false;
     }
   }
 
   get numberSelectedPlayers(): number {
-    return this.players.filter((player) => player.selectedDate).length;
+    return this.players.filter((player) => player.selected_date).length;
   }
 
   get numberSelectedMaps(): number {
-    return this.maps.filter((map) => map.selectedDate).length;
+    return this.maps.filter((map) => map.selected_date).length;
   }
 
   getMapName(id: string): string | undefined {
@@ -380,11 +387,11 @@ export default class SweepstakeNew extends Base {
     this.isBusy = true;
     try {
       this.gameSelected = this.$store.state.game ? this.$store.state.game : 'cs';
-      this.players.filter((player) => player.selectedDate).forEach((player) => {
-        this.$set(player, 'selectedDate', undefined);
+      this.players.filter((player) => player.selected_date).forEach((player) => {
+        this.$set(player, 'selected_date', undefined);
       });
-      this.maps.filter((map) => map.selectedDate).forEach((map) => {
-        this.$set(map, 'selectedDate', undefined);
+      this.maps.filter((map) => map.selected_date).forEach((map) => {
+        this.$set(map, 'selected_date', undefined);
       });
     } finally {
       this.isBusy = false;
@@ -393,14 +400,14 @@ export default class SweepstakeNew extends Base {
 
   // eslint-disable-next-line class-methods-use-this
   tbodyRowClass(item: IPlayerResumeDTO | IMapResumeDTO): string[] {
-    if (item?.selectedDate) {
+    if (item?.selected_date) {
       return ['cursor-pointer', 'b-table-row-selected', 'bg-active'];
     }
     return ['cursor-pointer'];
   }
 
   onRowClicked(item: IPlayerResumeDTO | IMapResumeDTO): void {
-    this.$set(item, 'selectedDate', item.selectedDate ? undefined : new Date());
+    this.$set(item, 'selected_date', item.selected_date ? undefined : new Date());
   }
 }
 </script>

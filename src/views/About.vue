@@ -17,7 +17,7 @@
           <a href="https://bootstrap-vue.org/" target="_blank">BootstrapVue</a>
         </li>
         <li>
-          <a href="https://firebase.google.com/" target="_blank">Firebase (Auth, Firestore)</a>
+          <a href="https://supabase.com/" target="_blank">Supabase</a>
         </li>
         <li>
           <a href="https://lodash.com/" target="_blank">Lodash</a>

@@ -3,7 +3,7 @@
     <Modal
       title="Atualizar Placares"
       :show.sync="showModal"
-      :busy="isBusy"
+      :busy="isBusyModal"
       @handleHidden="handleHidden"
       @handleSubmit="handleSubmit">
       <b-form ref="form" @submit.stop.prevent="handleSubmit">
@@ -14,31 +14,63 @@
             bg-variant="dark"
             text-variant="white"
             small
-            v-for="map in maps"
-            :key="map.id">
+            v-for="sweepstakeMap in cloneSweepstakeMaps"
+            :key="sweepstakeMap.id">
             <template #header>
               <p class="mb-0 text-center">
-                <strong>{{ map.name }}</strong>
+                <strong>{{ sweepstakeMap.maps.name }}</strong>
               </p>
             </template>
-            <div v-for="(match, matchIndex) in map.matches" :key="matchIndex">
-              <hr v-if="matchIndex !== 0" class="m-1">
-              <div class="row ml-1 d-flex align-items-center">
-                <b-icon class="align-middle" :icon="matchIndex == 0 ? 'people' : 'people-fill'"/>
-                <div class="ml-2" v-for="(score, scoreIndex) in match.scores" :key="scoreIndex">
-                  <b-form-input
-                    class="col-sm"
-                    v-model.number="match.scores[scoreIndex]"
-                    required
-                    type="number"
-                    min="0"
-                    max="99"
-                    pattern="\d*"
-                    onfocus="this.select();"
-                    :disabled="isBusy"
-                  />
-                </div>
-              </div>
+            <div class="row ml-1 d-flex align-items-center">
+              <b-icon class="align-middle" icon="people"/>
+              <b-form-input
+                class="col-sm ml-2"
+                v-model.number="sweepstakeMap.team_one_score_1"
+                required
+                type="number"
+                min="0"
+                max="99"
+                pattern="\d*"
+                onfocus="this.select();"
+                :disabled="isBusyModal"
+              />
+              <b-form-input
+                class="col-sm ml-2"
+                v-model.number="sweepstakeMap.team_one_score_2"
+                required
+                type="number"
+                min="0"
+                max="99"
+                pattern="\d*"
+                onfocus="this.select();"
+                :disabled="isBusyModal"
+              />
+            </div>
+            <hr class="m-1">
+            <div class="row ml-1 d-flex align-items-center">
+              <b-icon class="align-middle" icon="people-fill"/>
+              <b-form-input
+                class="col-sm ml-2"
+                v-model.number="sweepstakeMap.team_two_score_1"
+                required
+                type="number"
+                min="0"
+                max="99"
+                pattern="\d*"
+                onfocus="this.select();"
+                :disabled="isBusyModal"
+              />
+              <b-form-input
+                class="col-sm ml-2"
+                v-model.number="sweepstakeMap.team_two_score_2"
+                required
+                type="number"
+                min="0"
+                max="99"
+                pattern="\d*"
+                onfocus="this.select();"
+                :disabled="isBusyModal"
+              />
             </div>
             <hr class="m-1">
           </b-card>
@@ -85,7 +117,7 @@
     </div>
     <div v-else>
       <Card
-        :title="getGameTypeName(sweepstake.gameType)"
+        :title="getGameTypeName(sweepstake.game_type)"
         :busy="isBusy">
         <template v-slot:button>
           <b-button
@@ -105,31 +137,57 @@
         </p>
         <p class="mb-0">
           <b-icon class="mr-2" icon="map"/>
-          {{ sweepstake.quantityMaps }} mapas
+          {{ sweepstake.quantity_maps }} mapas
         </p>
         <p class="mb-0">
           <b-icon class="mr-2" icon="people"/>
-          {{ sweepstake.quantityPlayers }} jogadores
+          {{ sweepstake.quantity_players }} jogadores
         </p>
       </Card>
       <div class="row">
         <Card
           class="mt-2 col-sm-12 col-md-6"
           :busy="isBusy"
-          v-for="(team, index) in sweepstake.teams"
-          :key="team.description"
-          :title="team.description"
-          :icon="index == 0 ? 'people' : 'people-fill'">
-          <div v-for="(player, index) in team.players" :key="player.id">
+          title="Time 1"
+          icon="people">
+          <div
+            v-for="(sweepstakePlayer, index) in
+              sweepstakePlayers.filter(player => player.team === 0)"
+            :key="sweepstakePlayer.id"
+          >
             <hr v-if="index !== 0" class="m-1">
             <p class="m-0" >
-              {{ index + 1 }} - {{ player.name }} ({{ player.username }})
-              &nbsp;
+              {{ index + 1 }} - {{ sweepstakePlayer.players.name }}
+              ({{ sweepstakePlayer.players.username }})
               <img
-                v-if="player.patent"
+                v-if="sweepstakePlayer.players.patent"
                 width="50"
-                :alt="`${player.patent}`"
-                :src=" require(`@/assets/cs-go/competitive/${player.patent}.png`) " />
+                :alt="`${sweepstakePlayer.players.patent}`"
+                :src="require(`@/assets/cs-go/competitive/${sweepstakePlayer.players.patent}.png`)"
+              />
+            </p>
+          </div>
+        </Card>
+        <Card
+          class="mt-2 col-sm-12 col-md-6"
+          :busy="isBusy"
+          title="Time 2"
+          icon="people-fill">
+          <div
+            v-for="(sweepstakePlayer, index) in
+              sweepstakePlayers.filter(player => player.team === 1)"
+            :key="sweepstakePlayer.id"
+          >
+            <hr v-if="index !== 0" class="m-1">
+            <p class="m-0" >
+              {{ index + 1 }} - {{ sweepstakePlayer.players.name }}
+              ({{ sweepstakePlayer.players.username }})
+              <img
+                v-if="sweepstakePlayer.players.patent"
+                width="50"
+                :alt="`${sweepstakePlayer.players.patent}`"
+                :src="require(`@/assets/cs-go/competitive/${sweepstakePlayer.players.patent}.png`)"
+              />
             </p>
           </div>
         </Card>
@@ -157,50 +215,51 @@
             header-tag="header"
             bg-variant="dark"
             text-variant="white"
-            v-for="map in sweepstake.maps"
-            :key="map.id">
+            v-for="sweepstakeMap in sweepstakeMaps"
+            :key="sweepstakeMap.id">
             <template #header>
               <p class="mb-0 text-center">
-                <strong>{{ map.name }}</strong>
-                <a v-if="map.link" :href="map.link" target="_blank">
+                <strong>{{ sweepstakeMap.maps.name }}</strong>
+                <a v-if="sweepstakeMap.maps.link" :href="sweepstakeMap.maps.link" target="_blank">
                   <b-icon class="ml-2" icon="download" variant="secondary"/>
                 </a>
               </p>
             </template>
-            <p class="text-center">{{getMapTypeName(map.mapType)}}</p>
-            <div v-for="(match, index) in map.matches" :key="index">
-              <div class="mb-0" :id="'team' +(index + 1) +map.id">
-                <hr v-if="index !== 0" class="m-1">
-                <div class="row m-0">
-                  <b-icon
-                    class="ml-1 mt-1 mr-2"
-                    :icon="index == 0 ? 'people' : 'people-fill'"
-                    :variant="index == map.startFromTerrorist ? 'danger' : 'light'"/>
-                  <p class="m-0" v-for="(score, indexScore) in match.scores" :key="indexScore">
-                  {{ indexScore === 0 ? '' : '+'  }}&nbsp;{{ score }}&nbsp;
-                  </p>
-                  <b-icon
-                    v-if="map.winner === -1"
-                    class="ml-1 mt-1 mr-2"
-                    icon="trophy-fill"
-                    variant="secondary"
-                     scale="0.9"
-                  />
-                  <b-icon
-                    v-else-if="map.winner === index"
-                    class="ml-1 mt-1 mr-2"
-                    icon="trophy-fill"
-                    variant="warning"
-                     scale="0.9"
-                  />
-                </div>
+            <p class="text-center">{{getMapTypeName(sweepstakeMap.maps.map_type)}}</p>
+            <div>
+              <div class="row m-0" :id="`teamOne-${sweepstakeMap.id}`">
+                <b-icon
+                  class="ml-1 mt-1 mr-2"
+                  icon="people"
+                  :variant="sweepstakeMap.team_start_from_terrorist === 0 ? 'danger' : 'light'"
+                />
+                <p class="m-0">
+                  {{ sweepstakeMap.team_one_score_1 }} + {{ sweepstakeMap.team_one_score_2 }}
+                </p>
+                <b-icon
+                  class="ml-1 mt-1 mr-2"
+                  icon="trophy-fill"
+                  scale="0.9"
+                  :style="getWinnerStyle(0, sweepstakeMap)"
+                />
               </div>
-              <b-tooltip
-                :target="'team' +(index + 1)  +map.id"
-                triggers="hover"
-                placement="top">
-                {{ match.description }}
-              </b-tooltip>
+              <hr class="m-1">
+              <div class="row m-0" :id="`teamTwo-${sweepstakeMap.id}`">
+                <b-icon
+                  class="ml-1 mt-1 mr-2"
+                  icon="people-fill"
+                  :variant="sweepstakeMap.team_start_from_terrorist === 1 ? 'danger' : 'light'"
+                />
+                <p class="m-0">
+                  {{ sweepstakeMap.team_two_score_1 }} + {{ sweepstakeMap.team_two_score_2 }}
+                </p>
+                <b-icon
+                  class="ml-1 mt-1 mr-2"
+                  icon="trophy-fill"
+                  scale="0.9"
+                  :style="getWinnerStyle(1, sweepstakeMap)"
+                />
+              </div>
             </div>
           </b-card>
         </div>
@@ -227,14 +286,14 @@ import Base from '@/views/Base';
 import Card from '@/components/Card.vue';
 import Modal from '@/components/Modal.vue';
 import ISweepstakeDTO from '@/dtos/ISweepstakeDTO';
-import firebase from 'firebase';
+import ISweepstakePlayerDTO from '@/dtos/ISweepstakePlayerDTO';
 import moment from 'moment';
 import IMapResumeDTO from '@/dtos/IMapResumeDTO';
 import AppError, { ToastsTypeEnum } from '@/errors/AppError';
-import CloneObject from '@/tools/CloneObject';
-import _ from 'lodash';
+import supabase from '@/services/supabase';
+import ISweepstakeMapDTO from '@/dtos/ISweepstakeMapDTO';
 import SplitArray from '@/tools/SplitArray';
-import ITeamDTO from '@/dtos/ITeamDTO';
+import CloneObject from '@/tools/CloneObject';
 
 @Component({
   components: {
@@ -245,13 +304,21 @@ import ITeamDTO from '@/dtos/ITeamDTO';
 export default class Sweepstake extends Base {
   showModal = false;
 
+  isBusyModal = false;
+
   id = this.$route.params.id;
 
   sweepstake: ISweepstakeDTO | null = null;
 
+  sweepstakePlayers: ISweepstakePlayerDTO[] = [];
+
+  sweepstakeMaps: ISweepstakeMapDTO[] = [];
+
+  cloneSweepstakeMaps: ISweepstakeMapDTO[] = [];
+
   isFromLoggerUser = false;
 
-  user = firebase.auth().currentUser;
+  user = supabase.auth.user();
 
   title = '';
 
@@ -260,76 +327,131 @@ export default class Sweepstake extends Base {
   maps: IMapResumeDTO[] = [];
 
   async created(): Promise<void> {
-    await this.loadSweepstake();
-  }
-
-  async loadSweepstake(): Promise<void> {
     this.isBusy = true;
-    this.isFromLoggerUser = false;
-    this.sweepstake = null;
 
-    await firebase
-      .firestore()
-      .collection('sweepstakes')
-      .doc(this.id)
-      .onSnapshot((doc) => {
-        if (!doc.data()) {
+    await this.loadSweepstake();
+    await this.loadSweepstakePlayer();
+    await this.loadSweepstakeMap();
+
+    supabase
+      .from(`sweepstakes:id=eq.${this.id}`)
+      .on('UPDATE', (payload) => {
+        if (!payload) {
           this.$router.push('/');
         }
 
-        this.sweepstake = {
-          id: this.id,
-          userId: doc.data()?.userId,
-          created: (doc.data()?.created as firebase.firestore.Timestamp).toDate(),
-          updated: (doc.data()?.updated as firebase.firestore.Timestamp).toDate(),
-          departure: (doc.data()?.departure as firebase.firestore.Timestamp).toDate(),
-          gameType: doc.data()?.gameType,
-          quantityPlayers: doc.data()?.quantityPlayers,
-          quantityMaps: doc.data()?.quantityMaps,
-          considerPatents: doc.data()?.considerPatents,
-          considerPreviousRankings: doc.data()?.considerPreviousRankings,
-          teams: doc.data()?.teams,
-          maps: doc.data()?.maps as IMapResumeDTO[],
-        };
+        this.handleSweepstakeUpdate(payload?.new);
+      })
+      .subscribe();
 
-        this.departureDate = moment(this.sweepstake.departure).format('DD/MM/YYYY HH:mm');
-
-        if (this.user) {
-          this.isFromLoggerUser = this.sweepstake.userId === this.user.uid;
+    supabase
+      .from(`sweepstake_players:sweepstake_id=eq.${this.id}`)
+      .on('UPDATE', (payload) => {
+        if (!payload) {
+          this.$router.push('/');
         }
 
-        this.$meta().addApp('sweepstake').set({
-          title: `${this.getGameTypeShortName(this.sweepstake?.gameType)} - ${this.departureDate} (CS Manager)`,
-          meta: [
-            {
-              name: 'description',
-              content: `Partida de ${this.getGameTypeName(this.sweepstake?.gameType)}, com ${this.sweepstake.quantityPlayers} jogadores e ${this.sweepstake.quantityMaps} mapas, realizada em: ${this.departureDate}.`,
-            },
-            {
-              name: 'og:type',
-              content: 'website',
-            },
-            {
-              name: 'og:locale',
-              content: 'pt_BR',
-            },
-            {
-              name: 'og:site_name',
-              content: 'CS Manager',
-            },
-            {
-              name: 'og:title',
-              content: `${this.getGameTypeShortName(this.sweepstake?.gameType)} - ${this.departureDate}`,
-            },
-            {
-              name: 'og:description',
-              content: `Partida de ${this.getGameTypeShortName(this.sweepstake?.gameType)}, com ${this.sweepstake.quantityPlayers} jogadores e ${this.sweepstake.quantityMaps} mapas.`,
-            },
-          ],
-        });
+        this.handleSweepstakePlayerUpdate(payload?.new);
+      })
+      .subscribe();
 
-        this.isBusy = false;
-      });
+    supabase
+      .from(`sweepstake_maps:sweepstake_id=eq.${this.id}`)
+      .on('UPDATE', (payload) => {
+        if (!payload) {
+          this.$router.push('/');
+        }
+
+        this.handleSweepstakeMapUpdate(payload?.new);
+      })
+      .subscribe();
+
+    this.isBusy = false;
+  }
+
+  async loadSweepstake(): Promise<void> {
+    const { data, error } = await supabase
+      .from('sweepstakes')
+      .select()
+      .eq('id', this.id);
+
+    if (error) {
+      throw new AppError('Sorteio', error.message, ToastsTypeEnum.Warning);
+    }
+
+    if (data && data.length > 0) {
+      this.handleSweepstakeUpdate(data[0]);
+    }
+  }
+
+  handleSweepstakeUpdate(sweepstake: ISweepstakeDTO): void {
+    this.isFromLoggerUser = false;
+    this.sweepstake = null;
+
+    this.sweepstake = sweepstake;
+
+    this.departureDate = moment(this.sweepstake.departure_at).format('DD/MM/YYYY HH:mm');
+
+    if (this.sweepstake && this.user) {
+      this.isFromLoggerUser = this.sweepstake.user_id === this.user.id;
+    }
+  }
+
+  async loadSweepstakePlayer(): Promise<void> {
+    const { data, error } = await supabase
+      .from('sweepstake_players')
+      .select('*, players (*)')
+      .eq('sweepstake_id', this.id);
+
+    if (error) {
+      throw new AppError('Jogadores', error.message, ToastsTypeEnum.Warning);
+    }
+
+    if (data && data.length > 0) {
+      this.sweepstakePlayers = data;
+    }
+  }
+
+  handleSweepstakePlayerUpdate(sweepstakePlayer: ISweepstakePlayerDTO): void {
+    const index = this.sweepstakePlayers.findIndex((player) => (
+      player.id === sweepstakePlayer.id
+    ));
+
+    if (index > -1) {
+      this.sweepstakePlayers[index].team = sweepstakePlayer.team;
+    }
+  }
+
+  async loadSweepstakeMap(): Promise<void> {
+    const { data, error } = await supabase
+      .from('sweepstake_maps')
+      .select('*, maps (*)')
+      .eq('sweepstake_id', this.id);
+
+    if (error) {
+      throw new AppError('Mapas', error.message, ToastsTypeEnum.Warning);
+    }
+
+    if (data && data.length > 0) {
+      this.sweepstakeMaps = data;
+    }
+  }
+
+  handleSweepstakeMapUpdate(sweepstakeMap: ISweepstakeMapDTO): void {
+    const index = this.sweepstakeMaps.findIndex((map) => (
+      map.id === sweepstakeMap.id
+    ));
+
+    if (index > -1) {
+      this.sweepstakeMaps[index]
+        .team_start_from_terrorist = sweepstakeMap.team_start_from_terrorist;
+      this.sweepstakeMaps[index].team_one_score_1 = sweepstakeMap.team_one_score_1;
+      this.sweepstakeMaps[index].team_two_score_1 = sweepstakeMap.team_two_score_1;
+      this.sweepstakeMaps[index].team_one_score_2 = sweepstakeMap.team_one_score_2;
+      this.sweepstakeMaps[index].team_two_score_2 = sweepstakeMap.team_two_score_2;
+    } else {
+      this.sweepstakeMaps.push(sweepstakeMap);
+    }
   }
 
   getGameTypeShortName(id: string): string | undefined {
@@ -342,6 +464,26 @@ export default class Sweepstake extends Base {
 
   getMapTypeName(id: string): string | undefined {
     return this.$store.getters.getMapTypeName(id);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getWinnerStyle(index: number, sweepstakeMap: ISweepstakeMapDTO): string {
+    if (index < 0 || !sweepstakeMap) {
+      return 'display: none;';
+    }
+
+    const sumTeamOne = sweepstakeMap.team_one_score_1 + sweepstakeMap.team_one_score_2;
+    const sumTeamTwo = sweepstakeMap.team_two_score_1 + sweepstakeMap.team_two_score_2;
+
+    if ((index === 0 && sumTeamOne > sumTeamTwo) || (index === 1 && sumTeamOne < sumTeamTwo)) {
+      return 'color: #ffc107 !important;';
+    }
+
+    if (sumTeamOne > 0 && sumTeamOne === sumTeamTwo) {
+      return 'color: #6c757d !important;';
+    }
+
+    return 'display: none;';
   }
 
   async sweepstakeAgain(): Promise<void> {
@@ -366,27 +508,29 @@ export default class Sweepstake extends Base {
     try {
       this.isBusy = true;
 
-      const players = _.union(this.sweepstake.teams[0].players, this.sweepstake.teams[1].players);
+      const divisionTeams = SplitArray(this.sweepstakePlayers);
+      const newTeams: ISweepstakePlayerDTO[] = [];
 
-      const divisionTeams = SplitArray(players);
+      for (let i = 0; i < divisionTeams.length;) {
+        divisionTeams[i].forEach((sweepstakePlayer) => {
+          newTeams.push({
+            id: sweepstakePlayer.id,
+            user_id: sweepstakePlayer.user_id,
+            sweepstake_id: sweepstakePlayer.sweepstake_id,
+            player_id: sweepstakePlayer.player_id,
+            team: i,
+          });
+        });
+        i += 1;
+      }
 
-      const teamOne: ITeamDTO = {
-        description: 'Time 1',
-        quantityPlayers: divisionTeams[0].length,
-        players: divisionTeams[0],
-      };
+      const { error } = await supabase.from('sweepstake_players').upsert(newTeams);
 
-      const teamTwo: ITeamDTO = {
-        description: 'Time 2',
-        quantityPlayers: divisionTeams[1].length,
-        players: divisionTeams[1],
-      };
+      if (error) {
+        throw new AppError('Sortear Times', error.message, ToastsTypeEnum.Warning);
+      }
 
-      const teams: ITeamDTO[] = [teamOne, teamTwo];
-
-      this.sweepstake.teams = teams;
-
-      await firebase.firestore().collection('sweepstakes').doc(this.sweepstake.id).set(this.sweepstake);
+      await this.loadSweepstakePlayer();
     } finally {
       this.isBusy = false;
     }
@@ -397,7 +541,7 @@ export default class Sweepstake extends Base {
       return;
     }
 
-    this.maps = CloneObject(this.sweepstake.maps);
+    this.cloneSweepstakeMaps = CloneObject(this.sweepstakeMaps);
 
     this.showModal = true;
   }
@@ -409,42 +553,39 @@ export default class Sweepstake extends Base {
 
   async handleSubmit(): Promise<void> {
     try {
-      this.isBusy = true;
+      this.isBusyModal = true;
 
       if (!this.sweepstake) {
         return;
       }
 
-      const updatedMaps: IMapResumeDTO[] = [];
+      const updatedMaps: ISweepstakeMapDTO[] = [];
 
-      this.maps.forEach((map) => {
-        let winner = -2;
-        let previousScore = 0;
-        map.matches.forEach((match, index) => {
-          const score = _.sum(match.scores);
-          if (score > previousScore) {
-            winner = index;
-          } else if (score > 0 && score === previousScore) {
-            winner = -1;
-          }
-
-          previousScore = score;
-        });
-
+      this.cloneSweepstakeMaps.forEach((sweepstakeMap) => {
         updatedMaps.push({
-          ...map,
-          winner,
+          id: sweepstakeMap.id,
+          user_id: sweepstakeMap.user_id,
+          sweepstake_id: sweepstakeMap.sweepstake_id,
+          map_id: sweepstakeMap.map_id,
+          team_start_from_terrorist: sweepstakeMap.team_start_from_terrorist,
+          team_one_score_1: sweepstakeMap.team_one_score_1,
+          team_one_score_2: sweepstakeMap.team_one_score_2,
+          team_two_score_1: sweepstakeMap.team_two_score_1,
+          team_two_score_2: sweepstakeMap.team_two_score_2,
+          selected_at: sweepstakeMap.selected_at,
         });
       });
 
-      this.sweepstake.maps = updatedMaps;
+      const { error } = await supabase.from('sweepstake_maps').upsert(updatedMaps);
 
-      await firebase.firestore().collection('sweepstakes').doc(this.sweepstake.id).set(this.sweepstake);
+      if (error) {
+        throw new AppError('Sortear Times', error.message, ToastsTypeEnum.Warning);
+      }
 
+      this.showModal = false;
       throw new AppError('Sorteio', 'Placares atualizados com sucesso!', ToastsTypeEnum.Success);
     } finally {
-      this.isBusy = false;
-      this.showModal = false;
+      this.isBusyModal = false;
       this.maps = [];
     }
   }

@@ -19,7 +19,7 @@
             label-for="modal-game-type">
             <GameComboBox
               id="modal-game-type"
-              :model.sync="selectedMap.gameType"
+              :model.sync="selectedMap.game_type"
               :busy="isBusy">
             </GameComboBox>
           </b-form-group>
@@ -30,7 +30,7 @@
             label-for="modal-map-type">
             <MapComboBox
               id="modal-map-type"
-              :model.sync="selectedMap.mapType"
+              :model.sync="selectedMap.map_type"
               :busy="isBusy">
             </MapComboBox>
           </b-form-group>
@@ -145,11 +145,11 @@
         :fields="fields"
         :busy="isBusy"
         @onClickEdit="edit">
-        <template #cell(gameType)="row">
-          {{getGameTypeShortName(row.item.gameType)}}
+        <template #cell(game_type)="row">
+          {{getGameTypeShortName(row.item.game_type)}}
         </template>
-        <template #cell(mapType)="row">
-          {{getMapTypeName(row.item.mapType)}}
+        <template #cell(map_type)="row">
+          {{getMapTypeName(row.item.map_type)}}
         </template>
         <template #cell(link)="row">
           <b-icon icon="check-square-fill" v-if="row.item.link"/>
@@ -174,7 +174,6 @@
 </template>
 
 <script lang="ts">
-import firebase from 'firebase';
 import { v4 } from 'uuid';
 import { Component } from 'vue-property-decorator';
 import Base from '@/views/Base';
@@ -187,6 +186,7 @@ import SituationComboBox from '@/components/ComboBox/Situation.vue';
 import IMapDTO from '@/dtos/IMapDTO';
 import ITableFieldsDTO from '@/dtos/ITableFieldsDTO';
 import AppError, { ToastsTypeEnum } from '@/errors/AppError';
+import supabase from '@/services/supabase';
 
 @Component({
   components: {
@@ -204,8 +204,8 @@ export default class Maps extends Base {
   maps: IMapDTO[] = [];
 
   selectedMap: IMapDTO = {
-    gameType: this.$store.state.game ? this.$store.state.game : 'cs',
-    mapType: 'bomb',
+    game_type: this.$store.state.game ? this.$store.state.game : 'cs',
+    map_type: 'bomb',
     name: '',
     link: '',
     active: true,
@@ -218,12 +218,12 @@ export default class Maps extends Base {
       sortable: true,
     },
     {
-      key: 'mapType',
+      key: 'map_type',
       label: 'Tipo de Mapa',
       sortable: true,
     },
     {
-      key: 'gameType',
+      key: 'game_type',
       label: 'Tipo de Jogo',
       sortable: true,
     },
@@ -255,26 +255,21 @@ export default class Maps extends Base {
     this.isBusy = true;
     this.maps = [];
 
-    const user = firebase.auth().currentUser;
+    const user = supabase.auth.user();
 
-    const docs = await firebase
-      .firestore()
-      .collection('maps')
-      .where('userId', '==', user?.uid)
-      .orderBy('updated', 'desc')
-      .get();
+    const { data, error } = await supabase
+      .from('maps')
+      .select()
+      .eq('user_id', user?.id)
+      .order('updated_at', { ascending: false });
 
-    docs.forEach((map) => {
-      this.maps.push({
-        id: map.id,
-        gameType: map.data().gameType,
-        mapType: map.data().mapType,
-        name: map.data().name,
-        link: map.data().link,
-        active: map.data().active,
-        created: map.data().created,
-      });
-    });
+    if (error) {
+      throw new AppError('Mapas', error.message, ToastsTypeEnum.Warning);
+    }
+
+    if (data && data.length > 0) {
+      this.maps = data;
+    }
 
     this.searchGameType = this.$store.state.game ? this.$store.state.game : null;
 
@@ -294,11 +289,11 @@ export default class Maps extends Base {
 
     items = items.filter((item) => (this.searchGameType === null || this.searchGameType === 'null'
       ? item
-      : item.gameType === this.searchGameType));
+      : item.game_type === this.searchGameType));
 
     items = items.filter((item) => (this.searchMapType === null || this.searchMapType === 'null'
       ? item
-      : item.mapType === this.searchMapType));
+      : item.map_type === this.searchMapType));
 
     return items;
   }
@@ -325,8 +320,8 @@ export default class Maps extends Base {
 
   handleHidden(): void {
     this.selectedMap = {
-      gameType: this.$store.state.game ? this.$store.state.game : 'cs',
-      mapType: 'bomb',
+      game_type: this.$store.state.game ? this.$store.state.game : 'cs',
+      map_type: 'bomb',
       name: '',
       link: '',
       active: true,
@@ -334,22 +329,22 @@ export default class Maps extends Base {
     this.showModal = false;
   }
 
-  handleSubmit(): void {
+  async handleSubmit(): Promise<void> {
     if (!this.selectedMap.name) {
       throw new AppError('Mapa', 'O nome é obrigatório!', ToastsTypeEnum.Warning);
     }
 
-    if (!this.selectedMap.gameType) {
+    if (!this.selectedMap.game_type) {
       throw new AppError('Mapa', 'O tipo de jogo é obrigatório!', ToastsTypeEnum.Warning);
     }
 
-    if (!this.selectedMap.mapType) {
+    if (!this.selectedMap.map_type) {
       throw new AppError('Mapa', 'O tipo de mapa é obrigatório!', ToastsTypeEnum.Warning);
     }
 
     const existsUsername = this.maps.find((map) => (
-      map.gameType === this.selectedMap.gameType
-      && map.mapType === this.selectedMap.mapType
+      map.game_type === this.selectedMap.game_type
+      && map.map_type === this.selectedMap.map_type
       && map.name.toLowerCase() === this.selectedMap.name.toLowerCase()
       && map.id !== this.selectedMap.id
     ));
@@ -359,38 +354,40 @@ export default class Maps extends Base {
 
     this.isBusy = true;
     try {
-      const user = firebase.auth().currentUser;
-      const id = this.selectedMap?.id ? this.selectedMap?.id : v4();
+      const user = supabase.auth.user();
       const {
-        name, gameType, mapType, link, active, created,
+        // eslint-disable-next-line camelcase
+        id = v4(), name, game_type, map_type, link, active,
       } = this.selectedMap;
 
-      firebase.firestore().collection('maps')
-        .doc(id).set({
-          userId: user?.uid,
-          created: created ?? new Date(),
-          updated: new Date(),
+      const { data, error } = await supabase.from('maps').upsert({
+        id,
+        user_id: user?.id,
+        name,
+        game_type,
+        map_type,
+        link,
+        active,
+      });
+
+      if (error) {
+        throw new AppError('Mapa', error.message, ToastsTypeEnum.Warning);
+      }
+
+      if (data) {
+        this.maps = this.maps.filter((map) => map.id !== id);
+        this.maps.unshift({
+          id,
           name,
-          gameType,
-          mapType,
-          link,
+          game_type,
+          map_type,
           active,
-        })
-        .then(() => {
-          this.maps = this.maps.filter((map) => map.id !== id);
-          this.maps.unshift({
-            id,
-            name,
-            gameType,
-            mapType,
-            active,
-            link,
-            created,
-          });
+          link,
         });
+        this.showModal = false;
+      }
     } finally {
       this.isBusy = false;
-      this.showModal = false;
     }
   }
 }

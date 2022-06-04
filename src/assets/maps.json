@@ -2,7 +2,7 @@
   {
     "id": "bomb",
     "name": {
-      "es": "Bomba/Desactivar",        
+      "es": "Bomba/Desactivar",
       "en": "Bomb/Defuse",
       "pt-BR": "Bomba/Desarme"
     }
@@ -10,25 +10,17 @@
   {
     "id": "hostage",
     "name": {
-      "es": "Rescate de rehenes",        
+      "es": "Rescate de rehenes",
       "en": "Hostage Rescue",
       "pt-BR": "Refém"
     }
-  },     
+  },
   {
     "id": "heating",
     "name": {
-      "es": "Calefacción",        
+      "es": "Calefacción",
       "en": "Heating",
       "pt-BR": "Aquecimento"
-    }
-  },    
-  {
-    "id": "tiebreaker",
-    "name": {
-      "es": "Desempate",        
-      "en": "Tiebreaker",
-      "pt-BR": "Desempate"
     }
   }
 ]

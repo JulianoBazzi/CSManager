@@ -5,12 +5,12 @@ import Vue from 'vue';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 import VueSweetalert2 from 'vue-sweetalert2';
 import VueMeta from 'vue-meta';
-import App from './App.vue';
-import router from './router';
-import store from './store';
-import firebase from './services/firebaseConnection';
-import AppError from './errors/AppError';
+import router from '@/router';
+import store from '@/store';
+import AppError from '@/errors/AppError';
+import App from '@/App.vue';
 import 'sweetalert2/dist/sweetalert2.min.css';
+import supabase from '@/services/supabase';
 
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
@@ -36,18 +36,15 @@ Vue.config.errorHandler = (err: Error, vm: Vue, info: string) => {
   });
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let app: any;
+const app = new Vue({
+  router,
+  store,
+  render: (h) => h(App),
+}).$mount('#app');
 
-firebase.auth().onAuthStateChanged((user) => {
-  if (!app) {
-    app = new Vue({
-      router,
-      store,
-      render: (h) => h(App),
-    }).$mount('#app');
+const user = supabase.auth.user();
 
-    app.$store.commit('setUser', user);
-    app.$store.commit('initialiseStore');
-  }
-});
+if (user) {
+  app.$store.commit('setUser', user);
+  app.$store.commit('initialiseStore');
+}

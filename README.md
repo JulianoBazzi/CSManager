@@ -26,7 +26,7 @@ Coming soon.
 - [Vuex](https://vuex.vuejs.org/)
 - [Typescript](https://www.typescriptlang.org/)
 - [BootstrapVue](https://bootstrap-vue.org/)
-- [Firebase (Auth, Firestore)](https://firebase.google.com/)
+- [Supabase](https://supabase.com/)
 - [Lodash](https://lodash.com/)
 - [SweetAlert 2](https://sweetalert2.github.io/)
 
@@ -34,5 +34,5 @@ Coming soon.
 
 1. Clone the repository: `git@github.com:JulianoBazzi/CSManager.git`
 2. Access the directory: `cd CSManager`
-3. Configure the firebase in: `.env.example`
+3. Configure the Supabase in: `.env.example`
 4. Run the Vue: `npm run serve`
