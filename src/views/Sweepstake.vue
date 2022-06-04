@@ -23,54 +23,62 @@
             </template>
             <div class="row ml-1 d-flex align-items-center">
               <b-icon class="align-middle" icon="people"/>
-              <b-form-input
-                class="col-sm ml-2"
-                v-model.number="sweepstakeMap.team_one_score_1"
-                required
-                type="number"
-                min="0"
-                max="99"
-                pattern="\d*"
-                onfocus="this.select();"
-                :disabled="isBusyModal"
-              />
-              <b-form-input
-                class="col-sm ml-2"
-                v-model.number="sweepstakeMap.team_one_score_2"
-                required
-                type="number"
-                min="0"
-                max="99"
-                pattern="\d*"
-                onfocus="this.select();"
-                :disabled="isBusyModal"
-              />
+              <div class="ml-2">
+                <b-form-input
+                  class="col-sm ml-2"
+                  v-model.number="sweepstakeMap.team_one_score_1"
+                  required
+                  type="number"
+                  min="0"
+                  max="99"
+                  pattern="\d*"
+                  onfocus="this.select();"
+                  :disabled="isBusyModal"
+                />
+              </div>
+              <div class="ml-2">
+                <b-form-input
+                  class="col-sm ml-2"
+                  v-model.number="sweepstakeMap.team_one_score_2"
+                  required
+                  type="number"
+                  min="0"
+                  max="99"
+                  pattern="\d*"
+                  onfocus="this.select();"
+                  :disabled="isBusyModal"
+                />
+              </div>
             </div>
             <hr class="m-1">
             <div class="row ml-1 d-flex align-items-center">
               <b-icon class="align-middle" icon="people-fill"/>
-              <b-form-input
-                class="col-sm ml-2"
-                v-model.number="sweepstakeMap.team_two_score_1"
-                required
-                type="number"
-                min="0"
-                max="99"
-                pattern="\d*"
-                onfocus="this.select();"
-                :disabled="isBusyModal"
-              />
-              <b-form-input
-                class="col-sm ml-2"
-                v-model.number="sweepstakeMap.team_two_score_2"
-                required
-                type="number"
-                min="0"
-                max="99"
-                pattern="\d*"
-                onfocus="this.select();"
-                :disabled="isBusyModal"
-              />
+              <div class="ml-2">
+                <b-form-input
+                  class="col-sm ml-2"
+                  v-model.number="sweepstakeMap.team_two_score_1"
+                  required
+                  type="number"
+                  min="0"
+                  max="99"
+                  pattern="\d*"
+                  onfocus="this.select();"
+                  :disabled="isBusyModal"
+                />
+              </div>
+              <div class="ml-2">
+                <b-form-input
+                  class="col-sm ml-2"
+                  v-model.number="sweepstakeMap.team_two_score_2"
+                  required
+                  type="number"
+                  min="0"
+                  max="99"
+                  pattern="\d*"
+                  onfocus="this.select();"
+                  :disabled="isBusyModal"
+                />
+              </div>
             </div>
             <hr class="m-1">
           </b-card>
