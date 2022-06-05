@@ -31,12 +31,12 @@
             v-if="authenticatedUser">
             Sorteios
           </b-nav-item>
-          <b-nav-item
+          <!-- <b-nav-item
             to="/ranking"
             active-class="pageActive"
             v-if="authenticatedUser">
             Classificação
-          </b-nav-item>
+          </b-nav-item> -->
           <b-nav-item
             to="/about"
             active-class="pageActive">
