@@ -7,9 +7,9 @@
       @handleHidden="handleHidden"
       @handleSubmit="handleSubmit">
       <b-form ref="form" @submit.stop.prevent="handleSubmit">
-        <div class="row">
+        <div class="row d-flex justify-content-around">
           <b-card
-            class="ml-1 mt-1"
+            class="mt-1"
             header-tag="header"
             bg-variant="dark"
             text-variant="white"
@@ -21,29 +21,31 @@
                 <strong>{{ sweepstakeMap.maps.name }}</strong>
               </p>
             </template>
-            <div class="row ml-1 d-flex align-items-center">
+            <div class="row d-flex align-items-center">
               <b-icon class="align-middle" icon="people"/>
               <div class="ml-2">
                 <b-form-input
-                  class="col-sm ml-2"
+                  class="col-sm"
                   v-model.number="sweepstakeMap.team_one_score_1"
                   required
                   type="number"
                   min="0"
                   max="99"
+                  size="sm"
                   pattern="\d*"
                   onfocus="this.select();"
                   :disabled="isBusyModal"
                 />
               </div>
-              <div class="ml-2">
+              <div class="ml-1">
                 <b-form-input
-                  class="col-sm ml-2"
+                  class="col-sm"
                   v-model.number="sweepstakeMap.team_one_score_2"
                   required
                   type="number"
                   min="0"
                   max="99"
+                  size="sm"
                   pattern="\d*"
                   onfocus="this.select();"
                   :disabled="isBusyModal"
@@ -51,29 +53,31 @@
               </div>
             </div>
             <hr class="m-1">
-            <div class="row ml-1 d-flex align-items-center">
+            <div class="row d-flex align-items-center">
               <b-icon class="align-middle" icon="people-fill"/>
               <div class="ml-2">
                 <b-form-input
-                  class="col-sm ml-2"
+                  class="col-sm"
                   v-model.number="sweepstakeMap.team_two_score_1"
                   required
                   type="number"
                   min="0"
                   max="99"
+                  size="sm"
                   pattern="\d*"
                   onfocus="this.select();"
                   :disabled="isBusyModal"
                 />
               </div>
-              <div class="ml-2">
+              <div class="ml-1">
                 <b-form-input
-                  class="col-sm ml-2"
+                  class="col-sm"
                   v-model.number="sweepstakeMap.team_two_score_2"
                   required
                   type="number"
                   min="0"
                   max="99"
+                  size="sm"
                   pattern="\d*"
                   onfocus="this.select();"
                   :disabled="isBusyModal"
@@ -460,10 +464,6 @@ export default class Sweepstake extends Base {
     } else {
       this.sweepstakeMaps.push(sweepstakeMap);
     }
-  }
-
-  getGameTypeShortName(id: string): string | undefined {
-    return this.$store.getters.getGameTypeShortName(id);
   }
 
   getGameTypeName(id: string): string | undefined {

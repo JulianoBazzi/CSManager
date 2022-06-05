@@ -2,18 +2,19 @@ import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 
 import supabase from '@/services/supabase';
-import Home from '../views/Home.vue';
-import About from '../views/About.vue';
-import Maps from '../views/Maps.vue';
-import Players from '../views/Players.vue';
-import Sweepstake from '../views/Sweepstake.vue';
-import Sweepstakes from '../views/Sweepstakes.vue';
-import SweepstakeNew from '../views/SweepstakeNew.vue';
-import Login from '../views/Login.vue';
-import EmailConfirmation from '../views/EmailConfirmation.vue';
-import ChangePassword from '../views/ChangePassword.vue';
-import ForgotMyPassword from '../views/ForgotMyPassword.vue';
-import Profile from '../views/Profile.vue';
+import Home from '@/views/Home.vue';
+import About from '@/views/About.vue';
+import Maps from '@/views/Maps.vue';
+import Players from '@/views/Players.vue';
+import Sweepstake from '@/views/Sweepstake.vue';
+import Sweepstakes from '@/views/Sweepstakes.vue';
+import SweepstakeNew from '@/views/SweepstakeNew.vue';
+import SweepstakeRanking from '@/views/SweepstakeRanking.vue';
+import Login from '@/views/Login.vue';
+import EmailConfirmation from '@/views/EmailConfirmation.vue';
+import ChangePassword from '@/views/ChangePassword.vue';
+import ForgotMyPassword from '@/views/ForgotMyPassword.vue';
+import Profile from '@/views/Profile.vue';
 
 Vue.use(VueRouter);
 
@@ -57,6 +58,16 @@ const routes: Array<RouteConfig> = [
     props: true,
     meta: {
       title: 'Sorteio',
+    },
+  },
+  {
+    path: '/sweepstakeRanking/:id',
+    name: 'SweepstakeRanking',
+    component: SweepstakeRanking,
+    props: true,
+    meta: {
+      title: 'Ranking',
+      requiresAuth: true,
     },
   },
   {
