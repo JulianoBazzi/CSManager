@@ -3,7 +3,7 @@ import { Context, createContext, ReactNode, useContext } from 'react';
 import { AlertStatus, useToast } from '@chakra-ui/react';
 // import { AxiosError } from 'axios';
 
-interface ModalProviderProps {
+interface IFeedbackProviderProps {
   children: ReactNode;
 }
 
@@ -17,7 +17,7 @@ type FeedbackContextData = {
 
 const FeedbackContext = createContext({} as FeedbackContextData);
 
-export function FeedbackProvider({ children }: ModalProviderProps) {
+export function FeedbackProvider({ children }: IFeedbackProviderProps) {
   const toast = useToast();
 
   // function errorFeedbackToast(title: string, error: any): void {

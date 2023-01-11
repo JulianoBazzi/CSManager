@@ -1,3 +1,5 @@
+import { ReactNode } from 'react';
+
 import { HamburgerIcon, CloseIcon, MoonIcon, SunIcon } from '@chakra-ui/icons';
 import {
   Box,
@@ -18,7 +20,11 @@ import {
 
 import { INavItem } from '~/models/INavItem';
 
-export default function WithSubnavigation() {
+interface ITemplateProps {
+  children: ReactNode;
+}
+
+export default function Template({ children }: ITemplateProps) {
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onToggle } = useDisclosure();
 
@@ -68,6 +74,11 @@ export default function WithSubnavigation() {
       <Collapse in={isOpen} animateOpacity>
         <MobileNav />
       </Collapse>
+      <Flex w="100vw" align="center" flexDir="column" p="6">
+        <Flex w="100%" maxW={1480}>
+          {children}
+        </Flex>
+      </Flex>
     </Box>
   );
 }
