@@ -16,9 +16,20 @@ import {
   useBreakpointValue,
   useDisclosure,
   useColorMode,
+  Avatar,
+  Menu,
+  MenuButton,
+  Portal,
+  MenuList,
+  MenuItem,
+  MenuDivider,
 } from '@chakra-ui/react';
+import Router from 'next/router';
 
+import { useAuth } from '~/contexts/AuthContext';
 import { INavItem } from '~/models/INavItem';
+
+import packageInfo from '../../../package.json';
 
 interface ITemplateProps {
   children: ReactNode;
@@ -27,6 +38,7 @@ interface ITemplateProps {
 export default function Template({ children }: ITemplateProps) {
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onToggle } = useDisclosure();
+  const { user } = useAuth();
 
   return (
     <Box>
@@ -63,11 +75,28 @@ export default function Template({ children }: ITemplateProps) {
           </Flex>
         </Flex>
 
-        <Stack flex={{ base: 1, md: 0 }} justify={'flex-end'} direction={'row'} spacing={3}>
-          <Button onClick={toggleColorMode}>{colorMode === 'light' ? <MoonIcon /> : <SunIcon />}</Button>
+        <Stack flex={{ base: 1, md: 0 }} justify={'flex-end'} direction={'row'} spacing={3} align="center" pr="2">
+          <Button variant="ghost" onClick={toggleColorMode}>
+            {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+          </Button>
 
-          <Button>Entrar</Button>
-          <Button colorScheme="blue">Registrar-se</Button>
+          {user ? (
+            <Menu>
+              <MenuButton>
+                <Avatar name={user.user_metadata.name} size="sm" cursor="pointer" />
+              </MenuButton>
+              <Portal>
+                <MenuList>
+                  <MenuItem>Meu Perfil</MenuItem>
+                  <MenuItem>Alterar Senha</MenuItem>
+                  <MenuDivider />
+                  <MenuItem>Sair</MenuItem>
+                </MenuList>
+              </Portal>
+            </Menu>
+          ) : (
+            <Button onClick={() => Router.push('/login')}>Entrar</Button>
+          )}
         </Stack>
       </Flex>
 
@@ -75,8 +104,11 @@ export default function Template({ children }: ITemplateProps) {
         <MobileNav />
       </Collapse>
       <Flex w="100vw" align="center" flexDir="column" p="6">
-        <Flex w="100%" maxW={1480}>
+        <Flex w="100%" maxW={1480} direction="column" align="center" gap="2">
           {children}
+          <Text color="gray.400" fontSize="sm">
+            v{packageInfo.version} - Desenvolvido por <Link href="https://bazzi.solutions">Bazzi Solutions</Link>
+          </Text>
         </Flex>
       </Flex>
     </Box>

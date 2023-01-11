@@ -1,6 +1,6 @@
 {
   "name": "csmanager",
-  "version": "0.1.0",
+  "version": "1.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -13,7 +13,10 @@
     "@chakra-ui/react": "2.4.6",
     "@emotion/react": "11.10.5",
     "@emotion/styled": "11.10.5",
+    "@hookform/resolvers": "^2.9.10",
     "@next/font": "13.1.1",
+    "@supabase/auth-helpers-nextjs": "^0.5.2",
+    "@supabase/auth-helpers-react": "^0.3.1",
     "@supabase/supabase-js": "2.2.3",
     "framer-motion": "8.3.3",
     "lodash": "4.17.21",

@@ -1,14 +1,14 @@
 import { Context, createContext, ReactNode, useContext } from 'react';
 
 import { AlertStatus, useToast } from '@chakra-ui/react';
-// import { AxiosError } from 'axios';
+import { AuthError } from '@supabase/supabase-js';
 
 interface IFeedbackProviderProps {
   children: ReactNode;
 }
 
 type FeedbackContextData = {
-  // errorFeedbackToast: (title: string, error: any) => void;
+  errorFeedbackToast: (title: string, error: any) => void;
   infoFeedbackToast: (title: string, description?: string) => void;
   warningFeedbackToast: (title: string, description?: string) => void;
   successFeedbackToast: (title: string, description?: string) => void;
@@ -20,19 +20,15 @@ const FeedbackContext = createContext({} as FeedbackContextData);
 export function FeedbackProvider({ children }: IFeedbackProviderProps) {
   const toast = useToast();
 
-  // function errorFeedbackToast(title: string, error: any): void {
-  //   if (error as AxiosError) {
-  //     if (error.response?.status >= 500) {
-  //       dangerFeedbackToast(title, `${error.response?.data?.message}`);
-  //     } else {
-  //       warningFeedbackToast(title, `${error.response?.data?.message}`);
-  //     }
-  //   } else if (error?.message) {
-  //     dangerFeedbackToast(title, `Ocorreu um erro: ${error.message}`);
-  //   } else {
-  //     dangerFeedbackToast(title, `Ocorreu um erro: ${error}`);
-  //   }
-  // }
+  function errorFeedbackToast(title: string, error: any): void {
+    if (error as AuthError) {
+      warningFeedbackToast(title, `${error.message}`);
+    } else if (error?.message) {
+      dangerFeedbackToast(title, `Ocorreu um erro: ${error.message}`);
+    } else {
+      dangerFeedbackToast(title, `Ocorreu um erro: ${error}`);
+    }
+  }
 
   function genericFeedbackToast(title: string, description?: string, status?: AlertStatus) {
     toast({
@@ -63,7 +59,7 @@ export function FeedbackProvider({ children }: IFeedbackProviderProps) {
 
   return (
     <FeedbackContext.Provider
-      value={{ infoFeedbackToast, warningFeedbackToast, successFeedbackToast, dangerFeedbackToast }}
+      value={{ errorFeedbackToast, infoFeedbackToast, warningFeedbackToast, successFeedbackToast, dangerFeedbackToast }}
     >
       {children}
     </FeedbackContext.Provider>
