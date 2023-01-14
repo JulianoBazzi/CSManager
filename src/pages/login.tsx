@@ -112,7 +112,10 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
     };
   } catch {
     return {
-      props: {},
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
     };
   }
 };
