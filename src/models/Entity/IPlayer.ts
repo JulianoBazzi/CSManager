@@ -1,12 +1,11 @@
+import ISelectOption from '~/models/ISelectOption';
+
 interface IPlayer {
   id: string;
   name: string;
   username: string;
-  patent: string;
+  patent: ISelectOption;
   active: boolean;
-
-  format_patent?: string;
-  format_active?: string;
 }
 
 export default IPlayer;

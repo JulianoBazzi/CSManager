@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+
 import { AddIcon } from '@chakra-ui/icons';
 import { IconButton, Text } from '@chakra-ui/react';
 import { User } from '@supabase/supabase-js';
@@ -8,26 +10,46 @@ import { parseCookies } from 'nookies';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
+import { PlayerModal, PlayerModalHandle } from '~/components/Modal/PlayerModal';
 import Template from '~/components/Template';
-import { useAuth } from '~/contexts/AuthContext';
+import { usePlayers } from '~/services/hooks/usePlayers';
 import supabase from '~/services/supabase';
 
 interface IPlayersProps extends GetServerSideProps {
-  user?: User;
+  user: User;
 }
 
 const Players: NextPage<IPlayersProps> = ({ user }) => {
-  const { changePassword } = useAuth();
+  const playerModalRef = useRef<PlayerModalHandle>(null);
+
+  const { data, isLoading, isFetching } = usePlayers(user.id);
+
+  useEffect(() => {
+    console.log('players', data);
+  }, [data]);
+
+  function handleAdd() {
+    playerModalRef.current?.onOpenModal({
+      userId: user.id,
+    });
+  }
 
   return (
     <>
       <Head>
         <title>Jogadores - CS Manager</title>
       </Head>
+      <PlayerModal ref={playerModalRef} />
       <Template user={user}>
         <Card>
-          <CardHeader title="Jogadores">
-            <IconButton colorScheme="green" icon={<AddIcon />} aria-label="Adicionar" title="Novo Jogador"></IconButton>
+          <CardHeader title="Jogadores" isFetching={isFetching && !isLoading}>
+            <IconButton
+              colorScheme="green"
+              icon={<AddIcon />}
+              aria-label="Adicionar"
+              title="Novo Jogador"
+              onClick={handleAdd}
+            />
           </CardHeader>
           <CardBody>
             <Text>AKSOASDKASKOKS KO</Text>
