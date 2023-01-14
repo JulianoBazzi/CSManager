@@ -5,3 +5,4 @@ export const NEXT_PUBLIC_SUPABASE_URL = String(process.env.NEXT_PUBLIC_SUPABASE_
 export const NEXT_PUBLIC_SUPABASE_ANON_KEY = String(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
 export const TABLE_PLAYERS = 'players';
+export const TABLE_SWEEPSTAKES = 'sweepstakes';

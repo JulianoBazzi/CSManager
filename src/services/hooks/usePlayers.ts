@@ -16,11 +16,7 @@ export function formatPlayer(player: IPlayerAPI): IPlayerAPI {
 }
 
 export async function getPlayers(userId: string): Promise<IPlayerAPI[]> {
-  const { data } = await supabase
-    .from(TABLE_PLAYERS)
-    .select()
-    .eq('user_id', userId)
-    .order('name', { ascending: false });
+  const { data } = await supabase.from(TABLE_PLAYERS).select().eq('user_id', userId).order('name', { ascending: true });
 
   const formattedData: IPlayerAPI[] = [];
 
