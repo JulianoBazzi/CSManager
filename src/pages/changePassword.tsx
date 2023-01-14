@@ -2,63 +2,56 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { Button } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { GetServerSidePropsContext } from 'next';
+import { User } from '@supabase/supabase-js';
+import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
-import Router from 'next/router';
 import { parseCookies } from 'nookies';
 import * as yup from 'yup';
 
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
-import { Input } from '~/components/Form/Input';
 import { PasswordInput } from '~/components/Form/PasswordInput';
 import Template from '~/components/Template';
 import { useAuth } from '~/contexts/AuthContext';
-import ISignIn from '~/models/ISignIn';
+import IChangePassword from '~/models/IChangePassword';
 import supabase from '~/services/supabase';
 
-export default function Login() {
-  const { signIn } = useAuth();
+interface IChangePasswordProps extends GetServerSideProps {
+  user?: User;
+}
 
-  const signInFormSchema = yup.object().shape({
-    email: yup.string().email().required(),
+const ChangePassword: NextPage<IChangePasswordProps> = ({ user }) => {
+  const { changePassword } = useAuth();
+
+  const changePasswordFormSchema = yup.object().shape({
     password: yup.string().required(),
+    password_confirmation: yup.string().oneOf([yup.ref('password'), null], 'As senhas devem ser iguais'),
   });
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<ISignIn>({
-    resolver: yupResolver(signInFormSchema),
+  } = useForm<IChangePassword>({
+    resolver: yupResolver(changePasswordFormSchema),
   });
 
-  const handleSignIn: SubmitHandler<ISignIn> = async (data) => {
-    await signIn(data);
+  const handleChangePassword: SubmitHandler<IChangePassword> = async (data) => {
+    await changePassword(data);
   };
 
   return (
     <>
       <Head>
-        <title>Entrar - CS Manager</title>
+        <title>Alterar Senha - CS Manager</title>
       </Head>
-      <Template>
+      <Template user={user}>
         <Card maxW={600}>
-          <CardHeader title="Entrar" />
-          <CardBody as="form" onSubmit={handleSubmit(handleSignIn)}>
-            <Input
-              type="email"
-              label="E-mail"
-              placeholder="E-mail"
-              error={errors.email}
-              {...register('email')}
-              isDisabled={isSubmitting}
-              isRequired
-            />
-
+          <CardHeader title="Alterar Senha" />
+          <CardBody as="form" onSubmit={handleSubmit(handleChangePassword)}>
             <PasswordInput
-              label="Senha"
+              label="Nova Senha"
               placeholder="Senha"
               error={errors.password}
               {...register('password')}
@@ -66,31 +59,36 @@ export default function Login() {
               isRequired
             />
 
-            <Button colorScheme="blue" type="submit" mt="6" isLoading={isSubmitting}>
-              Entrar
-            </Button>
-            <Button
-              colorScheme="green"
-              variant="outline"
-              mt="6"
+            <PasswordInput
+              label="Confirmar Nova Senha"
+              placeholder="Confirmar Senha"
+              error={errors.password_confirmation}
+              {...register('password_confirmation')}
               isDisabled={isSubmitting}
-              onClick={() => Router.push('/register')}
-            >
-              Registrar-se
+              isRequired
+            />
+
+            <Button colorScheme="blue" type="submit" mt="6" isLoading={isSubmitting}>
+              Alterar Senha
             </Button>
           </CardBody>
         </Card>
       </Template>
     </>
   );
-}
+};
+
+export default ChangePassword;
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   try {
     const { 'csm.token': token } = parseCookies(context);
     if (!token) {
       return {
-        props: {},
+        redirect: {
+          destination: '/login',
+          permanent: false,
+        },
       };
     }
 
@@ -100,14 +98,16 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
     if (!user) {
       return {
-        props: {},
+        redirect: {
+          destination: '/login',
+          permanent: false,
+        },
       };
     }
 
     return {
-      redirect: {
-        destination: '/',
-        permanent: false,
+      props: {
+        user: user,
       },
     };
   } catch {

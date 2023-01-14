@@ -1,18 +1,26 @@
 import { Box, Divider, Link, ListItem, Text, UnorderedList } from '@chakra-ui/react';
+import { User } from '@supabase/supabase-js';
+import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
+import { parseCookies } from 'nookies';
 
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
 import Template from '~/components/Template';
+import supabase from '~/services/supabase';
 
-export default function Home() {
+interface IAboutProps extends GetServerSideProps {
+  user?: User;
+}
+
+const About: NextPage<IAboutProps> = ({ user }) => {
   return (
     <>
       <Head>
         <title>Sobre - CS Manager</title>
       </Head>
-      <Template>
+      <Template user={user}>
         <Card>
           <CardHeader title="Sobre" />
           <CardBody>
@@ -47,4 +55,37 @@ export default function Home() {
       </Template>
     </>
   );
-}
+};
+
+export default About;
+
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+  try {
+    const { 'csm.token': token } = parseCookies(context);
+    if (!token) {
+      return {
+        props: {},
+      };
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser(token);
+
+    if (!user) {
+      return {
+        props: {},
+      };
+    }
+
+    return {
+      props: {
+        user: user,
+      },
+    };
+  } catch {
+    return {
+      props: {},
+    };
+  }
+};

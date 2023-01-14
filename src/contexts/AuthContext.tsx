@@ -1,11 +1,11 @@
-import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, ReactNode, useCallback, useContext, useMemo } from 'react';
 
-import { User } from '@supabase/supabase-js';
 import Router from 'next/router';
 import { destroyCookie, setCookie } from 'nookies';
 
 import { useFeedback } from '~/contexts/FeedbackContext';
-import { ISignIn } from '~/models/ISignIn';
+import IChangePassword from '~/models/IChangePassword';
+import ISignIn from '~/models/ISignIn';
 import supabase from '~/services/supabase';
 
 interface IAuthProviderProps {
@@ -13,28 +13,22 @@ interface IAuthProviderProps {
 }
 
 type AuthContextData = {
-  user?: User;
   signIn(credentials: ISignIn): Promise<void>;
+  changePassword(changePassword: IChangePassword): Promise<void>;
+  logout(): Promise<void>;
 };
 
 const AuthContext = createContext({} as AuthContextData);
 
-export function logout() {
-  destroyCookie(undefined, 'pri.user', { path: '/' });
-  destroyCookie(undefined, 'pri.token', { path: '/' });
-  destroyCookie(undefined, 'pri.refreshToken', { path: '/' });
-  destroyCookie(undefined, 'pri.workdayBreak', { path: '/' });
-
-  Router.push('/login');
-}
-
 export function AuthProvider({ children }: IAuthProviderProps) {
   const { errorFeedbackToast, warningFeedbackToast, successFeedbackToast } = useFeedback();
-  const [user, setUser] = useState<User>();
 
   const signIn = useCallback(
     async ({ email, password }: ISignIn) => {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const {
+        data: { session, user },
+        error,
+      } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -44,14 +38,13 @@ export function AuthProvider({ children }: IAuthProviderProps) {
         return;
       }
 
-      if (!data || !data.user) {
+      if (!session || !user) {
         warningFeedbackToast('Login', 'Usuário não encontrado!');
         return;
       }
 
-      setUser(data.user);
-      setCookie(undefined, 'csm.user', JSON.stringify(data.user), {
-        maxAge: 60 * 60 * 24 * 3, // 3 days
+      setCookie(undefined, 'csm.token', session.access_token, {
+        maxAge: 60 * 60 * 24 * 7, // 7 days
         path: '/',
       });
 
@@ -61,12 +54,42 @@ export function AuthProvider({ children }: IAuthProviderProps) {
     [errorFeedbackToast, warningFeedbackToast, successFeedbackToast]
   );
 
+  const logout = useCallback(async () => {
+    destroyCookie(undefined, 'csm.token', { path: '/' });
+    await supabase.auth.signOut();
+
+    Router.push('/login');
+  }, []);
+
+  const changePassword = useCallback(
+    async ({ password }: IChangePassword) => {
+      const { data, error } = await supabase.auth.updateUser({
+        password,
+      });
+
+      if (error) {
+        errorFeedbackToast('Alterar Senha', error);
+        return;
+      }
+
+      if (!data || !data.user) {
+        warningFeedbackToast('Alterar Senha', 'Usuário não encontrado!');
+        return;
+      }
+
+      successFeedbackToast('Alterar Senha', 'Senha alterada com sucesso!');
+      await logout();
+    },
+    [errorFeedbackToast, warningFeedbackToast, successFeedbackToast, logout]
+  );
+
   const authProviderValue = useMemo(
     () => ({
-      user,
       signIn,
+      changePassword,
+      logout,
     }),
-    [user, signIn]
+    [signIn, changePassword, logout]
   );
 
   return <AuthContext.Provider value={authProviderValue}>{children}</AuthContext.Provider>;

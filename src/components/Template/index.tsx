@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-import { HamburgerIcon, CloseIcon, MoonIcon, SunIcon } from '@chakra-ui/icons';
+import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import {
   Box,
   Flex,
@@ -15,7 +15,6 @@ import {
   useColorModeValue,
   useBreakpointValue,
   useDisclosure,
-  useColorMode,
   Avatar,
   Menu,
   MenuButton,
@@ -24,21 +23,23 @@ import {
   MenuItem,
   MenuDivider,
 } from '@chakra-ui/react';
+import { User } from '@supabase/supabase-js';
 import Router from 'next/router';
 
 import { useAuth } from '~/contexts/AuthContext';
-import { INavItem } from '~/models/INavItem';
+import INav from '~/models/INav';
+import INavItem from '~/models/INavItem';
 
 import packageInfo from '../../../package.json';
 
 interface ITemplateProps {
+  user?: User;
   children: ReactNode;
 }
 
-export default function Template({ children }: ITemplateProps) {
-  const { colorMode, toggleColorMode } = useColorMode();
+export default function Template({ user, children }: ITemplateProps) {
   const { isOpen, onToggle } = useDisclosure();
-  const { user } = useAuth();
+  const { logout } = useAuth();
 
   return (
     <Box>
@@ -71,15 +72,11 @@ export default function Template({ children }: ITemplateProps) {
             CS Manager
           </Text>
           <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-            <DesktopNav />
+            <DesktopNav user={user} />
           </Flex>
         </Flex>
 
         <Stack flex={{ base: 1, md: 0 }} justify={'flex-end'} direction={'row'} spacing={3} align="center" pr="2">
-          <Button variant="ghost" onClick={toggleColorMode}>
-            {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
-          </Button>
-
           {user ? (
             <Menu>
               <MenuButton>
@@ -87,10 +84,10 @@ export default function Template({ children }: ITemplateProps) {
               </MenuButton>
               <Portal>
                 <MenuList>
-                  <MenuItem>Meu Perfil</MenuItem>
-                  <MenuItem>Alterar Senha</MenuItem>
+                  <MenuItem onClick={() => Router.push('/profile')}>Meu Perfil</MenuItem>
+                  <MenuItem onClick={() => Router.push('/changePassword')}>Alterar Senha</MenuItem>
                   <MenuDivider />
-                  <MenuItem>Sair</MenuItem>
+                  <MenuItem onClick={() => logout()}>Sair</MenuItem>
                 </MenuList>
               </Portal>
             </Menu>
@@ -101,7 +98,7 @@ export default function Template({ children }: ITemplateProps) {
       </Flex>
 
       <Collapse in={isOpen} animateOpacity>
-        <MobileNav />
+        <MobileNav user={user} />
       </Collapse>
       <Flex w="100vw" align="center" flexDir="column" p="6">
         <Flex w="100%" maxW={1480} direction="column" align="center" gap="2">
@@ -115,43 +112,46 @@ export default function Template({ children }: ITemplateProps) {
   );
 }
 
-const DesktopNav = () => {
+const DesktopNav = ({ user }: INav) => {
   const linkColor = useColorModeValue('gray.600', 'gray.200');
   const linkHoverColor = useColorModeValue('gray.800', 'white');
 
   return (
     <Stack direction={'row'} spacing={4}>
-      {NAV_ITEMS.map((navItem) => (
-        <Box key={navItem.label}>
-          <Popover trigger={'hover'} placement={'bottom-start'}>
-            <PopoverTrigger>
-              <Link
-                p={2}
-                href={navItem.href ?? '#'}
-                fontSize={'sm'}
-                fontWeight={500}
-                color={linkColor}
-                _hover={{
-                  textDecoration: 'none',
-                  color: linkHoverColor,
-                }}
-              >
-                {navItem.label}
-              </Link>
-            </PopoverTrigger>
-          </Popover>
-        </Box>
-      ))}
+      {NAV_ITEMS.map(
+        (navItem) =>
+          ((navItem.auth && user) || !navItem.auth) && (
+            <Box key={navItem.label}>
+              <Popover trigger={'hover'} placement={'bottom-start'}>
+                <PopoverTrigger>
+                  <Link
+                    p={2}
+                    href={navItem.href ?? '#'}
+                    fontSize={'sm'}
+                    fontWeight={500}
+                    color={linkColor}
+                    _hover={{
+                      textDecoration: 'none',
+                      color: linkHoverColor,
+                    }}
+                  >
+                    {navItem.label}
+                  </Link>
+                </PopoverTrigger>
+              </Popover>
+            </Box>
+          )
+      )}
     </Stack>
   );
 };
 
-const MobileNav = () => {
+const MobileNav = ({ user }: INav) => {
   return (
     <Stack bg={useColorModeValue('white', 'gray.800')} p={4} display={{ md: 'none' }}>
-      {NAV_ITEMS.map((navItem) => (
-        <MobileNavItem key={navItem.label} {...navItem} />
-      ))}
+      {NAV_ITEMS.map(
+        (navItem) => ((navItem.auth && user) || !navItem.auth) && <MobileNavItem key={navItem.label} {...navItem} />
+      )}
     </Stack>
   );
 };
