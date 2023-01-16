@@ -16,7 +16,7 @@ import { Select } from '~/components/Form/Select';
 import { TABLE_PLAYERS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import IPlayer from '~/models/Entity/IPlayer';
-import IRecordModal from '~/models/IRecordModal';
+import IRecordModal from '~/models/Modal/IRecordModal';
 import { getPlayer } from '~/services/hooks/usePlayers';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';
@@ -157,7 +157,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
           <Checkbox {...register('active')}>Ativo</Checkbox>
         </Stack>
       </ModalBody>
-      <ModalFooter flexDirection={['column', 'row']} justifyContent="space-between">
+      <ModalFooter flexDirection={['column-reverse', 'row']} justifyContent="space-between" gap="3">
         <CancelSolidButton onClick={() => modalRef.current?.onCloseModal()} isDisabled={isSubmitting} />
         {recordModalProps?.id ? (
           <SaveSolidButton type="submit" isLoading={isSubmitting} />

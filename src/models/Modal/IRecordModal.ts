@@ -1,5 +1,5 @@
 interface IRecordModal {
-  id?: number;
+  id?: string;
   userId: string;
 }
 

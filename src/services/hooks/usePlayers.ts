@@ -27,7 +27,7 @@ export async function getPlayers(userId: string): Promise<IPlayerAPI[]> {
   return formattedData;
 }
 
-export async function getPlayer(id: number, userId: string): Promise<IPlayerAPI> {
+export async function getPlayer(id: string, userId: string): Promise<IPlayerAPI> {
   const { data } = await supabase.from(TABLE_PLAYERS).select().eq('user_id', userId).eq('id', id).limit(1).single();
 
   return formatPlayer(data);

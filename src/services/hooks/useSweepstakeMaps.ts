@@ -1,7 +1,7 @@
 import { useQuery, QueryOptions } from 'react-query';
 
 import { TABLE_SWEEPSTAKE_MAPS } from '~/config/constants';
-import ISweepstakeMapAPI from '~/models/Entity/ISweepstakeMapAPI';
+import ISweepstakeMapAPI from '~/models/Entity/Sweepstake/ISweepstakeMapAPI';
 import supabase from '~/services/supabase';
 
 export async function getSweepstakeMaps(sweepstakeId: string): Promise<ISweepstakeMapAPI[]> {
@@ -14,6 +14,12 @@ export async function getSweepstakeMaps(sweepstakeId: string): Promise<ISweepsta
     .eq('sweepstake_id', sweepstakeId);
 
   return data as ISweepstakeMapAPI[];
+}
+
+export async function getSweepstakeMap(id: string): Promise<ISweepstakeMapAPI> {
+  const { data } = await supabase.from(TABLE_SWEEPSTAKE_MAPS).select().eq('id', id).limit(1).single();
+
+  return data;
 }
 
 export function useSweepstakeMaps(sweepstakeId: string, options?: QueryOptions<ISweepstakeMapAPI[]>) {

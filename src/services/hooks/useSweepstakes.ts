@@ -2,7 +2,7 @@ import { useQuery, QueryOptions } from 'react-query';
 
 import { games } from '~/assets/games';
 import { TABLE_SWEEPSTAKES } from '~/config/constants';
-import ISweepstakeAPI from '~/models/Entity/ISweepstakeAPI';
+import ISweepstakeAPI from '~/models/Entity/Sweepstake/ISweepstakeAPI';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';
 import { formatDatetime } from '~/utils/formatDatetime';

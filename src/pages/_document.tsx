@@ -28,7 +28,7 @@ export default class MyDocument extends Document {
           <meta property="og:site_name" content="CS Manager" />
         </Head>
         <body>
-          <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+          <ColorModeScript initialColorMode={theme.config.initialColorMode} storageKey="csm-color-mode" />
           <Main />
           <NextScript />
         </body>

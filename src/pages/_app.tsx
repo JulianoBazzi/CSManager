@@ -12,6 +12,7 @@ import { theme } from '~/styles/theme';
 
 export default function App({ Component, pageProps }: AppProps) {
   Yup.setLocale(ptShort);
+  Yup.setLocale({ mixed: { notType: 'Valor inválido.' } });
 
   return (
     <ChakraProvider theme={theme}>
