@@ -9,7 +9,7 @@ interface ICardBodyProps extends ChakraCardBodyProps {
 export default function CardBody({ children, ...rest }: ICardBodyProps) {
   return (
     <ChakraCardBody w="100%" {...rest}>
-      <Stack spacing="4">{children}</Stack>
+      <Stack>{children}</Stack>
     </ChakraCardBody>
   );
 }

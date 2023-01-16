@@ -6,3 +6,5 @@ export const NEXT_PUBLIC_SUPABASE_ANON_KEY = String(process.env.NEXT_PUBLIC_SUPA
 
 export const TABLE_PLAYERS = 'players';
 export const TABLE_SWEEPSTAKES = 'sweepstakes';
+export const TABLE_SWEEPSTAKE_MAPS = 'sweepstake_maps';
+export const TABLE_SWEEPSTAKE_PLAYERS = 'sweepstake_players';

@@ -25,6 +25,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "7.41.5",
+    "react-icons": "^4.7.1",
     "react-query": "3.39.2",
     "yup": "0.32.11",
     "yup-locale-pt": "0.0.9"

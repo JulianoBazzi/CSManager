@@ -104,7 +104,10 @@ export default function Template({ user, children }: ITemplateProps) {
         <Flex w="100%" maxW={1480} direction="column" align="center" gap="2">
           {children}
           <Text color="gray.400" fontSize="sm">
-            v{packageInfo.version} - Desenvolvido por <Link href="https://bazzi.solutions">Bazzi Solutions</Link>
+            Desenvolvido por <Link href="https://bazzi.solutions">Bazzi Solutions</Link>
+          </Text>
+          <Text color="gray.400" fontSize="sm" mt="-1">
+            v{packageInfo.version}
           </Text>
         </Flex>
       </Flex>

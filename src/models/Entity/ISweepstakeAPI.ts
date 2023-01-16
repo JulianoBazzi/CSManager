@@ -1,5 +1,6 @@
 interface ISweepstakeAPI {
   id: string;
+  user_id: string;
   game_type: string;
   consider_patents: boolean;
   consider_previous_rankings: boolean;
