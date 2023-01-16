@@ -19,20 +19,18 @@
 Coming soon.
 
 ## Demo
-- [Demo on Netlify](https://csmanager.netlify.app/)
+- [Demo on Vercel](https://csmanager.vercel.app/)
 
 ## Technologies
-- [Vue.js 2](https://vuejs.org/)
-- [Vuex](https://vuex.vuejs.org/)
+- [Next.js](https://nextjs.org/)
 - [Typescript](https://www.typescriptlang.org/)
-- [BootstrapVue](https://bootstrap-vue.org/)
+- [Chakra UI](https://chakra-ui.com/)
 - [Supabase](https://supabase.com/)
 - [Lodash](https://lodash.com/)
-- [SweetAlert 2](https://sweetalert2.github.io/)
 
 ## Installation
 
 1. Clone the repository: `git@github.com:JulianoBazzi/CSManager.git`
 2. Access the directory: `cd CSManager`
 3. Configure the Supabase in: `.env.example`
-4. Run the Vue: `npm run serve`
+4. Run the Vue: `npm run dev`
