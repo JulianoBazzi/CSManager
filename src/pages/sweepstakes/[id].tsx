@@ -34,10 +34,10 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
   return (
     <>
       <Head>
-        <title>{`${sweepstake.format_departure_at} - ${sweepstake.format_short_game_type}`}</title>
+        <title>{`${sweepstake.format_short_game_type}: ${sweepstake.format_departure_at}`}</title>
         <meta
           name="description"
-          content={`${sweepstake.format_short_game_type}: ${sweepstake.quantity_players} jogadores e ${sweepstake.quantity_maps} mapas.`}
+          content={`Partida com ${sweepstake.quantity_players} jogadores e ${sweepstake.quantity_maps} mapas.`}
         />
       </Head>
       <Template user={user}>
