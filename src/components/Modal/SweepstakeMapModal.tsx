@@ -63,7 +63,7 @@ const SweepstakeMapModalBase: ForwardRefRenderFunction<SweepstakeMapModalHandle>
             });
           })
           .catch((error) => {
-            errorFeedbackToast('Atualizar Placar', error);
+            errorFeedbackToast('Placar', error);
             modalRef.current?.onCloseModal();
           })
           .finally(() => {
