@@ -98,9 +98,9 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
       });
     },
     {
-      onSuccess() {
+      async onSuccess() {
         successFeedbackToast('Jogador', `${recordModalProps?.id ? 'Atualizado' : 'Cadastrada'} com sucesso!`);
-        queryClient.invalidateQueries(TABLE_PLAYERS);
+        await queryClient.invalidateQueries(TABLE_PLAYERS);
         modalRef.current?.onCloseModal();
       },
       onError(error) {

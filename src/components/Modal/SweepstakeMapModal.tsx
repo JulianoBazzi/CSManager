@@ -92,9 +92,9 @@ const SweepstakeMapModalBase: ForwardRefRenderFunction<SweepstakeMapModalHandle>
         .eq('id', recordModalProps?.id);
     },
     {
-      onSuccess() {
+      async onSuccess() {
         successFeedbackToast('Placar', 'Atualizado com sucesso!');
-        queryClient.invalidateQueries([TABLE_SWEEPSTAKE_MAPS, recordModalProps?.sweepstakeMap?.sweepstake_id]);
+        await queryClient.invalidateQueries([TABLE_SWEEPSTAKE_MAPS, recordModalProps?.sweepstakeMap?.sweepstake_id]);
         modalRef.current?.onCloseModal();
       },
       onError(error) {
@@ -141,8 +141,8 @@ const SweepstakeMapModalBase: ForwardRefRenderFunction<SweepstakeMapModalHandle>
                     autoFocus
                   />
                   <NumberInput
-                    error={errors.team_two_score_1}
-                    {...register('team_two_score_1')}
+                    error={errors.team_one_score_2}
+                    {...register('team_one_score_2')}
                     isLoading={isLoading}
                     isDisabled={isSubmitting}
                     isRequired
@@ -154,8 +154,8 @@ const SweepstakeMapModalBase: ForwardRefRenderFunction<SweepstakeMapModalHandle>
                     color={recordModalProps?.sweepstakeMap?.team_start_from_terrorist === 1 ? 'red.500' : 'inherit'}
                   />
                   <NumberInput
-                    error={errors.team_one_score_2}
-                    {...register('team_one_score_2')}
+                    error={errors.team_two_score_1}
+                    {...register('team_two_score_1')}
                     isLoading={isLoading}
                     isDisabled={isSubmitting}
                     isRequired

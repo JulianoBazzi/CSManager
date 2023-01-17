@@ -72,9 +72,9 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
         .eq('id', sweepstake_player_id);
     },
     {
-      onSuccess() {
+      async onSuccess() {
         successFeedbackToast('Trocar de Time', 'Jogador movido com sucesso!');
-        queryClient.invalidateQueries([TABLE_SWEEPSTAKE_PLAYERS, sweepstake.id]);
+        await queryClient.invalidateQueries([TABLE_SWEEPSTAKE_PLAYERS, sweepstake.id]);
       },
       onError(error) {
         errorFeedbackToast('Trocar de Time', error);
@@ -184,9 +184,10 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
                           alt={sweepstakePlayer.players.patent}
                           objectFit="scale-down"
                           maxH="24px"
+                          title={sweepstakePlayer.players.format_patent}
                         />
                       </Flex>
-                      {user && user.id === sweepstake.user_id && (
+                      {!isMobile && user && user.id === sweepstake.user_id && (
                         <IconButton
                           colorScheme="gray"
                           icon={<Icon as={RiArrowLeftRightLine} fontSize="xl" />}
@@ -223,9 +224,10 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
                           alt={sweepstakePlayer.players.patent}
                           objectFit="scale-down"
                           maxH="24px"
+                          title={sweepstakePlayer.players.format_patent}
                         />
                       </Flex>
-                      {user && user.id === sweepstake.user_id && (
+                      {!isMobile && user && user.id === sweepstake.user_id && (
                         <IconButton
                           colorScheme="gray"
                           icon={<Icon as={RiArrowLeftRightLine} fontSize="xl" />}
