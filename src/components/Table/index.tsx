@@ -1,6 +1,7 @@
-import { forwardRef, ForwardRefRenderFunction, useState } from 'react';
+import { forwardRef, ForwardRefRenderFunction, useEffect, useState } from 'react';
 
 import { Table as ChakraTable, TableContainer, Thead, Tr, Th, Tbody, Td, Skeleton, Text, Flex } from '@chakra-ui/react';
+import { slice } from 'lodash';
 
 import { FirstPageGhostIconButton } from '~/components/IconButton/FirstPageGhostIconButton';
 import { LastPageGhostIconButton } from '~/components/IconButton/LastPageGhostIconButton';
@@ -18,16 +19,22 @@ interface ITableProps<T> {
 const emptyArray: never[] = [];
 
 const TableBase: ForwardRefRenderFunction<HTMLTableElement, ITableProps<any>> = (
-  { data, columns, isLoading }: ITableProps<any>,
+  { data: dataProp, columns, isLoading }: ITableProps<any>,
   ref
 ) => {
-  const dataFiltered = data || emptyArray;
+  const data = dataProp || emptyArray;
   const [currentPage, setCurrentPage] = useState(1);
+  const [dataFiltered, setDataFiltered] = useState(data);
 
-  const totalRecords = dataFiltered.length || 0;
+  const totalRecords = data.length || 0;
   const totalPages = Math.ceil(totalRecords / 10);
   const startRecordNumber = currentPage > 1 ? (currentPage - 1) * 10 + 1 : 1;
   const endRecordNumber = totalRecords > currentPage * 10 ? currentPage * 10 : totalRecords;
+
+  useEffect(() => {
+    setDataFiltered(slice(data, startRecordNumber - 1, endRecordNumber));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, data]);
 
   return (
     <>
@@ -52,10 +59,10 @@ const TableBase: ForwardRefRenderFunction<HTMLTableElement, ITableProps<any>> = 
                 </Tr>
               ))}
             {totalRecords > 0 &&
-              data?.map((item) => (
+              dataFiltered?.map((item) => (
                 <Tr key={item.id}>
                   {columns.map((column) => (
-                    <Td>{getProperty(item, column.field)}</Td>
+                    <Td key={column.field}>{getProperty(item, column.field)}</Td>
                   ))}
                 </Tr>
               ))}

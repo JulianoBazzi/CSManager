@@ -132,6 +132,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
             isLoading={isLoading}
             isDisabled={isSubmitting}
             isRequired
+            autoFocus
           />
           <Input
             label="Usuário da Steam"

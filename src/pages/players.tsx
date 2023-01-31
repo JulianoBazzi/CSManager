@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { AddIcon } from '@chakra-ui/icons';
 import { IconButton } from '@chakra-ui/react';
@@ -6,11 +6,13 @@ import { User } from '@supabase/supabase-js';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
+import removeAccents from 'remove-accents';
 
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
 import { PlayerModal, PlayerModalHandle } from '~/components/Modal/PlayerModal';
+import { SearchBar } from '~/components/SearchBar';
 import { Table } from '~/components/Table';
 import Template from '~/components/Template';
 import ITableColumn from '~/models/ITableColumn';
@@ -26,9 +28,18 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
 
   const { data, isLoading, isFetching } = usePlayers(user.id);
 
+  const [search, setSearch] = useState('');
+  const [dataFiltered, setDataFiltered] = useState(data);
+
   useEffect(() => {
-    console.log('players', data);
-  }, [data]);
+    setDataFiltered(
+      data?.filter(
+        (player) =>
+          removeAccents(player.name.toLowerCase()).includes(removeAccents(search)) ||
+          removeAccents(player.username.toLowerCase()).includes(removeAccents(search))
+      )
+    );
+  }, [search, data]);
 
   function handleAdd() {
     playerModalRef.current?.onOpenModal({
@@ -73,7 +84,8 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
             />
           </CardHeader>
           <CardBody>
-            <Table data={data} columns={columns} isLoading={isLoading} />
+            <SearchBar onSearch={(value) => setSearch(value)} isDisabled={isFetching} />
+            <Table data={dataFiltered} columns={columns} isLoading={isLoading} />
           </CardBody>
         </Card>
       </Template>
