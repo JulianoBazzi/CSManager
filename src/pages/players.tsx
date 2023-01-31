@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 import { AddIcon } from '@chakra-ui/icons';
-import { IconButton, Text } from '@chakra-ui/react';
+import { IconButton } from '@chakra-ui/react';
 import { User } from '@supabase/supabase-js';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
@@ -11,7 +11,9 @@ import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
 import { PlayerModal, PlayerModalHandle } from '~/components/Modal/PlayerModal';
+import { Table } from '~/components/Table';
 import Template from '~/components/Template';
+import ITableColumn from '~/models/ITableColumn';
 import { usePlayers } from '~/services/hooks/usePlayers';
 import supabase from '~/services/supabase';
 
@@ -34,6 +36,25 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
     });
   }
 
+  const columns: ITableColumn[] = [
+    {
+      header: 'Nome',
+      field: 'name',
+    },
+    {
+      header: 'Steam',
+      field: 'username',
+    },
+    {
+      header: 'Patente',
+      field: 'patent',
+    },
+    {
+      header: 'Ativo',
+      field: 'active',
+    },
+  ];
+
   return (
     <>
       <Head>
@@ -52,7 +73,7 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
             />
           </CardHeader>
           <CardBody>
-            <Text>AKSOASDKASKOKS KO</Text>
+            <Table data={data} columns={columns} isLoading={isLoading} />
           </CardBody>
         </Card>
       </Template>

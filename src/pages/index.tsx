@@ -1,4 +1,4 @@
-import { Text } from '@chakra-ui/react';
+import { Box, Divider, Link, ListItem, Text, UnorderedList } from '@chakra-ui/react';
 import { User } from '@supabase/supabase-js';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
@@ -19,17 +19,37 @@ const Home: NextPage<IHomeProps> = ({ user }) => {
     <>
       <Head>
         <title>CS Manager</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
       </Head>
       <Template user={user}>
         <Card>
-          <CardHeader title="Início" />
+          <CardHeader title="CS Manager" />
           <CardBody>
-            <Text>Em Breve</Text>
-            <div className="container" style={{ padding: '50px 0 100px 0' }}>
-              {user ? <p>Account page will go here.</p> : <p>Not is session.</p>}
-            </div>
+            <Box>
+              <Text>Tecnologias Utilizadas:</Text>
+              <UnorderedList mt="2">
+                <ListItem>
+                  <Link href="https://nextjs.org">Next.js</Link>
+                </ListItem>
+                <ListItem>
+                  <Link href="https://www.typescriptlang.org">TypeScript</Link>
+                </ListItem>
+                <ListItem>
+                  <Link href="https://chakra-ui.com">Chakra UI</Link>
+                </ListItem>
+                <ListItem>
+                  <Link href="https://supabase.com">Supabase</Link>
+                </ListItem>
+              </UnorderedList>
+            </Box>
+            <Divider mt="-2" />
+            <Box>
+              <Text>Link do Projeto:</Text>
+              <UnorderedList mt="2">
+                <ListItem>
+                  <Link href="https://github.com/JulianoBazzi/CSManager">GitHub</Link>
+                </ListItem>
+              </UnorderedList>
+            </Box>
           </CardBody>
         </Card>
       </Template>

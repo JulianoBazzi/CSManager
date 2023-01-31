@@ -200,8 +200,4 @@ const NAV_ITEMS: Array<INavItem> = [
     href: '/sweepstakes',
     auth: true,
   },
-  {
-    label: 'Sobre',
-    href: '/about',
-  },
 ];
