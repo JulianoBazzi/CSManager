@@ -1,4 +1,4 @@
-import IPlayerAPI from '~/models/Entity/IPlayerAPI';
+import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
 
 interface ISweepstakePlayerAPI {
   id: string;
