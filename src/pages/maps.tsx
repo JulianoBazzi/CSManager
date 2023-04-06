@@ -8,27 +8,27 @@ import { parseCookies } from 'nookies';
 import removeAccents from 'remove-accents';
 
 import { ActiveBadge } from '~/components/Badge/ActiveBadge';
-import { PatentBadge } from '~/components/Badge/PatentBadge';
+import { MapBadge } from '~/components/Badge/MapBadge';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
 import { Table } from '~/components/Form/Table';
 import { AddIconButton } from '~/components/IconButton/AddIconButton';
-import { PlayerModal, PlayerModalHandle } from '~/components/Modal/PlayerModal';
+import { MapModal, MapModalHandle } from '~/components/Modal/MapModal';
 import { SearchBar } from '~/components/SearchBar';
 import Template from '~/components/Template';
-import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
-import { usePlayers } from '~/services/hooks/usePlayers';
+import IMapAPI from '~/models/Entity/Map/IMapAPI';
+import { useMaps } from '~/services/hooks/useMaps';
 import supabase from '~/services/supabase';
 
-interface IPlayersProps extends GetServerSideProps {
+interface IMapsProps extends GetServerSideProps {
   user: User;
 }
 
-const Players: NextPage<IPlayersProps> = ({ user }) => {
-  const playerModalRef = useRef<PlayerModalHandle>(null);
+const Maps: NextPage<IMapsProps> = ({ user }) => {
+  const mapModalRef = useRef<MapModalHandle>(null);
 
-  const { data, isLoading, isFetching } = usePlayers(user.id);
+  const { data, isLoading, isFetching } = useMaps(user.id);
 
   const [search, setSearch] = useState('');
   const [dataFiltered, setDataFiltered] = useState(data);
@@ -36,37 +36,38 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
   useEffect(() => {
     setDataFiltered(
       data?.filter(
-        (player) =>
-          removeAccents(player.name.toLowerCase()).includes(removeAccents(search.toLowerCase())) ||
-          removeAccents(player.username.toLowerCase()).includes(removeAccents(search.toLowerCase()))
+        (map) =>
+          removeAccents(map.name.toLowerCase()).includes(removeAccents(search.toLowerCase())) ||
+          removeAccents(map.format_short_game_type.toLowerCase()).includes(removeAccents(search.toLowerCase())) ||
+          removeAccents(map.format_map_type.toLowerCase()).includes(removeAccents(search.toLowerCase()))
       )
     );
   }, [search, data]);
 
   function handleShowModal(id?: string) {
-    playerModalRef.current?.onOpenModal({
+    mapModalRef.current?.onOpenModal({
       id,
       userId: user.id,
     });
   }
 
-  const columns: ColumnDef<IPlayerAPI>[] = [
+  const columns: ColumnDef<IMapAPI>[] = [
     {
       accessorKey: 'name',
       header: 'Nome',
       enableSorting: false,
     },
     {
-      accessorKey: 'username',
-      header: 'Steam',
-      enableSorting: false,
-    },
-    {
-      accessorKey: 'patent',
-      header: 'Patente',
+      accessorKey: 'format_map_type',
+      header: 'Categoria',
       enableSorting: false,
       // eslint-disable-next-line react/no-unstable-nested-components
-      cell: ({ row }) => <PatentBadge patent={row.original.patent} format_patent={row.original.format_patent} />,
+      cell: ({ row }) => <MapBadge type={row.original.map_type} format_type={row.original.format_map_type} />,
+    },
+    {
+      accessorKey: 'format_short_game_type',
+      header: 'Jogo',
+      enableSorting: false,
     },
     {
       accessorKey: 'active',
@@ -80,12 +81,12 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
   return (
     <>
       <Head>
-        <title>Jogadores - CS Manager</title>
+        <title>Mapas - CS Manager</title>
       </Head>
-      <PlayerModal ref={playerModalRef} />
+      <MapModal ref={mapModalRef} />
       <Template user={user}>
         <Card>
-          <CardHeader title="Jogadores" isFetching={isFetching && !isLoading}>
+          <CardHeader title="Mapas" isFetching={isFetching && !isLoading}>
             <AddIconButton onClick={() => handleShowModal()} />
           </CardHeader>
           <CardBody>
@@ -103,7 +104,7 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
   );
 };
 
-export default Players;
+export default Maps;
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   try {

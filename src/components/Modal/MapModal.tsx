@@ -6,7 +6,8 @@ import { Checkbox, ModalBody, ModalFooter, Stack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
-import { patents } from '~/assets/patents';
+import { games } from '~/assets/games';
+import { maps } from '~/assets/maps';
 import { AddSolidButton } from '~/components/Button/AddSolidButton';
 import { CancelSolidButton } from '~/components/Button/CancelSolidButton';
 import { SaveSolidButton } from '~/components/Button/SaveSolidButton';
@@ -15,17 +16,18 @@ import { Modal, ModalHandle } from '~/components/Form/Modal';
 import { Select } from '~/components/Form/Select';
 import { TABLE_PLAYERS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
+import IMap from '~/models/Entity/Map/IMap';
 import IPlayer from '~/models/Entity/Player/IPlayer';
 import IRecordModal from '~/models/Modal/IRecordModal';
-import { getPlayer } from '~/services/hooks/usePlayers';
+import { getMap } from '~/services/hooks/useMaps';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';
 
-export type PlayerModalHandle = {
+export type MapModalHandle = {
   onOpenModal: (recordModal?: IRecordModal) => void;
 };
 
-const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) => {
+const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
   const modalRef = useRef<ModalHandle>(null);
 
   const { errorFeedbackToast, successFeedbackToast } = useFeedback();
@@ -34,9 +36,16 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
 
   const playerSchema = yup.object().shape({
     name: yup.string().min(3).required(),
-    username: yup.string().min(3).required(),
     active: yup.boolean().required(),
-    patent: yup
+    map_type: yup
+      .object()
+      .shape({
+        id: yup.string().required(),
+        name: yup.string(),
+      })
+      .nullable()
+      .required(),
+    game_type: yup
       .object()
       .shape({
         id: yup.string().required(),
@@ -53,7 +62,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
     setValue,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm<Partial<IPlayer>>({
+  } = useForm<Partial<IMap>>({
     resolver: yupResolver(playerSchema),
   });
 
@@ -62,15 +71,16 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
       setRecordModalProps(recordModal);
       if (recordModal?.id) {
         setIsLoading(true);
-        getPlayer(recordModal?.id, recordModal?.userId)
+        getMap(recordModal?.id, recordModal?.userId)
           .then((response) => {
             reset({
               ...response,
-              patent: patents.find((patent) => patent.id === response.patent),
+              map_type: maps.find((map) => map.id === response.map_type),
+              game_type: games.find((game) => game.id === response.game_type),
             });
           })
           .catch((error) => {
-            errorFeedbackToast('Jogador', error);
+            errorFeedbackToast('Mapa', error);
             modalRef.current?.onCloseModal();
           })
           .finally(() => {
@@ -99,12 +109,12 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
     },
     {
       async onSuccess() {
-        successFeedbackToast('Jogador', `${recordModalProps?.id ? 'Atualizado' : 'Cadastrado'} com sucesso!`);
+        successFeedbackToast('Mapa', `${recordModalProps?.id ? 'Atualizado' : 'Cadastrada'} com sucesso!`);
         await queryClient.invalidateQueries(TABLE_PLAYERS);
         modalRef.current?.onCloseModal();
       },
       onError(error) {
-        errorFeedbackToast('Jogador', error);
+        errorFeedbackToast('Mapa', error);
       },
     }
   );
@@ -122,7 +132,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
   );
 
   return (
-    <Modal title="Jogador" ref={modalRef} size="3xl" onSubmit={handleSubmit(handleOk)}>
+    <Modal title="Mapa" ref={modalRef} size="3xl" onSubmit={handleSubmit(handleOk)}>
       <ModalBody>
         <Stack>
           <Input
@@ -134,25 +144,30 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
             isRequired
             autoFocus
           />
-          <Input
-            label="Usuário da Steam"
-            error={errors.username}
-            {...register('username')}
-            isLoading={isLoading}
-            isDisabled={isSubmitting}
-            isRequired
-          />
           <Select
-            label="Patente"
-            options={patents}
-            value={watch('patent')}
-            error={errors.patent?.id}
-            {...register('patent')}
+            label="Categoria"
+            options={maps}
+            value={watch('map_type')}
+            error={errors.map_type?.id}
+            {...register('map_type')}
             isLoading={isLoading}
             isDisabled={isSubmitting}
             isRequired
             onChange={(option) => {
-              setValue('patent', option);
+              setValue('map_type', option);
+            }}
+          />
+          <Select
+            label="Jogo"
+            options={games}
+            value={watch('game_type')}
+            error={errors.game_type?.id}
+            {...register('game_type')}
+            isLoading={isLoading}
+            isDisabled={isSubmitting}
+            isRequired
+            onChange={(option) => {
+              setValue('game_type', option);
             }}
           />
           <Checkbox {...register('active')} isDisabled={isLoading || isSubmitting}>
@@ -172,4 +187,4 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
   );
 };
 
-export const PlayerModal = forwardRef(PlayerModalBase);
+export const MapModal = forwardRef(MapModalBase);

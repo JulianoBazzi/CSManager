@@ -1,4 +1,4 @@
-import IMapAPI from '~/models/Entity/IMapAPI';
+import IMapAPI from '~/models/Entity/Map/IMapAPI';
 
 interface ISweepstakeMapAPI {
   id: string;

@@ -2,7 +2,7 @@ import { useQuery, QueryOptions } from 'react-query';
 
 import { patents } from '~/assets/patents';
 import { TABLE_PLAYERS } from '~/config/constants';
-import IPlayerAPI from '~/models/Entity/IPlayerAPI';
+import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';
 import { formatBoolean } from '~/utils/formatBoolean';

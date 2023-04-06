@@ -5,8 +5,8 @@ interface IPlayerAPI {
   patent: string;
   active: boolean;
 
-  format_patent?: string;
-  format_active?: string;
+  format_patent: string;
+  format_active: string;
 }
 
 export default IPlayerAPI;
