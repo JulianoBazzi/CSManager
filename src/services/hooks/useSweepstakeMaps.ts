@@ -13,7 +13,7 @@ export async function getSweepstakeMaps(sweepstakeId: string): Promise<ISweepsta
     .order('selected_at', { ascending: true })
     .eq('sweepstake_id', sweepstakeId);
 
-  return data as ISweepstakeMapAPI[];
+  return data as unknown as ISweepstakeMapAPI[];
 }
 
 export async function getSweepstakeMap(id: string): Promise<ISweepstakeMapAPI> {
