@@ -1,9 +1,9 @@
 import { forwardRef, ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { useMutation } from 'react-query';
 
 import { Checkbox, ModalBody, ModalFooter, Stack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useMutation } from '@tanstack/react-query';
 import * as yup from 'yup';
 
 import { patents } from '~/assets/patents';
@@ -77,7 +77,9 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
             setIsLoading(false);
           });
       } else {
-        reset({});
+        reset({
+          active: true,
+        });
       }
       modalRef.current?.onOpenModal();
     },
@@ -100,7 +102,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
     {
       async onSuccess() {
         successFeedbackToast('Jogador', `${recordModalProps?.id ? 'Atualizado' : 'Cadastrado'} com sucesso!`);
-        await queryClient.invalidateQueries(TABLE_PLAYERS);
+        await queryClient.invalidateQueries([TABLE_PLAYERS]);
         modalRef.current?.onCloseModal();
       },
       onError(error) {

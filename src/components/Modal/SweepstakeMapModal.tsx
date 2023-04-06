@@ -3,10 +3,10 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { GiUnlitBomb } from 'react-icons/gi';
 import { MdEmojiPeople } from 'react-icons/md';
 import { RiUser3Fill, RiUser3Line } from 'react-icons/ri';
-import { useMutation } from 'react-query';
 
 import { ModalBody, ModalFooter, Stack, Divider, Flex, Icon } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useMutation } from '@tanstack/react-query';
 import * as yup from 'yup';
 
 import { CancelSolidButton } from '~/components/Button/CancelSolidButton';

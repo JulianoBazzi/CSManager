@@ -1,4 +1,4 @@
-import { useQuery, QueryOptions } from 'react-query';
+import { useQuery, QueryOptions } from '@tanstack/react-query';
 
 import { TABLE_SWEEPSTAKE_MAPS } from '~/config/constants';
 import ISweepstakeMapAPI from '~/models/Entity/Sweepstake/ISweepstakeMapAPI';

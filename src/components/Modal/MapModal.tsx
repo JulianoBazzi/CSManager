@@ -1,9 +1,9 @@
 import { forwardRef, ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { useMutation } from 'react-query';
 
 import { Checkbox, ModalBody, ModalFooter, Stack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useMutation } from '@tanstack/react-query';
 import * as yup from 'yup';
 
 import { games } from '~/assets/games';
@@ -14,10 +14,9 @@ import { SaveSolidButton } from '~/components/Button/SaveSolidButton';
 import { Input } from '~/components/Form/Input';
 import { Modal, ModalHandle } from '~/components/Form/Modal';
 import { Select } from '~/components/Form/Select';
-import { TABLE_PLAYERS } from '~/config/constants';
+import { TABLE_MAPS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import IMap from '~/models/Entity/Map/IMap';
-import IPlayer from '~/models/Entity/Player/IPlayer';
 import IRecordModal from '~/models/Modal/IRecordModal';
 import { getMap } from '~/services/hooks/useMaps';
 import { queryClient } from '~/services/queryClient';
@@ -34,7 +33,7 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
   const [isLoading, setIsLoading] = useState(false);
   const [recordModalProps, setRecordModalProps] = useState<IRecordModal | undefined>({} as IRecordModal);
 
-  const playerSchema = yup.object().shape({
+  const mapSchema = yup.object().shape({
     name: yup.string().min(3).required(),
     active: yup.boolean().required(),
     map_type: yup
@@ -63,7 +62,7 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
     watch,
     formState: { errors, isSubmitting },
   } = useForm<Partial<IMap>>({
-    resolver: yupResolver(playerSchema),
+    resolver: yupResolver(mapSchema),
   });
 
   const onOpenModal = useCallback(
@@ -87,30 +86,32 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
             setIsLoading(false);
           });
       } else {
-        reset({});
+        reset({
+          active: true,
+        });
       }
       modalRef.current?.onOpenModal();
     },
     [errorFeedbackToast, reset]
   );
 
-  const createOrUpdatePlayer = useMutation(
-    async (player: Partial<IPlayer>) => {
-      const { id, name, username, patent, active } = player;
+  const createOrUpdateMap = useMutation(
+    async (map: Partial<IMap>) => {
+      const { id, name, game_type, map_type, active } = map;
 
-      await supabase.from(TABLE_PLAYERS).upsert({
+      await supabase.from(TABLE_MAPS).upsert({
         id,
         user_id: recordModalProps?.userId,
         name,
-        username,
-        patent: patent?.id,
+        map_type: map_type?.id,
+        game_type: game_type?.id,
         active,
       });
     },
     {
       async onSuccess() {
         successFeedbackToast('Mapa', `${recordModalProps?.id ? 'Atualizado' : 'Cadastrada'} com sucesso!`);
-        await queryClient.invalidateQueries(TABLE_PLAYERS);
+        await queryClient.invalidateQueries([TABLE_MAPS]);
         modalRef.current?.onCloseModal();
       },
       onError(error) {
@@ -119,8 +120,8 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
     }
   );
 
-  const handleOk: SubmitHandler<Partial<IPlayer>> = async (data) => {
-    await createOrUpdatePlayer.mutateAsync(data);
+  const handleOk: SubmitHandler<Partial<IMap>> = async (data) => {
+    await createOrUpdateMap.mutateAsync(data);
   };
 
   useImperativeHandle(

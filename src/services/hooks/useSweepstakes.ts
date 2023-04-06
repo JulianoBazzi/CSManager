@@ -1,4 +1,4 @@
-import { useQuery, QueryOptions } from 'react-query';
+import { useQuery, QueryOptions } from '@tanstack/react-query';
 
 import { games } from '~/assets/games';
 import { TABLE_SWEEPSTAKES } from '~/config/constants';

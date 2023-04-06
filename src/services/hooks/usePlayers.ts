@@ -1,4 +1,4 @@
-import { useQuery, QueryOptions } from 'react-query';
+import { useQuery, QueryOptions } from '@tanstack/react-query';
 
 import { patents } from '~/assets/patents';
 import { TABLE_PLAYERS } from '~/config/constants';

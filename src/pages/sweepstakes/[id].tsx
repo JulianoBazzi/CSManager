@@ -11,10 +11,10 @@ import {
   RiUser3Line,
   RiUserSettingsLine,
 } from 'react-icons/ri';
-import { useMutation } from 'react-query';
 
 import { Divider, Flex, Icon, IconButton, Stack, Text, useBreakpointValue, Image } from '@chakra-ui/react';
 import { User } from '@supabase/supabase-js';
+import { useMutation } from '@tanstack/react-query';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
