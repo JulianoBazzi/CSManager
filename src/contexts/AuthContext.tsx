@@ -5,6 +5,7 @@ import { destroyCookie, setCookie } from 'nookies';
 
 import { useFeedback } from '~/contexts/FeedbackContext';
 import IChangePassword from '~/models/IChangePassword';
+import IProfile from '~/models/IProfile';
 import ISignIn from '~/models/ISignIn';
 import supabase from '~/services/supabase';
 
@@ -15,6 +16,7 @@ interface IAuthProviderProps {
 type AuthContextData = {
   signIn(credentials: ISignIn): Promise<void>;
   changePassword(changePassword: IChangePassword): Promise<void>;
+  updateProfile(profile: IProfile): Promise<void>;
   logout(): Promise<void>;
 };
 
@@ -83,13 +85,39 @@ export function AuthProvider({ children }: IAuthProviderProps) {
     [errorFeedbackToast, warningFeedbackToast, successFeedbackToast, logout]
   );
 
+  const updateProfile = useCallback(
+    async ({ name, game_type }: IProfile) => {
+      const { data, error } = await supabase.auth.updateUser({
+        data: {
+          name,
+          gameType: game_type?.id,
+        },
+      });
+
+      if (error) {
+        errorFeedbackToast('Meu Perfil', error);
+        return;
+      }
+
+      if (!data || !data.user) {
+        warningFeedbackToast('Meu Perfil', 'Usuário não encontrado!');
+        return;
+      }
+
+      successFeedbackToast('Meu Perfil', 'Perfil atualizado com sucesso!');
+      await Router.push('/');
+    },
+    [errorFeedbackToast, warningFeedbackToast, successFeedbackToast]
+  );
+
   const authProviderValue = useMemo(
     () => ({
       signIn,
       changePassword,
+      updateProfile,
       logout,
     }),
-    [signIn, changePassword, logout]
+    [signIn, changePassword, updateProfile, logout]
   );
 
   return <AuthContext.Provider value={authProviderValue}>{children}</AuthContext.Provider>;

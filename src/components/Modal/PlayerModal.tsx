@@ -62,7 +62,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
       setRecordModalProps(recordModal);
       if (recordModal?.id) {
         setIsLoading(true);
-        getPlayer(recordModal?.id, recordModal?.userId)
+        getPlayer(recordModal?.id, recordModal?.user.id)
           .then((response) => {
             reset({
               ...response,
@@ -92,7 +92,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
 
       await supabase.from(TABLE_PLAYERS).upsert({
         id,
-        user_id: recordModalProps?.userId,
+        user_id: recordModalProps?.user.id,
         name,
         username,
         patent: patent?.id,
@@ -126,7 +126,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
   return (
     <Modal title="Jogador" ref={modalRef} size="3xl" onSubmit={handleSubmit(handleOk)}>
       <ModalBody>
-        <Stack>
+        <Stack spacing="4">
           <Input
             label="Nome"
             error={errors.name}

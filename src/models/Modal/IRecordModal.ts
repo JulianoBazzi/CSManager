@@ -1,6 +1,8 @@
+import { User } from '@supabase/supabase-js';
+
 interface IRecordModal {
   id?: string;
-  userId: string;
+  user: User;
 }
 
 export default IRecordModal;

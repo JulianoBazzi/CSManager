@@ -8,71 +8,89 @@ import Head from 'next/head';
 import { parseCookies } from 'nookies';
 import * as yup from 'yup';
 
+import { games } from '~/assets/games';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
-import { PasswordInput } from '~/components/Form/PasswordInput';
+import { Input } from '~/components/Form/Input';
+import { Select } from '~/components/Form/Select';
 import Template from '~/components/Template';
 import { useAuth } from '~/contexts/AuthContext';
-import IChangePassword from '~/models/IChangePassword';
+import IProfile from '~/models/IProfile';
 import supabase from '~/services/supabase';
 
-interface IChangePasswordProps extends GetServerSideProps {
-  user?: User;
+interface IProfileProps extends GetServerSideProps {
+  user: User;
 }
 
-const ChangePassword: NextPage<IChangePasswordProps> = ({ user }) => {
-  const { changePassword } = useAuth();
+const Profile: NextPage<IProfileProps> = ({ user }) => {
+  const { updateProfile } = useAuth();
 
-  const changePasswordFormSchema = yup.object().shape({
-    password: yup.string().required(),
-    password_confirmation: yup.string().oneOf([yup.ref('password')], 'As senhas devem ser iguais'),
+  const profileFormSchema = yup.object().shape({
+    name: yup.string().required(),
+    game_type: yup
+      .object()
+      .shape({
+        id: yup.string().required(),
+        name: yup.string(),
+      })
+      .nullable()
+      .required(),
   });
 
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
-  } = useForm<IChangePassword>({
-    resolver: yupResolver(changePasswordFormSchema),
+  } = useForm<IProfile>({
+    resolver: yupResolver(profileFormSchema),
+    defaultValues: {
+      name: user.user_metadata.name,
+      game_type: games.find((game) => game.id === user.user_metadata.gameType),
+    },
   });
 
-  const handleChangePassword: SubmitHandler<IChangePassword> = async (data) => {
-    await changePassword(data);
+  const handleUpdateProfile: SubmitHandler<IProfile> = async (data) => {
+    await updateProfile(data);
   };
 
   return (
     <>
       <Head>
-        <title>Alterar Senha - CS Manager</title>
+        <title>Meu Perfil - CS Manager</title>
       </Head>
       <Template user={user}>
-        <Card maxW={['100%', '600px']} as="form" onSubmit={handleSubmit(handleChangePassword)}>
-          <CardHeader title="Alterar Senha" />
+        <Card maxW={['100%', '600px']} as="form" onSubmit={handleSubmit(handleUpdateProfile)}>
+          <CardHeader title="Meu Perfil" />
           <CardBody>
             <Stack spacing="4">
-              <PasswordInput
-                label="Nova Senha"
-                placeholder="Senha"
-                error={errors.password}
-                {...register('password')}
+              <Input
+                label="Nome Completo"
+                error={errors.name}
+                {...register('name')}
                 isDisabled={isSubmitting}
                 isRequired
               />
 
-              <PasswordInput
-                label="Confirmar Nova Senha"
-                placeholder="Confirmar Senha"
-                error={errors.password_confirmation}
-                {...register('password_confirmation')}
+              <Select
+                label="Jogo Favorito"
+                options={games}
+                value={watch('game_type')}
+                error={errors.game_type?.id}
+                {...register('game_type')}
                 isDisabled={isSubmitting}
                 isRequired
+                onChange={(option) => {
+                  setValue('game_type', option);
+                }}
               />
             </Stack>
           </CardBody>
           <CardFooter>
             <Button colorScheme="blue" type="submit" w="100%" isLoading={isSubmitting}>
-              Alterar Senha
+              Atualizar Perfil
             </Button>
           </CardFooter>
         </Card>
@@ -81,7 +99,7 @@ const ChangePassword: NextPage<IChangePasswordProps> = ({ user }) => {
   );
 };
 
-export default ChangePassword;
+export default Profile;
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   try {

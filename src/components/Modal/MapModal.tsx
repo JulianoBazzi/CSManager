@@ -70,7 +70,7 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
       setRecordModalProps(recordModal);
       if (recordModal?.id) {
         setIsLoading(true);
-        getMap(recordModal?.id, recordModal?.userId)
+        getMap(recordModal?.id, recordModal?.user.id)
           .then((response) => {
             reset({
               ...response,
@@ -88,6 +88,7 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
       } else {
         reset({
           active: true,
+          game_type: games.find((game) => game.id === recordModal?.user.user_metadata.gameType),
         });
       }
       modalRef.current?.onOpenModal();
@@ -101,7 +102,7 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
 
       await supabase.from(TABLE_MAPS).upsert({
         id,
-        user_id: recordModalProps?.userId,
+        user_id: recordModalProps?.user.id,
         name,
         map_type: map_type?.id,
         game_type: game_type?.id,
@@ -135,7 +136,7 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
   return (
     <Modal title="Mapa" ref={modalRef} size="3xl" onSubmit={handleSubmit(handleOk)}>
       <ModalBody>
-        <Stack>
+        <Stack spacing="4">
           <Input
             label="Nome"
             error={errors.name}

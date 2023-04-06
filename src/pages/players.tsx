@@ -46,7 +46,7 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
   function handleShowModal(id?: string) {
     playerModalRef.current?.onOpenModal({
       id,
-      userId: user.id,
+      user,
     });
   }
 

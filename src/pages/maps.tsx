@@ -47,7 +47,7 @@ const Maps: NextPage<IMapsProps> = ({ user }) => {
   function handleShowModal(id?: string) {
     mapModalRef.current?.onOpenModal({
       id,
-      userId: user.id,
+      user,
     });
   }
 
