@@ -8,9 +8,9 @@ interface ISweepstakeAPI {
   quantity_maps: number;
   departure_at: string;
 
-  format_game_type?: string;
-  format_short_game_type?: string;
-  format_departure_at?: string;
+  format_game_type: string;
+  format_short_game_type: string;
+  format_departure_at: string;
 }
 
 export default ISweepstakeAPI;

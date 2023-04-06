@@ -1,17 +1,22 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-import { AddIcon } from '@chakra-ui/icons';
-import { IconButton, Text } from '@chakra-ui/react';
 import { User } from '@supabase/supabase-js';
+import { ColumnDef } from '@tanstack/react-table';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
+import Router from 'next/router';
 import { parseCookies } from 'nookies';
+import removeAccents from 'remove-accents';
 
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
+import { Table } from '~/components/Form/Table';
+import { AddIconButton } from '~/components/IconButton/AddIconButton';
+import { SearchBar } from '~/components/SearchBar';
 import Template from '~/components/Template';
-import { usePlayers } from '~/services/hooks/usePlayers';
+import ISweepstakeAPI from '~/models/Entity/Sweepstake/ISweepstakeAPI';
+import { useSweepstakes } from '~/services/hooks/useSweepstakes';
 import supabase from '~/services/supabase';
 
 interface ISweepstakesProps extends GetServerSideProps {
@@ -19,17 +24,55 @@ interface ISweepstakesProps extends GetServerSideProps {
 }
 
 const Sweepstakes: NextPage<ISweepstakesProps> = ({ user }) => {
-  const { data, isLoading, isFetching } = usePlayers(user.id);
+  const { data, isLoading, isFetching } = useSweepstakes(user.id);
+
+  const [search, setSearch] = useState('');
+  const [dataFiltered, setDataFiltered] = useState(data);
 
   useEffect(() => {
-    console.log('players', data);
-  }, [data]);
+    setDataFiltered(
+      data?.filter(
+        (sweepstake) =>
+          removeAccents(sweepstake.format_departure_at.toLowerCase()).includes(removeAccents(search.toLowerCase())) ||
+          removeAccents(sweepstake.format_short_game_type.toLowerCase()).includes(
+            removeAccents(search.toLowerCase())
+          ) ||
+          removeAccents(sweepstake.format_game_type.toLowerCase()).includes(removeAccents(search.toLowerCase()))
+      )
+    );
+  }, [search, data]);
 
-  function handleAdd() {
-    // playerModalRef.current?.onOpenModal({
-    //   userId: user.id,
-    // });
+  async function handleVisualization(id?: string) {
+    if (id) {
+      await Router.push(`/sweepstakes/${id}`);
+      return;
+    }
+
+    await Router.push('/sweepstakes/new');
   }
+
+  const columns: ColumnDef<ISweepstakeAPI>[] = [
+    {
+      accessorKey: 'format_departure_at',
+      header: 'Data/Hora Sorteio',
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'format_short_game_type',
+      header: 'Jogo',
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'quantity_players',
+      header: 'Nº Jogadores',
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'quantity_maps',
+      header: 'Nº Mapas',
+      enableSorting: false,
+    },
+  ];
 
   return (
     <>
@@ -39,16 +82,16 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user }) => {
       <Template user={user}>
         <Card>
           <CardHeader title="Sorteios" isFetching={isFetching && !isLoading}>
-            <IconButton
-              colorScheme="green"
-              icon={<AddIcon />}
-              aria-label="Novo"
-              title="Novo Sorteio"
-              onClick={handleAdd}
-            />
+            <AddIconButton onClick={() => handleVisualization()} />
           </CardHeader>
           <CardBody>
-            <Text>AKSOASDKASKOKS KO</Text>
+            <SearchBar onSearch={(value) => setSearch(value)} isDisabled={isFetching} />
+            <Table
+              data={dataFiltered}
+              columns={columns}
+              isLoading={isLoading}
+              onRowClick={({ id }) => handleVisualization(id)}
+            />
           </CardBody>
         </Card>
       </Template>

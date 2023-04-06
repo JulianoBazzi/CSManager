@@ -95,7 +95,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
   function handleUpdateScore(sweepstakeMap: ISweepstakeMapAPI) {
     sweepstakeMapModalRef.current?.onOpenModal({
       id: sweepstakeMap.id,
-      userId: user.id,
+      user,
       sweepstakeMap,
     });
   }
