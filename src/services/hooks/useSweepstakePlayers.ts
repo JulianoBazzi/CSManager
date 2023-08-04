@@ -22,7 +22,7 @@ export async function getSweepstakePlayers(sweepstakeId: string): Promise<ISweep
   const formattedData: ISweepstakePlayerAPI[] = [];
 
   data?.forEach((sweepstakePlayer) => {
-    formattedData.push(formatSweepstakePlayer(sweepstakePlayer as ISweepstakePlayerAPI));
+    formattedData.push(formatSweepstakePlayer(sweepstakePlayer as unknown as ISweepstakePlayerAPI));
   });
 
   return formattedData;

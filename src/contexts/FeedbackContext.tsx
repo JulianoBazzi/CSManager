@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Context, createContext, ReactNode, useContext,
 } from 'react';
@@ -61,6 +62,7 @@ export function FeedbackProvider({ children }: IFeedbackProviderProps) {
 
   return (
     <FeedbackContext.Provider
+      // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{
         errorFeedbackToast,
         infoFeedbackToast,
