@@ -1,6 +1,7 @@
-import { SUPABASE_PUBLIC_TOKEN, SUPABASE_URL } from '@/config/env';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLIC_TOKEN);
+import { NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY } from '~/config/constants';
+
+const supabase = createClient(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
 export default supabase;

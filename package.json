@@ -1,67 +1,55 @@
 {
   "name": "csmanager",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "private": true,
   "scripts": {
-    "dev": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "analyze": "cross-env ANALYZE=true next build && next bundle-analyze"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^1.35.3",
-    "bootstrap": "^4.6.0",
-    "bootstrap-vue": "^2.21.2",
-    "core-js": "^3.6.5",
-    "lodash": "^4.17.21",
-    "moment": "^2.29.1",
-    "sweetalert2": "^11.1.2",
-    "tslib": "^2.4.0",
-    "uuid": "^3.4.0",
-    "vue": "^2.6.11",
-    "vue-class-component": "^7.2.3",
-    "vue-meta": "^2.4.0",
-    "vue-property-decorator": "^9.1.2",
-    "vue-router": "^3.2.0",
-    "vue-sweetalert2": "^5.0.2",
-    "vuex": "^3.4.0"
+    "@chakra-ui/icons": "2.1.0",
+    "@chakra-ui/react": "2.8.0",
+    "@emotion/react": "11.11.1",
+    "@emotion/styled": "11.11.0",
+    "@hookform/resolvers": "2.9.11",
+    "@next/bundle-analyzer": "13.4.12",
+    "@next/font": "13.4.12",
+    "@supabase/supabase-js": "2.31.0",
+    "@tanstack/react-query": "4.32.5",
+    "@tanstack/react-table": "8.9.3",
+    "chakra-react-select": "4.7.0",
+    "dayjs": "1.11.9",
+    "framer-motion": "10.15.0",
+    "next": "13.4.12",
+    "nookies": "2.5.2",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-hook-form": "7.45.2",
+    "react-icons": "4.10.1",
+    "remove-accents": "0.4.4",
+    "uuidv4": "6.2.13",
+    "yup": "1.2.0",
+    "yup-locale-pt": "0.0.9"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.171",
-    "@types/uuid": "^8.3.1",
-    "@typescript-eslint/eslint-plugin": "^4.18.0",
-    "@typescript-eslint/parser": "^4.18.0",
-    "@vue/cli-plugin-babel": "~4.5.0",
-    "@vue/cli-plugin-eslint": "~4.5.0",
-    "@vue/cli-plugin-router": "~4.5.0",
-    "@vue/cli-plugin-typescript": "~4.5.0",
-    "@vue/cli-plugin-vuex": "~4.5.0",
-    "@vue/cli-service": "~4.5.0",
-    "@vue/eslint-config-airbnb": "^5.0.2",
-    "@vue/eslint-config-typescript": "^7.0.0",
-    "eslint": "^6.7.2",
-    "eslint-plugin-import": "^2.20.2",
-    "eslint-plugin-vue": "^6.2.2",
-    "typescript": "~4.1.5",
-    "vue-template-compiler": "^2.6.11"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/essential",
-      "@vue/airbnb",
-      "@vue/typescript/recommended"
-    ],
-    "parserOptions": {
-      "ecmaVersion": 2020
-    },
-    "rules": {}
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ]
+    "@types/node": "20.4.7",
+    "@types/react": "18.2.18",
+    "@types/react-dom": "18.2.7",
+    "@typescript-eslint/eslint-plugin": "5.62.0",
+    "@typescript-eslint/parser": "5.62.0",
+    "eslint": "8.46.0",
+    "eslint-config-airbnb": "19.0.4",
+    "eslint-config-next": "13.4.12",
+    "eslint-import-resolver-typescript": "3.5.5",
+    "eslint-plugin-import": "2.28.0",
+    "eslint-plugin-import-helpers": "1.3.1",
+    "eslint-plugin-jsx-a11y": "6.7.1",
+    "eslint-plugin-react": "7.33.1",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "eslint-plugin-unused-imports": "2.0.0",
+    "typescript": "5.1.6"
+  }
 }
