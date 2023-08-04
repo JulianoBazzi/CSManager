@@ -15,8 +15,9 @@ export function formatPlayer(player: IPlayerAPI): IPlayerAPI {
   };
 }
 
-export async function getPlayers(userId: string): Promise<IPlayerAPI[]> {
-  const { data } = await supabase.from(TABLE_PLAYERS).select().eq('user_id', userId).order('name', { ascending: true });
+export async function getPlayers(userId: string, onlyActives?: boolean): Promise<IPlayerAPI[]> {
+  const { data } = await supabase.from(TABLE_PLAYERS).select().eq('user_id', userId).in('active', onlyActives ? [true] : [true, false])
+    .order('name', { ascending: true });
 
   const formattedData: IPlayerAPI[] = [];
 
@@ -35,8 +36,8 @@ export async function getPlayer(id: string, userId: string): Promise<IPlayerAPI>
   return formatPlayer(data);
 }
 
-export function usePlayers(userId: string, options?: QueryOptions<IPlayerAPI[]>) {
-  return useQuery([TABLE_PLAYERS, userId], () => getPlayers(userId), {
+export function usePlayers(userId: string, onlyActives?: boolean, options?: QueryOptions<IPlayerAPI[]>) {
+  return useQuery([TABLE_PLAYERS, userId], () => getPlayers(userId, onlyActives), {
     keepPreviousData: true,
     ...options,
   });

@@ -9,7 +9,6 @@ import {
   RiMap2Line,
   RiUser3Fill,
   RiUser3Line,
-  RiUserSettingsLine,
 } from 'react-icons/ri';
 
 import {
@@ -136,17 +135,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
       <SweepstakeMapModal ref={sweepstakeMapModalRef} />
       <Template user={user}>
         <Card>
-          <CardHeader title={(isMobile ? sweepstake.format_short_game_type : sweepstake.format_game_type) || ''}>
-            {user && user.id === sweepstake.user_id && (
-              <IconButton
-                colorScheme="gray"
-                icon={<Icon as={RiUserSettingsLine} fontSize="2xl" />}
-                aria-label="Novo Sorteio"
-                title="Sortear Times Novamente"
-                onClick={() => handleTeamRaffle()}
-              />
-            )}
-          </CardHeader>
+          <CardHeader title={(isMobile ? sweepstake.format_short_game_type : sweepstake.format_game_type) || ''} />
           <CardBody>
             <Flex align="center" gap="2">
               <Icon as={RiCalendarEventLine} fontSize="xl" />

@@ -17,8 +17,9 @@ export function formatMap(map: IMapAPI): IMapAPI {
   };
 }
 
-export async function getMaps(userId: string): Promise<IMapAPI[]> {
-  const { data } = await supabase.from(TABLE_MAPS).select().eq('user_id', userId).order('name', { ascending: true });
+export async function getMaps(userId: string, onlyActives?: boolean): Promise<IMapAPI[]> {
+  const { data } = await supabase.from(TABLE_MAPS).select().eq('user_id', userId).in('active', onlyActives ? [true] : [true, false])
+    .order('name', { ascending: true });
 
   const formattedData: IMapAPI[] = [];
 
@@ -37,8 +38,8 @@ export async function getMap(id: string, userId: string): Promise<IMapAPI> {
   return formatMap(data);
 }
 
-export function useMaps(userId: string, options?: QueryOptions<IMapAPI[]>) {
-  return useQuery([TABLE_MAPS, userId], () => getMaps(userId), {
+export function useMaps(userId: string, onlyActives?: boolean, options?: QueryOptions<IMapAPI[]>) {
+  return useQuery([TABLE_MAPS, userId], () => getMaps(userId, onlyActives), {
     keepPreviousData: true,
     ...options,
   });

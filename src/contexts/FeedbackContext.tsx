@@ -1,4 +1,6 @@
-import { Context, createContext, ReactNode, useContext } from 'react';
+import {
+  Context, createContext, ReactNode, useContext,
+} from 'react';
 
 import { AlertStatus, useToast } from '@chakra-ui/react';
 import { AuthError } from '@supabase/supabase-js';
@@ -19,16 +21,6 @@ const FeedbackContext = createContext({} as FeedbackContextData);
 
 export function FeedbackProvider({ children }: IFeedbackProviderProps) {
   const toast = useToast();
-
-  function errorFeedbackToast(title: string, error: any): void {
-    if (error as AuthError) {
-      warningFeedbackToast(title, `${error.message}`);
-    } else if (error?.message) {
-      dangerFeedbackToast(title, `Ocorreu um erro: ${error.message}`);
-    } else {
-      dangerFeedbackToast(title, `Ocorreu um erro: ${error}`);
-    }
-  }
 
   function genericFeedbackToast(title: string, description?: string, status?: AlertStatus) {
     toast({
@@ -57,9 +49,25 @@ export function FeedbackProvider({ children }: IFeedbackProviderProps) {
     genericFeedbackToast(title, description, 'error');
   }
 
+  function errorFeedbackToast(title: string, error: any): void {
+    if (error as AuthError) {
+      warningFeedbackToast(title, `${error.message}`);
+    } else if (error?.message) {
+      dangerFeedbackToast(title, `Ocorreu um erro: ${error.message}`);
+    } else {
+      dangerFeedbackToast(title, `Ocorreu um erro: ${error}`);
+    }
+  }
+
   return (
     <FeedbackContext.Provider
-      value={{ errorFeedbackToast, infoFeedbackToast, warningFeedbackToast, successFeedbackToast, dangerFeedbackToast }}
+      value={{
+        errorFeedbackToast,
+        infoFeedbackToast,
+        warningFeedbackToast,
+        successFeedbackToast,
+        dangerFeedbackToast,
+      }}
     >
       {children}
     </FeedbackContext.Provider>

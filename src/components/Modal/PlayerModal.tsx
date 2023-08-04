@@ -162,7 +162,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
               setValue('patent', option);
             }}
           />
-          <Switch label="Ativo" {...register('active')} isDisabled={isLoading || isSubmitting} />
+          <Switch label="Ativo" {...register('active')} isChecked={watch('active')} isDisabled={isLoading || isSubmitting} />
         </Stack>
       </ModalBody>
       <ModalFooter flexDir="column" gap="4">

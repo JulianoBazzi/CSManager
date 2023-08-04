@@ -1,4 +1,6 @@
-import { createContext, ReactNode, useCallback, useContext, useMemo } from 'react';
+import {
+  createContext, ReactNode, useCallback, useContext, useMemo,
+} from 'react';
 
 import Router from 'next/router';
 import { destroyCookie, setCookie } from 'nookies';
@@ -53,7 +55,7 @@ export function AuthProvider({ children }: IAuthProviderProps) {
       successFeedbackToast('Login', 'Login efetuado com sucesso!');
       await Router.push('/');
     },
-    [errorFeedbackToast, warningFeedbackToast, successFeedbackToast]
+    [errorFeedbackToast, warningFeedbackToast, successFeedbackToast],
   );
 
   const logout = useCallback(async () => {
@@ -82,7 +84,7 @@ export function AuthProvider({ children }: IAuthProviderProps) {
       successFeedbackToast('Alterar Senha', 'Senha alterada com sucesso!');
       await logout();
     },
-    [errorFeedbackToast, warningFeedbackToast, successFeedbackToast, logout]
+    [errorFeedbackToast, warningFeedbackToast, successFeedbackToast, logout],
   );
 
   const updateProfile = useCallback(
@@ -107,7 +109,7 @@ export function AuthProvider({ children }: IAuthProviderProps) {
       successFeedbackToast('Meu Perfil', 'Perfil atualizado com sucesso!');
       await Router.push('/');
     },
-    [errorFeedbackToast, warningFeedbackToast, successFeedbackToast]
+    [errorFeedbackToast, warningFeedbackToast, successFeedbackToast],
   );
 
   const authProviderValue = useMemo(
@@ -117,7 +119,7 @@ export function AuthProvider({ children }: IAuthProviderProps) {
       updateProfile,
       logout,
     }),
-    [signIn, changePassword, updateProfile, logout]
+    [signIn, changePassword, updateProfile, logout],
   );
 
   return <AuthContext.Provider value={authProviderValue}>{children}</AuthContext.Provider>;

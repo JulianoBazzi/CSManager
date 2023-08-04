@@ -23,7 +23,6 @@
     "chakra-react-select": "4.7.0",
     "dayjs": "1.11.9",
     "framer-motion": "10.15.0",
-    "lodash": "4.17.21",
     "next": "13.4.12",
     "nookies": "2.5.2",
     "react": "18.2.0",
@@ -31,6 +30,7 @@
     "react-hook-form": "7.45.2",
     "react-icons": "4.10.1",
     "remove-accents": "0.4.4",
+    "uuidv4": "6.2.13",
     "yup": "1.2.0",
     "yup-locale-pt": "0.0.9"
   },

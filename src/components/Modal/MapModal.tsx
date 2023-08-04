@@ -177,7 +177,7 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
               setValue('game_type', option);
             }}
           />
-          <Switch label="Ativo" {...register('active')} isDisabled={isLoading || isSubmitting} />
+          <Switch label="Ativo" {...register('active')} isChecked={watch('active')} isDisabled={isLoading || isSubmitting} />
         </Stack>
       </ModalBody>
       <ModalFooter flexDir="column" gap="4">
