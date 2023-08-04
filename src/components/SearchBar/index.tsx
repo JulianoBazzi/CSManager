@@ -1,7 +1,9 @@
 import { ChangeEvent, useState } from 'react';
 import { RiSearchLine } from 'react-icons/ri';
 
-import { Icon, Input, InputGroup, InputLeftElement } from '@chakra-ui/react';
+import {
+  Icon, Input, InputGroup, InputLeftElement,
+} from '@chakra-ui/react';
 
 import useDebounce from '~/hooks/useDebounce';
 

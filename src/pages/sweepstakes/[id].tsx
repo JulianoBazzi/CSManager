@@ -83,12 +83,6 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
     },
   );
 
-  function handleTeamRaffle() {
-    // playerModalRef.current?.onOpenModal({
-    //   userId: user.id,
-    // });
-  }
-
   async function handleChangeTeam(data: IChangeTeamPlayer) {
     await changeTeamMutateAsync(data);
   }

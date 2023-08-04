@@ -10,7 +10,7 @@ export async function getSweepstakeMaps(sweepstakeId: string): Promise<ISweepsta
     .select(
       'id, team_start_from_terrorist, team_one_score_1, team_two_score_1, team_one_score_2, team_two_score_2,  maps(map_type, name, link)',
     )
-    .order('selected_at', { ascending: true })
+    .order('order', { ascending: true })
     .eq('sweepstake_id', sweepstakeId);
 
   return data as unknown as ISweepstakeMapAPI[];
@@ -26,6 +26,7 @@ export async function getSweepstakeMap(id: string): Promise<ISweepstakeMapAPI> {
 export function useSweepstakeMaps(sweepstakeId: string, options?: QueryOptions<ISweepstakeMapAPI[]>) {
   return useQuery([TABLE_SWEEPSTAKE_MAPS, sweepstakeId], () => getSweepstakeMaps(sweepstakeId), {
     keepPreviousData: true,
+    refetchInterval: 30000,
     ...options,
   });
 }

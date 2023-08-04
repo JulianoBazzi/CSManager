@@ -100,7 +100,7 @@ const SweepstakeMapModalBase: ForwardRefRenderFunction<SweepstakeMapModalHandle>
     {
       async onSuccess() {
         successFeedbackToast('Placar', 'Atualizado com sucesso!');
-        await queryClient.invalidateQueries([TABLE_SWEEPSTAKE_MAPS, recordModalProps?.sweepstakeMap?.sweepstake_id]);
+        await queryClient.invalidateQueries([TABLE_SWEEPSTAKE_MAPS]);
         modalRef.current?.onCloseModal();
       },
       onError(error) {

@@ -9,7 +9,7 @@ type RaffleIconButtonProps = Omit<IconButtonProps, 'aria-label'>;
 
 const RaffleIconButtonBase: ForwardRefRenderFunction<HTMLButtonElement, RaffleIconButtonProps> = (
   { ...rest }: RaffleIconButtonProps,
-  ref
+  ref,
 ) => (
   <GhostGrayIconButton
     ref={ref}

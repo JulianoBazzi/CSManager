@@ -18,7 +18,9 @@ interface ICardHeaderProps extends ChakraCardHeaderProps {
   children?: ReactNode;
 }
 
-export default function CardHeader({ icon, size = 'lg', title, isFetching, children, ...rest }: ICardHeaderProps) {
+export default function CardHeader({
+  icon, size = 'lg', title, isFetching, children, ...rest
+}: ICardHeaderProps) {
   return (
     <>
       <ChakraCardHeader w="100%" {...rest}>

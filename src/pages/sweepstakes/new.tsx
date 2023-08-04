@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-import { Checkbox, Flex, Stack } from '@chakra-ui/react';
+import {
+  Checkbox, Flex, Stack, TableContainer,
+} from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { User } from '@supabase/supabase-js';
 import { useMutation } from '@tanstack/react-query';
@@ -90,19 +92,21 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
       }
 
       const mapList: ISweepstakeMap[] = [];
-      selectedMaps.forEach((mapId) => {
+      for (let i = 0; i < selectedMaps.length;) {
         mapList.push({
           user_id: user?.id,
           sweepstake_id: sweepstakeId,
-          map_id: mapId,
+          map_id: selectedMaps[i],
           team_start_from_terrorist: randomUnique(2, 1)[0] - 1,
           team_one_score_1: 0,
           team_one_score_2: 0,
           team_two_score_1: 0,
           team_two_score_2: 0,
-          selected_at: dayjs().format(),
+          order: i,
         });
-      });
+
+        i += 1;
+      }
 
       await supabase.from(TABLE_SWEEPSTAKES).insert({
         id: sweepstakeId,
@@ -123,7 +127,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
     },
     {
       async onSuccess(id) {
-        successFeedbackToast('Novo Sorteio', 'Sorteio com sucesso!');
+        successFeedbackToast('Novo Sorteio', 'Sorteio realizado com sucesso!');
         await queryClient.invalidateQueries([TABLE_SWEEPSTAKES]);
         await Router.push(`/sweepstakes/${id}`);
       },
@@ -267,20 +271,22 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
                 isDisabled={isLoadingCreate}
                 isRequired
               />
-              <NumberInput
-                maxW={['100%', '150px']}
-                label="Qtd. Jogadores"
-                name="quantity_players"
-                value={selectedPlayers.length}
-                isDisabled
-              />
-              <NumberInput
-                maxW={['100%', '150px']}
-                label="Qtd. Mapas"
-                name="quantity_maps"
-                value={selectedMaps.length}
-                isDisabled
-              />
+              <Stack direction="row" spacing="4" w="100%">
+                <NumberInput
+                  maxW={['100%', '150px']}
+                  label="Qtd. Jogadores"
+                  name="quantity_players"
+                  value={selectedPlayers.length}
+                  isDisabled
+                />
+                <NumberInput
+                  maxW={['100%', '150px']}
+                  label="Qtd. Mapas"
+                  name="quantity_maps"
+                  value={selectedMaps.length}
+                  isDisabled
+                />
+              </Stack>
             </Stack>
           </CardBody>
         </Card>
@@ -288,23 +294,27 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
           <Card w={['100%', '60%']}>
             <CardHeader title="Jogadores" />
             <CardBody>
-              <Table
-                data={players}
-                columns={playerColumns}
-                isLoading={isLoadingPlayers}
-                onRowClick={({ id }) => handleSelectedPlayers(id)}
-              />
+              <TableContainer>
+                <Table
+                  data={players}
+                  columns={playerColumns}
+                  isLoading={isLoadingPlayers}
+                  onRowClick={({ id }) => handleSelectedPlayers(id)}
+                />
+              </TableContainer>
             </CardBody>
           </Card>
           <Card w={['100%', '40%']}>
             <CardHeader title="Mapas" />
             <CardBody>
-              <Table
-                data={maps}
-                columns={mapColumns}
-                isLoading={isLoadingMaps}
-                onRowClick={({ id }) => handleSelectedMaps(id)}
-              />
+              <TableContainer>
+                <Table
+                  data={maps}
+                  columns={mapColumns}
+                  isLoading={isLoadingMaps}
+                  onRowClick={({ id }) => handleSelectedMaps(id)}
+                />
+              </TableContainer>
             </CardBody>
           </Card>
         </Flex>
