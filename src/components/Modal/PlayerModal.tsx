@@ -1,14 +1,18 @@
-import { forwardRef, ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState } from 'react';
+import {
+  forwardRef, ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
+} from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-import { Checkbox, ModalBody, ModalFooter, Stack } from '@chakra-ui/react';
+import {
+  Checkbox, ModalBody, ModalFooter, Stack,
+} from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@tanstack/react-query';
 import * as yup from 'yup';
 
 import { patents } from '~/assets/patents';
 import { AddSolidButton } from '~/components/Button/AddSolidButton';
-import { CancelSolidButton } from '~/components/Button/CancelSolidButton';
+import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
 import { SaveSolidButton } from '~/components/Button/SaveSolidButton';
 import { Input } from '~/components/Form/Input';
 import { Modal, ModalHandle } from '~/components/Form/Modal';
@@ -83,12 +87,14 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
       }
       modalRef.current?.onOpenModal();
     },
-    [errorFeedbackToast, reset]
+    [errorFeedbackToast, reset],
   );
 
   const createOrUpdatePlayer = useMutation(
     async (player: Partial<IPlayer>) => {
-      const { id, name, username, patent, active } = player;
+      const {
+        id, name, username, patent, active,
+      } = player;
 
       await supabase.from(TABLE_PLAYERS).upsert({
         id,
@@ -108,7 +114,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
       onError(error) {
         errorFeedbackToast('Jogador', error);
       },
-    }
+    },
   );
 
   const handleOk: SubmitHandler<Partial<IPlayer>> = async (data) => {
@@ -120,11 +126,11 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
     () => ({
       onOpenModal,
     }),
-    [onOpenModal]
+    [onOpenModal],
   );
 
   return (
-    <Modal title="Jogador" ref={modalRef} size="3xl" onSubmit={handleSubmit(handleOk)}>
+    <Modal title="Jogador" ref={modalRef} size="md" onSubmit={handleSubmit(handleOk)}>
       <ModalBody>
         <Stack spacing="4">
           <Input
@@ -162,13 +168,13 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
           </Checkbox>
         </Stack>
       </ModalBody>
-      <ModalFooter flexDirection={['column-reverse', 'row']} justifyContent="space-between" gap="3">
-        <CancelSolidButton onClick={() => modalRef.current?.onCloseModal()} isDisabled={isSubmitting || isLoading} />
+      <ModalFooter flexDir="column" gap="4">
         {recordModalProps?.id ? (
-          <SaveSolidButton type="submit" isLoading={isSubmitting} isDisabled={isLoading} />
+          <SaveSolidButton w="100%" type="submit" isLoading={isSubmitting} isDisabled={isLoading} />
         ) : (
-          <AddSolidButton type="submit" isLoading={isSubmitting} isDisabled={isLoading} />
+          <AddSolidButton w="100%" type="submit" isLoading={isSubmitting} isDisabled={isLoading} />
         )}
+        <CancelOutlineButton w="100%" onClick={() => modalRef.current?.onCloseModal()} isDisabled={isSubmitting || isLoading} />
       </ModalFooter>
     </Modal>
   );

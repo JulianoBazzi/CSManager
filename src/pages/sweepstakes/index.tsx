@@ -32,13 +32,12 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user }) => {
   useEffect(() => {
     setDataFiltered(
       data?.filter(
-        (sweepstake) =>
-          removeAccents(sweepstake.format_departure_at.toLowerCase()).includes(removeAccents(search.toLowerCase())) ||
-          removeAccents(sweepstake.format_short_game_type.toLowerCase()).includes(
-            removeAccents(search.toLowerCase())
-          ) ||
-          removeAccents(sweepstake.format_game_type.toLowerCase()).includes(removeAccents(search.toLowerCase()))
-      )
+        (sweepstake) => removeAccents(sweepstake.format_departure_at.toLowerCase()).includes(removeAccents(search.toLowerCase()))
+          || removeAccents(sweepstake.format_short_game_type.toLowerCase()).includes(
+            removeAccents(search.toLowerCase()),
+          )
+          || removeAccents(sweepstake.format_game_type.toLowerCase()).includes(removeAccents(search.toLowerCase())),
+      ),
     );
   }, [search, data]);
 
@@ -128,7 +127,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
     return {
       props: {
-        user: user,
+        user,
       },
     };
   } catch {

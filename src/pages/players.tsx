@@ -36,10 +36,9 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
   useEffect(() => {
     setDataFiltered(
       data?.filter(
-        (player) =>
-          removeAccents(player.name.toLowerCase()).includes(removeAccents(search.toLowerCase())) ||
-          removeAccents(player.username.toLowerCase()).includes(removeAccents(search.toLowerCase()))
-      )
+        (player) => removeAccents(player.name.toLowerCase()).includes(removeAccents(search.toLowerCase()))
+          || removeAccents(player.username.toLowerCase()).includes(removeAccents(search.toLowerCase())),
+      ),
     );
   }, [search, data]);
 
@@ -132,7 +131,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
     return {
       props: {
-        user: user,
+        user,
       },
     };
   } catch {

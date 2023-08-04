@@ -36,11 +36,10 @@ const Maps: NextPage<IMapsProps> = ({ user }) => {
   useEffect(() => {
     setDataFiltered(
       data?.filter(
-        (map) =>
-          removeAccents(map.name.toLowerCase()).includes(removeAccents(search.toLowerCase())) ||
-          removeAccents(map.format_short_game_type.toLowerCase()).includes(removeAccents(search.toLowerCase())) ||
-          removeAccents(map.format_map_type.toLowerCase()).includes(removeAccents(search.toLowerCase()))
-      )
+        (map) => removeAccents(map.name.toLowerCase()).includes(removeAccents(search.toLowerCase()))
+          || removeAccents(map.format_short_game_type.toLowerCase()).includes(removeAccents(search.toLowerCase()))
+          || removeAccents(map.format_map_type.toLowerCase()).includes(removeAccents(search.toLowerCase())),
+      ),
     );
   }, [search, data]);
 
@@ -133,7 +132,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
     return {
       props: {
-        user: user,
+        user,
       },
     };
   } catch {

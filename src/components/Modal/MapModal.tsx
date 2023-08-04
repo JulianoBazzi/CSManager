@@ -1,7 +1,11 @@
-import { forwardRef, ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState } from 'react';
+import {
+  forwardRef, ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
+} from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-import { Checkbox, ModalBody, ModalFooter, Stack } from '@chakra-ui/react';
+import {
+  Checkbox, ModalBody, ModalFooter, Stack,
+} from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@tanstack/react-query';
 import * as yup from 'yup';
@@ -9,7 +13,7 @@ import * as yup from 'yup';
 import { games } from '~/assets/games';
 import { maps } from '~/assets/maps';
 import { AddSolidButton } from '~/components/Button/AddSolidButton';
-import { CancelSolidButton } from '~/components/Button/CancelSolidButton';
+import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
 import { SaveSolidButton } from '~/components/Button/SaveSolidButton';
 import { Input } from '~/components/Form/Input';
 import { Modal, ModalHandle } from '~/components/Form/Modal';
@@ -93,12 +97,14 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
       }
       modalRef.current?.onOpenModal();
     },
-    [errorFeedbackToast, reset]
+    [errorFeedbackToast, reset],
   );
 
   const createOrUpdateMap = useMutation(
     async (map: Partial<IMap>) => {
-      const { id, name, game_type, map_type, active } = map;
+      const {
+        id, name, game_type, map_type, active,
+      } = map;
 
       await supabase.from(TABLE_MAPS).upsert({
         id,
@@ -118,7 +124,7 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
       onError(error) {
         errorFeedbackToast('Mapa', error);
       },
-    }
+    },
   );
 
   const handleOk: SubmitHandler<Partial<IMap>> = async (data) => {
@@ -130,11 +136,11 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
     () => ({
       onOpenModal,
     }),
-    [onOpenModal]
+    [onOpenModal],
   );
 
   return (
-    <Modal title="Mapa" ref={modalRef} size="3xl" onSubmit={handleSubmit(handleOk)}>
+    <Modal title="Mapa" ref={modalRef} size="md" onSubmit={handleSubmit(handleOk)}>
       <ModalBody>
         <Stack spacing="4">
           <Input
@@ -177,13 +183,13 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
           </Checkbox>
         </Stack>
       </ModalBody>
-      <ModalFooter flexDirection={['column-reverse', 'row']} justifyContent="space-between" gap="3">
-        <CancelSolidButton onClick={() => modalRef.current?.onCloseModal()} isDisabled={isSubmitting || isLoading} />
+      <ModalFooter flexDir="column" gap="4">
         {recordModalProps?.id ? (
-          <SaveSolidButton type="submit" isLoading={isSubmitting} isDisabled={isLoading} />
+          <SaveSolidButton w="100%" type="submit" isLoading={isSubmitting} isDisabled={isLoading} />
         ) : (
-          <AddSolidButton type="submit" isLoading={isSubmitting} isDisabled={isLoading} />
+          <AddSolidButton w="100%" type="submit" isLoading={isSubmitting} isDisabled={isLoading} />
         )}
+        <CancelOutlineButton w="100%" onClick={() => modalRef.current?.onCloseModal()} isDisabled={isSubmitting || isLoading} />
       </ModalFooter>
     </Modal>
   );

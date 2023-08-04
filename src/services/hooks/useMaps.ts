@@ -30,7 +30,9 @@ export async function getMaps(userId: string): Promise<IMapAPI[]> {
 }
 
 export async function getMap(id: string, userId: string): Promise<IMapAPI> {
-  const { data } = await supabase.from(TABLE_MAPS).select().eq('user_id', userId).eq('id', id).limit(1).single();
+  const { data } = await supabase.from(TABLE_MAPS).select().eq('user_id', userId).eq('id', id)
+    .limit(1)
+    .single();
 
   return formatMap(data);
 }

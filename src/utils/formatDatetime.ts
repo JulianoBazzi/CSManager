@@ -1,8 +1,8 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 export function formatDatetime(value?: string): string {
   if (value) {
-    return moment(value).format('DD/MM/YYYY HH:mm');
+    return dayjs(value).format('DD/MM/YYYY HH:mm');
   }
 
   return '';

@@ -33,7 +33,8 @@ export async function getSweepstakes(userId: string): Promise<ISweepstakeAPI[]> 
 }
 
 export async function getSweepstake(id: string): Promise<ISweepstakeAPI> {
-  const { data } = await supabase.from(TABLE_SWEEPSTAKES).select().eq('id', id).limit(1).single();
+  const { data } = await supabase.from(TABLE_SWEEPSTAKES).select().eq('id', id).limit(1)
+    .single();
 
   return formatSweepstakes(data);
 }

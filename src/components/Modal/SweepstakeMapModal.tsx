@@ -1,15 +1,19 @@
-import { forwardRef, ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState } from 'react';
+import {
+  forwardRef, ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
+} from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { GiUnlitBomb } from 'react-icons/gi';
 import { MdEmojiPeople } from 'react-icons/md';
 import { RiUser3Fill, RiUser3Line } from 'react-icons/ri';
 
-import { ModalBody, ModalFooter, Stack, Divider, Flex, Icon } from '@chakra-ui/react';
+import {
+  ModalBody, ModalFooter, Stack, Divider, Flex, Icon,
+} from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@tanstack/react-query';
 import * as yup from 'yup';
 
-import { CancelSolidButton } from '~/components/Button/CancelSolidButton';
+import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
 import { SaveSolidButton } from '~/components/Button/SaveSolidButton';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
@@ -74,12 +78,14 @@ const SweepstakeMapModalBase: ForwardRefRenderFunction<SweepstakeMapModalHandle>
       }
       modalRef.current?.onOpenModal();
     },
-    [errorFeedbackToast, reset]
+    [errorFeedbackToast, reset],
   );
 
   const updateSweepstakMap = useMutation(
     async (sweepstakMap: Partial<ISweepstakeMap>) => {
-      const { team_one_score_1, team_one_score_2, team_two_score_1, team_two_score_2 } = sweepstakMap;
+      const {
+        team_one_score_1, team_one_score_2, team_two_score_1, team_two_score_2,
+      } = sweepstakMap;
 
       await supabase
         .from(TABLE_SWEEPSTAKE_MAPS)
@@ -100,7 +106,7 @@ const SweepstakeMapModalBase: ForwardRefRenderFunction<SweepstakeMapModalHandle>
       onError(error) {
         errorFeedbackToast('Placar', error);
       },
-    }
+    },
   );
 
   const handleOk: SubmitHandler<Partial<ISweepstakeMap>> = async (data) => {
@@ -112,7 +118,7 @@ const SweepstakeMapModalBase: ForwardRefRenderFunction<SweepstakeMapModalHandle>
     () => ({
       onOpenModal,
     }),
-    [onOpenModal]
+    [onOpenModal],
   );
 
   return (
@@ -173,9 +179,9 @@ const SweepstakeMapModalBase: ForwardRefRenderFunction<SweepstakeMapModalHandle>
           </Card>
         </Stack>
       </ModalBody>
-      <ModalFooter flexDirection={['column-reverse', 'row']} justifyContent="space-between" gap="3">
-        <CancelSolidButton onClick={() => modalRef.current?.onCloseModal()} isDisabled={isSubmitting} />
-        <SaveSolidButton type="submit" isLoading={isSubmitting} />
+      <ModalFooter flexDir="column" gap="4">
+        <SaveSolidButton w="100%" type="submit" isLoading={isSubmitting} />
+        <CancelOutlineButton w="100%" onClick={() => modalRef.current?.onCloseModal()} isDisabled={isSubmitting} />
       </ModalFooter>
     </Modal>
   );

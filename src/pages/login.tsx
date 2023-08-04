@@ -4,7 +4,6 @@ import { Button } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
-import Router from 'next/router';
 import { parseCookies } from 'nookies';
 import * as yup from 'yup';
 
@@ -69,7 +68,7 @@ export default function Login() {
             <Button colorScheme="blue" type="submit" mt="6" isLoading={isSubmitting}>
               Entrar
             </Button>
-            <Button
+            {/* <Button
               colorScheme="green"
               variant="outline"
               mt="6"
@@ -77,7 +76,7 @@ export default function Login() {
               onClick={() => Router.push('/register')}
             >
               Registrar-se
-            </Button>
+            </Button> */}
           </CardBody>
         </Card>
       </Template>

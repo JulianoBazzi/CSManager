@@ -12,7 +12,9 @@ import {
   RiUserSettingsLine,
 } from 'react-icons/ri';
 
-import { Divider, Flex, Icon, IconButton, Stack, Text, useBreakpointValue, Image } from '@chakra-ui/react';
+import {
+  Divider, Flex, Icon, IconButton, Stack, Text, useBreakpointValue, Image,
+} from '@chakra-ui/react';
 import { User } from '@supabase/supabase-js';
 import { useMutation } from '@tanstack/react-query';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
@@ -79,7 +81,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
       onError(error) {
         errorFeedbackToast('Trocar de Time', error);
       },
-    }
+    },
   );
 
   function handleTeamRaffle() {
@@ -141,7 +143,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
                 icon={<Icon as={RiUserSettingsLine} fontSize="2xl" />}
                 aria-label="Novo Sorteio"
                 title="Sortear Times Novamente"
-                onClick={handleTeamRaffle}
+                onClick={() => handleTeamRaffle()}
               />
             )}
           </CardHeader>
@@ -153,11 +155,19 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
             <Stack direction={['column', 'row']}>
               <Flex align="center" gap="2">
                 <Icon as={RiMap2Line} fontSize="xl" />
-                <Text>{sweepstake.quantity_maps} mapas</Text>
+                <Text>
+                  {sweepstake.quantity_maps}
+                  {' '}
+                  mapas
+                </Text>
               </Flex>
               <Flex align="center" gap="2">
                 <Icon as={RiUser3Line} fontSize="xl" />
-                <Text>{sweepstake.quantity_players} jogadores</Text>
+                <Text>
+                  {sweepstake.quantity_players}
+                  {' '}
+                  jogadores
+                </Text>
               </Flex>
             </Stack>
           </CardBody>
@@ -177,7 +187,15 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
                     <Stack direction={['column', 'row']} key={sweepstakePlayer.id}>
                       <Flex align="center" gap="2" justify={isMobile ? 'space-between' : 'inherit'}>
                         <Text>
-                          {index + 1} - {sweepstakePlayer.players.name} ({sweepstakePlayer.players.username})
+                          {index + 1}
+                          {' '}
+                          -
+                          {' '}
+                          {sweepstakePlayer.players.name}
+                          {' '}
+                          (
+                          {sweepstakePlayer.players.username}
+                          )
                         </Text>
                         <Image
                           src={`/assets/patents/${sweepstakePlayer.players.patent}.webp`}
@@ -217,7 +235,15 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
                     <Stack direction={['column', 'row']} key={sweepstakePlayer.id}>
                       <Flex align="center" gap="2" justify={isMobile ? 'space-between' : 'inherit'}>
                         <Text>
-                          {index + 1} - {sweepstakePlayer.players.name} ({sweepstakePlayer.players.username})
+                          {index + 1}
+                          {' '}
+                          -
+                          {' '}
+                          {sweepstakePlayer.players.name}
+                          {' '}
+                          (
+                          {sweepstakePlayer.players.username}
+                          )
                         </Text>
                         <Image
                           src={`/assets/patents/${sweepstakePlayer.players.patent}.webp`}
@@ -279,7 +305,11 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
                           color={sweepstakeMap.team_start_from_terrorist === 0 ? 'red.500' : 'inherit'}
                         />
                         <Text>
-                          {sweepstakeMap.team_one_score_1} + {sweepstakeMap.team_one_score_2}
+                          {sweepstakeMap.team_one_score_1}
+                          {' '}
+                          +
+                          {' '}
+                          {sweepstakeMap.team_one_score_2}
                         </Text>
                         {isNoWinner(sweepstakeMap) && <Icon as={BsTrophyFill} color="gray.400" />}
                         {isWinnerTeam(sweepstakeMap, 0) && <Icon as={BsTrophyFill} color="yellow.400" />}
@@ -290,7 +320,11 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
                           color={sweepstakeMap.team_start_from_terrorist === 1 ? 'red.500' : 'inherit'}
                         />
                         <Text>
-                          {sweepstakeMap.team_two_score_1} + {sweepstakeMap.team_two_score_2}
+                          {sweepstakeMap.team_two_score_1}
+                          {' '}
+                          +
+                          {' '}
+                          {sweepstakeMap.team_two_score_2}
                         </Text>
                         {isNoWinner(sweepstakeMap) && <Icon as={BsTrophyFill} color="gray.400" />}
                         {isWinnerTeam(sweepstakeMap, 1) && <Icon as={BsTrophyFill} color="yellow.400" />}

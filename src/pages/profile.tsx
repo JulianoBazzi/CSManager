@@ -128,7 +128,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
     return {
       props: {
-        user: user,
+        user,
       },
     };
   } catch {
