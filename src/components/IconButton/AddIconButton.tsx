@@ -9,7 +9,7 @@ type AddIconButtonProps = Omit<IconButtonProps, 'aria-label'>;
 
 const AddIconButtonBase: ForwardRefRenderFunction<HTMLButtonElement, AddIconButtonProps> = (
   { ...rest }: AddIconButtonProps,
-  ref
+  ref,
 ) => (
   <GhostGrayIconButton
     ref={ref}

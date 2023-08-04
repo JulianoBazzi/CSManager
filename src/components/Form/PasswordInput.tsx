@@ -23,8 +23,10 @@ interface IPasswordInputProps extends ChakraInputProps {
 }
 
 function PasswordInputBase(
-  { name, label, error, isRequired, isLoading, maxW, ...rest }: IPasswordInputProps,
-  ref: React.ForwardedRef<HTMLInputElement>
+  {
+    name, label, error, isRequired, isLoading, maxW, ...rest
+  }: IPasswordInputProps,
+  ref: React.ForwardedRef<HTMLInputElement>,
 ) {
   const [show, setShow] = useState(false);
 

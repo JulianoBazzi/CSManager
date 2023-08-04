@@ -1,26 +1,32 @@
-import { useRef } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
-import { Text, useBreakpointValue } from '@chakra-ui/react';
+import { Flex, Stack } from '@chakra-ui/react';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { User } from '@supabase/supabase-js';
-import { useMutation } from '@tanstack/react-query';
+import { ColumnDef } from '@tanstack/react-table';
+import dayjs from 'dayjs';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
+import * as yup from 'yup';
 
+import { games } from '~/assets/games';
+import { MapBadge } from '~/components/Badge/MapBadge';
+import { PatentBadge } from '~/components/Badge/PatentBadge';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
-import { RaffleIconButton } from '~/components/IconButton/RaffleIconButton';
-import { SweepstakeMapModal, SweepstakeMapModalHandle } from '~/components/Modal/SweepstakeMapModal';
+import { Input } from '~/components/Form/Input';
+import { NumberInput } from '~/components/Form/NumberInput';
+import { Select } from '~/components/Form/Select';
+import { Table } from '~/components/Form/Table';
+import { SweepstakeIconButton } from '~/components/IconButton/SweepstakeIconButton';
 import Template from '~/components/Template';
-import { TABLE_SWEEPSTAKE_PLAYERS } from '~/config/constants';
-import { useFeedback } from '~/contexts/FeedbackContext';
-import IChangeTeamPlayer from '~/models/Entity/Sweepstake/IChangeTeamPlayer';
-import ISweepstakeMapAPI from '~/models/Entity/Sweepstake/ISweepstakeMapAPI';
-import { useSweepstakeMaps } from '~/services/hooks/useSweepstakeMaps';
-import { useSweepstakePlayers } from '~/services/hooks/useSweepstakePlayers';
-import { getSweepstake } from '~/services/hooks/useSweepstakes';
-import { queryClient } from '~/services/queryClient';
+import IMapAPI from '~/models/Entity/Map/IMapAPI';
+import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
+import ISweepstake from '~/models/Entity/Sweepstake/ISweepstake';
+import { useMaps } from '~/services/hooks/useMaps';
+import { usePlayers } from '~/services/hooks/usePlayers';
 import supabase from '~/services/supabase';
 
 interface INewSweepstakeProps extends GetServerSideProps {
@@ -28,106 +34,157 @@ interface INewSweepstakeProps extends GetServerSideProps {
 }
 
 const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
-  const sweepstakeMapModalRef = useRef<SweepstakeMapModalHandle>(null);
+  const { data: players, isLoading: isLoadingPlayers } = usePlayers(user.id);
+  const { data: maps, isLoading: isLoadingMaps } = useMaps(user.id);
 
-  const { errorFeedbackToast, successFeedbackToast } = useFeedback();
-  const isMobile = useBreakpointValue({
-    base: true,
-    md: false,
+  const playerColumns: ColumnDef<IPlayerAPI>[] = [
+    {
+      accessorKey: 'name',
+      header: 'Nome',
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'username',
+      header: 'Steam',
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'patent',
+      header: 'Patente',
+      enableSorting: false,
+      // eslint-disable-next-line react/no-unstable-nested-components
+      cell: ({ row }) => <PatentBadge patent={row.original.patent} format_patent={row.original.format_patent} />,
+    },
+  ];
+
+  const mapColumns: ColumnDef<IMapAPI>[] = [
+    {
+      accessorKey: 'name',
+      header: 'Nome',
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'format_map_type',
+      header: 'Categoria',
+      enableSorting: false,
+      // eslint-disable-next-line react/no-unstable-nested-components
+      cell: ({ row }) => <MapBadge type={row.original.map_type} format_type={row.original.format_map_type} />,
+    },
+  ];
+
+  const sweepstakeSchema = yup.object().shape({
+    name: yup.string().min(3).required(),
+    active: yup.boolean().required(),
+    map_type: yup
+      .object()
+      .shape({
+        id: yup.string().required(),
+        name: yup.string(),
+      })
+      .nullable()
+      .required(),
+    game_type: yup
+      .object()
+      .shape({
+        id: yup.string().required(),
+        name: yup.string(),
+      })
+      .nullable()
+      .required(),
   });
 
   const {
-    data: sweepstakePlayers,
-    isLoading: isLoadingSweepstakePlayers,
-    isFetching: isFetchingSweepstakePlayers,
-  } = useSweepstakePlayers(sweepstake.id);
-
-  const {
-    data: sweepstakeMaps,
-    isLoading: isLoadingSweepstakeMaps,
-    isFetching: isFetchingSweepstakeMaps,
-  } = useSweepstakeMaps(sweepstake.id);
-
-  const { mutateAsync: changeTeamMutateAsync, isLoading: isLoadingChangeTeam } = useMutation(
-    async ({ sweepstake_player_id, team }: IChangeTeamPlayer) => {
-      await supabase
-        .from(TABLE_SWEEPSTAKE_PLAYERS)
-        .update({
-          user_id: user?.id,
-          team,
-        })
-        .eq('id', sweepstake_player_id);
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<Partial<ISweepstake>>({
+    resolver: yupResolver(sweepstakeSchema),
+    defaultValues: {
+      game_type: games.find((game) => game.id === user.user_metadata.gameType),
+      departure_at: dayjs().set('hour', 20).set('minute', 0).set('second', 0)
+        .format('YYYY-MM-DD HH:mm:ss'),
+      quantity_players: 0,
+      quantity_maps: 0,
     },
-    {
-      async onSuccess() {
-        successFeedbackToast('Trocar de Time', 'Jogador movido com sucesso!');
-        await queryClient.invalidateQueries([TABLE_SWEEPSTAKE_PLAYERS, sweepstake.id]);
-      },
-      onError(error) {
-        errorFeedbackToast('Trocar de Time', error);
-      },
-    },
-  );
+  });
 
-  function handleTeamRaffle() {
-    // playerModalRef.current?.onOpenModal({
-    //   userId: user.id,
-    // });
-  }
-
-  async function handleChangeTeam(data: IChangeTeamPlayer) {
-    await changeTeamMutateAsync(data);
-  }
-
-  function handleUpdateScore(sweepstakeMap: ISweepstakeMapAPI) {
-    sweepstakeMapModalRef.current?.onOpenModal({
-      id: sweepstakeMap.id,
-      user,
-      sweepstakeMap,
-    });
-  }
-
-  function isWinnerTeam(sweepstakeMap: ISweepstakeMapAPI, team: number): boolean {
-    const sumTeamOne = sweepstakeMap.team_one_score_1 + sweepstakeMap.team_one_score_2;
-    const sumTeamTwo = sweepstakeMap.team_two_score_1 + sweepstakeMap.team_two_score_2;
-
-    if ((team === 0 && sumTeamOne > sumTeamTwo) || (team === 1 && sumTeamOne < sumTeamTwo)) {
-      return true;
-    }
-
-    return false;
-  }
-
-  function isNoWinner(sweepstakeMap: ISweepstakeMapAPI): boolean {
-    const sumTeamOne = sweepstakeMap.team_one_score_1 + sweepstakeMap.team_one_score_2;
-    const sumTeamTwo = sweepstakeMap.team_two_score_1 + sweepstakeMap.team_two_score_2;
-
-    if (sumTeamOne > 0 && sumTeamOne === sumTeamTwo) {
-      return true;
-    }
-
-    return false;
-  }
+  const handleOk: SubmitHandler<Partial<ISweepstake>> = async (data) => {
+    console.log('asadssd');
+  };
 
   return (
     <>
       <Head>
-        <title>{`${sweepstake.format_short_game_type}: ${sweepstake.format_departure_at}`}</title>
-        <meta
-          name="description"
-          content={`Partida com ${sweepstake.quantity_players} jogadores e ${sweepstake.quantity_maps} mapas.`}
-        />
+        <title>Novo Sorteio - CS Manager</title>
       </Head>
-      <SweepstakeMapModal ref={sweepstakeMapModalRef} />
       <Template user={user}>
         <Card>
-          <CardHeader title={(isMobile ? sweepstake.format_short_game_type : sweepstake.format_game_type) || ''}>
-            {user && user.id === sweepstake.user_id && <RaffleIconButton onClick={handleTeamRaffle} />}
+          <CardHeader title="Novo Sorteio">
+            <SweepstakeIconButton type="submit" />
           </CardHeader>
           <CardBody>
-            <Text>asdadasasd</Text>
+            <Stack direction={['column', 'row']} spacing="4">
+              <Select
+                label="Jogo"
+                options={games}
+                value={watch('game_type')}
+                error={errors.game_type?.id}
+                {...register('game_type')}
+                isDisabled={isSubmitting}
+                isRequired
+                onChange={(option) => {
+                  setValue('game_type', option);
+                }}
+              />
+              <Input
+                type="datetime-local"
+                label="Data/Hora da Partida"
+                error={errors.departure_at}
+                {...register('departure_at')}
+                isDisabled={isSubmitting}
+                isRequired
+              />
+              <NumberInput
+                maxW={['100%', '150px']}
+                label="Qtd. Jogadores"
+                name="quantity_players"
+                value={watch('quantity_players')}
+                isDisabled
+              />
+              <NumberInput
+                maxW={['100%', '150px']}
+                label="Qtd. Mapas"
+                name="quantity_maps"
+                value={watch('quantity_maps')}
+                isDisabled
+              />
+            </Stack>
           </CardBody>
         </Card>
+        <Flex direction={['column', 'row']} w="100%" gap={['0', '2']}>
+          <Card w={['100%', '60%']}>
+            <CardHeader title="Jogadores" />
+            <CardBody>
+              <Table
+                data={players}
+                columns={playerColumns}
+                isLoading={isLoadingPlayers}
+              />
+            </CardBody>
+          </Card>
+          <Card w={['100%', '40%']}>
+            <CardHeader title="Mapas" />
+            <CardBody>
+              <Table
+                data={maps}
+                columns={mapColumns}
+                isLoading={isLoadingMaps}
+              />
+            </CardBody>
+          </Card>
+        </Flex>
       </Template>
     </>
   );
@@ -137,49 +194,38 @@ export default NewSweepstake;
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   try {
-    const { id } = context.query;
-    const sweepstake = await getSweepstake(String(id));
-
-    if (sweepstake) {
-      const { 'csm.token': token } = parseCookies(context);
-      if (!token) {
-        return {
-          props: {
-            sweepstake,
-          },
-        };
-      }
-
-      const {
-        data: { user },
-      } = await supabase.auth.getUser(token);
-
-      if (!user) {
-        return {
-          props: {
-            sweepstake,
-          },
-        };
-      }
-
+    const { 'csm.token': token } = parseCookies(context);
+    if (!token) {
       return {
-        props: {
-          sweepstake,
-          user,
+        redirect: {
+          destination: '/login',
+          permanent: false,
+        },
+      };
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser(token);
+
+    if (!user) {
+      return {
+        redirect: {
+          destination: '/login',
+          permanent: false,
         },
       };
     }
 
     return {
-      redirect: {
-        destination: '/',
-        permanent: false,
+      props: {
+        user,
       },
     };
   } catch {
     return {
       redirect: {
-        destination: '/',
+        destination: '/login',
         permanent: false,
       },
     };

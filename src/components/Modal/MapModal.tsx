@@ -3,9 +3,7 @@ import {
 } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-import {
-  Checkbox, ModalBody, ModalFooter, Stack,
-} from '@chakra-ui/react';
+import { ModalBody, ModalFooter, Stack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@tanstack/react-query';
 import * as yup from 'yup';
@@ -18,6 +16,7 @@ import { SaveSolidButton } from '~/components/Button/SaveSolidButton';
 import { Input } from '~/components/Form/Input';
 import { Modal, ModalHandle } from '~/components/Form/Modal';
 import { Select } from '~/components/Form/Select';
+import { Switch } from '~/components/Form/Switch';
 import { TABLE_MAPS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import IMap from '~/models/Entity/Map/IMap';
@@ -178,9 +177,7 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
               setValue('game_type', option);
             }}
           />
-          <Checkbox {...register('active')} isDisabled={isLoading || isSubmitting}>
-            Ativo
-          </Checkbox>
+          <Switch label="Ativo" {...register('active')} isDisabled={isLoading || isSubmitting} />
         </Stack>
       </ModalBody>
       <ModalFooter flexDir="column" gap="4">

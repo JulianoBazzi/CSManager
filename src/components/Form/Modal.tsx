@@ -1,4 +1,6 @@
-import { forwardRef, ForwardRefRenderFunction, ReactNode, useCallback, useImperativeHandle, useState } from 'react';
+import {
+  forwardRef, ForwardRefRenderFunction, ReactNode, useCallback, useImperativeHandle, useState,
+} from 'react';
 
 import {
   Modal as ChakraModal,
@@ -24,8 +26,10 @@ export type ModalHandle = {
 };
 
 const ModalBase: ForwardRefRenderFunction<ModalHandle, IModalProps> = (
-  { title, children, disableCloseButton, onSubmit, ...rest }: IModalProps,
-  ref
+  {
+    title, children, disableCloseButton, onSubmit, ...rest
+  }: IModalProps,
+  ref,
 ) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -41,7 +45,7 @@ const ModalBase: ForwardRefRenderFunction<ModalHandle, IModalProps> = (
       onOpenModal,
       onCloseModal,
     }),
-    [onCloseModal]
+    [onCloseModal],
   );
 
   return (

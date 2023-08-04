@@ -1,6 +1,8 @@
 import { RiArrowDownSFill, RiArrowUpSFill, RiSubtractLine } from 'react-icons/ri';
 
-import { Table as ChakraTable, Thead, Tbody, Tr, Th, Td, Flex, Text, Skeleton, Icon } from '@chakra-ui/react';
+import {
+  Table as ChakraTable, Thead, Tbody, Tr, Th, Td, Flex, Text, Skeleton, Icon,
+} from '@chakra-ui/react';
 import {
   useReactTable,
   flexRender,
@@ -25,7 +27,9 @@ export type ITableProps<T extends IEntityBase> = {
 
 const emptyArray: never[] = [];
 
-export function Table<T extends IEntityBase>({ columns, data = emptyArray, isLoading, onRowClick }: ITableProps<T>) {
+export function Table<T extends IEntityBase>({
+  columns, data = emptyArray, isLoading, onRowClick,
+}: ITableProps<T>) {
   const totalRecords = data.length || 0;
 
   const {
@@ -75,8 +79,8 @@ export function Table<T extends IEntityBase>({ columns, data = emptyArray, isLoa
           ))}
         </Thead>
         <Tbody>
-          {isLoading &&
-            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => (
+          {isLoading
+            && [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => (
               <Tr key={index}>
                 {columns.map((column, columnIndex) => (
                   <Td

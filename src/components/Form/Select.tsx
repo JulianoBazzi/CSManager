@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { forwardRef } from 'react';
 
-import { FormControl, FormErrorMessage, FormLabel, Skeleton } from '@chakra-ui/react';
+import {
+  FormControl, FormErrorMessage, FormLabel, Skeleton,
+} from '@chakra-ui/react';
 import { Select as ChakraReactSelect, SelectInstance } from 'chakra-react-select';
 
 import ISelectOption from '~/models/ISelectOption';
@@ -38,7 +40,7 @@ function SelectBase(
     value,
     onChange,
   }: ISelectProps,
-  ref: React.ForwardedRef<SelectInstance<ISelectOption>>
+  ref: React.ForwardedRef<SelectInstance<ISelectOption>>,
 ) {
   const cursorType = () => {
     if (isDisabled) {

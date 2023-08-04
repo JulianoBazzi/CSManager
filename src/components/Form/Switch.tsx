@@ -5,13 +5,13 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
-  Input as ChakraInput,
+  Switch as ChakraSwitch,
   InputGroup,
-  InputProps as ChakraInputProps,
+  SwitchProps,
   Skeleton,
 } from '@chakra-ui/react';
 
-interface IInputProps extends ChakraInputProps {
+interface ISwitchProps extends SwitchProps {
   name: string;
   label?: string;
   error?: FieldError;
@@ -20,10 +20,10 @@ interface IInputProps extends ChakraInputProps {
   children?: ReactNode;
 }
 
-const InputBase: ForwardRefRenderFunction<HTMLInputElement, IInputProps> = (
+const SwitchBase: ForwardRefRenderFunction<HTMLInputElement, ISwitchProps> = (
   {
     name, label, error, isRequired, isLoading, maxW, children, ...rest
-  }: IInputProps,
+  }: ISwitchProps,
   ref,
 ) => (
   <FormControl isInvalid={!!error} isRequired={isRequired} maxW={maxW}>
@@ -31,7 +31,7 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, IInputProps> = (
     {isLoading && <Skeleton height="10" borderRadius={4} />}
     {!isLoading && (
     <InputGroup>
-      <ChakraInput ref={ref} id={name} name={name} autoComplete="off" {...rest} />
+      <ChakraSwitch ref={ref} id={name} name={name} autoComplete="off" {...rest} />
       {children}
     </InputGroup>
     )}
@@ -39,4 +39,4 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, IInputProps> = (
   </FormControl>
 );
 
-export const Input = forwardRef(InputBase);
+export const Switch = forwardRef(SwitchBase);
