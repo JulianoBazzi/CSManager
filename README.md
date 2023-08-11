@@ -26,7 +26,6 @@ Coming soon.
 - [Typescript](https://www.typescriptlang.org/)
 - [Chakra UI](https://chakra-ui.com/)
 - [Supabase](https://supabase.com/)
-- [Lodash](https://lodash.com/)
 
 ## Installation
 
