@@ -220,8 +220,8 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
     resolver: yupResolver(sweepstakeSchema),
     defaultValues: {
       game_type: games.find((game) => game.id === user.user_metadata.gameType),
-      departure_at: dayjs().set('hour', 20).set('minute', 0).set('second', 0)
-        .format('YYYY-MM-DD HH:mm:ss'),
+      departure_at: dayjs().set('hour', 21).set('minute', 0).set('second', 0)
+        .format('YYYY-MM-DD HH:mm'),
     },
   });
 
@@ -264,7 +264,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
                 }}
               />
               <Input
-                type="datetime-local"
+                type="datetime"
                 label="Data/Hora da Partida"
                 error={errors.departure_at}
                 {...register('departure_at')}
