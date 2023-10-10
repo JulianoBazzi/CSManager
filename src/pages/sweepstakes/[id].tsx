@@ -44,7 +44,7 @@ interface ISweepstakesProps extends GetServerSideProps {
 const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
   const sweepstakeMapModalRef = useRef<SweepstakeMapModalHandle>(null);
 
-  const { errorFeedbackToast, successFeedbackToast } = useFeedback();
+  const { infoFeedbackToast, errorFeedbackToast, successFeedbackToast } = useFeedback();
   const isMobile = useBreakpointValue({
     base: true,
     md: false,
@@ -186,6 +186,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
                           objectFit="scale-down"
                           maxH="24px"
                           title={sweepstakePlayer.players.format_patent}
+                          onClick={() => infoFeedbackToast(sweepstakePlayer.players.name, sweepstakePlayer.players.format_patent)}
                         />
                       </Flex>
                       {!isMobile && user && user.id === sweepstake.user_id && (
@@ -234,6 +235,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
                           objectFit="scale-down"
                           maxH="24px"
                           title={sweepstakePlayer.players.format_patent}
+                          onClick={() => infoFeedbackToast(sweepstakePlayer.players.name, sweepstakePlayer.players.format_patent)}
                         />
                       </Flex>
                       {!isMobile && user && user.id === sweepstake.user_id && (

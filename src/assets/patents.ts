@@ -72,7 +72,7 @@ export const patents: ISelectOption[] = [
   },
   {
     id: 'lem',
-    name: 'Águia IUI',
+    name: 'Águia II',
   },
   {
     id: 'smfc',
