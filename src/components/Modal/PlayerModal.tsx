@@ -7,6 +7,7 @@ import { ModalBody, ModalFooter, Stack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@tanstack/react-query';
 import * as yup from 'yup';
+import { InferType } from 'yup';
 
 import { patents } from '~/assets/patents';
 import { AddSolidButton } from '~/components/Button/AddSolidButton';
@@ -19,6 +20,7 @@ import { Switch } from '~/components/Form/Switch';
 import { TABLE_PLAYERS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import IPlayer from '~/models/Entity/Player/IPlayer';
+import ISelectOption from '~/models/ISelectOption';
 import IRecordModal from '~/models/Modal/IRecordModal';
 import { getPlayer } from '~/services/hooks/usePlayers';
 import { queryClient } from '~/services/queryClient';
@@ -56,7 +58,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
     setValue,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm<Partial<IPlayer>>({
+  } = useForm({
     resolver: yupResolver(playerSchema),
   });
 
@@ -90,7 +92,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
   );
 
   const createOrUpdatePlayer = useMutation(
-    async (player: Partial<IPlayer>) => {
+    async (player: IPlayer) => {
       const {
         id, name, username, patent, active,
       } = player;
@@ -116,8 +118,8 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
     },
   );
 
-  const handleOk: SubmitHandler<Partial<IPlayer>> = async (data) => {
-    await createOrUpdatePlayer.mutateAsync(data);
+  const handleOk: SubmitHandler<InferType<typeof playerSchema>> = async (data) => {
+    await createOrUpdatePlayer.mutateAsync(data as IPlayer);
   };
 
   useImperativeHandle(
@@ -152,7 +154,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
           <Select
             label="Patente"
             options={patents}
-            value={watch('patent')}
+            value={watch('patent') as ISelectOption}
             error={errors.patent?.id}
             {...register('patent')}
             isLoading={isLoading}

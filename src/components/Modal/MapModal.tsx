@@ -7,6 +7,7 @@ import { ModalBody, ModalFooter, Stack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@tanstack/react-query';
 import * as yup from 'yup';
+import { InferType } from 'yup';
 
 import { games } from '~/assets/games';
 import { maps } from '~/assets/maps';
@@ -20,6 +21,7 @@ import { Switch } from '~/components/Form/Switch';
 import { TABLE_MAPS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import IMap from '~/models/Entity/Map/IMap';
+import ISelectOption from '~/models/ISelectOption';
 import IRecordModal from '~/models/Modal/IRecordModal';
 import { getMap } from '~/services/hooks/useMaps';
 import { queryClient } from '~/services/queryClient';
@@ -64,7 +66,7 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
     setValue,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm<Partial<IMap>>({
+  } = useForm({
     resolver: yupResolver(mapSchema),
   });
 
@@ -100,7 +102,7 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
   );
 
   const createOrUpdateMap = useMutation(
-    async (map: Partial<IMap>) => {
+    async (map: IMap) => {
       const {
         id, name, game_type, map_type, active,
       } = map;
@@ -126,8 +128,8 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
     },
   );
 
-  const handleOk: SubmitHandler<Partial<IMap>> = async (data) => {
-    await createOrUpdateMap.mutateAsync(data);
+  const handleOk: SubmitHandler<InferType<typeof mapSchema>> = async (data) => {
+    await createOrUpdateMap.mutateAsync(data as IMap);
   };
 
   useImperativeHandle(
@@ -154,7 +156,7 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
           <Select
             label="Categoria"
             options={maps}
-            value={watch('map_type')}
+            value={watch('map_type') as ISelectOption}
             error={errors.map_type?.id}
             {...register('map_type')}
             isLoading={isLoading}
@@ -167,7 +169,7 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
           <Select
             label="Jogo"
             options={games}
-            value={watch('game_type')}
+            value={watch('game_type') as ISelectOption}
             error={errors.game_type?.id}
             {...register('game_type')}
             isLoading={isLoading}

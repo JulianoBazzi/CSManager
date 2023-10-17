@@ -15,6 +15,7 @@ import Router from 'next/router';
 import { parseCookies } from 'nookies';
 import { uuid } from 'uuidv4';
 import * as yup from 'yup';
+import { InferType } from 'yup';
 
 import { games } from '~/assets/games';
 import { MapBadge } from '~/components/Badge/MapBadge';
@@ -35,6 +36,7 @@ import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
 import ISweepstake from '~/models/Entity/Sweepstake/ISweepstake';
 import ISweepstakeMap from '~/models/Entity/Sweepstake/ISweepstakeMap';
 import ISweepstakePlayer from '~/models/Entity/Sweepstake/ISweepstakePlayer';
+import ISelectOption from '~/models/ISelectOption';
 import { useMaps } from '~/services/hooks/useMaps';
 import { usePlayers } from '~/services/hooks/usePlayers';
 import { queryClient } from '~/services/queryClient';
@@ -73,7 +75,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
   }
 
   const { mutateAsync, isLoading: isLoadingCreate } = useMutation(
-    async ({ game_type, departure_at }: Partial<ISweepstake>) => {
+    async ({ game_type, departure_at }: ISweepstake) => {
       const sweepstakeId = uuid();
       const divisionTeams = splitArray(selectedPlayers);
 
@@ -216,7 +218,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
     setValue,
     watch,
     formState: { errors },
-  } = useForm<Partial<ISweepstake>>({
+  } = useForm({
     resolver: yupResolver(sweepstakeSchema),
     defaultValues: {
       game_type: games.find((game) => game.id === user.user_metadata.gameType),
@@ -225,7 +227,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
     },
   });
 
-  const handleOk: SubmitHandler<Partial<ISweepstake>> = async (data) => {
+  const handleOk: SubmitHandler<InferType<typeof sweepstakeSchema>> = async (data) => {
     if (selectedPlayers.length <= 1) {
       warningFeedbackToast('Novo Sorteio', 'É obrigatório selecionar ao menos dois jogadores.');
       return;
@@ -236,7 +238,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
       return;
     }
 
-    await mutateAsync(data);
+    await mutateAsync(data as ISweepstake);
   };
 
   return (
@@ -254,7 +256,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
               <Select
                 label="Jogo"
                 options={games}
-                value={watch('game_type')}
+                value={watch('game_type') as ISelectOption}
                 error={errors.game_type?.id}
                 {...register('game_type')}
                 isDisabled={isLoadingCreate}

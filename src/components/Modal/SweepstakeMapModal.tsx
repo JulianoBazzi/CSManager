@@ -12,6 +12,7 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@tanstack/react-query';
 import * as yup from 'yup';
+import { InferType } from 'yup';
 
 import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
 import { SaveSolidButton } from '~/components/Button/SaveSolidButton';
@@ -51,7 +52,7 @@ const SweepstakeMapModalBase: ForwardRefRenderFunction<SweepstakeMapModalHandle>
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<Partial<ISweepstakeMap>>({
+  } = useForm({
     resolver: yupResolver(sweepstakeMapSchema),
   });
 
@@ -82,7 +83,7 @@ const SweepstakeMapModalBase: ForwardRefRenderFunction<SweepstakeMapModalHandle>
   );
 
   const updateSweepstakMap = useMutation(
-    async (sweepstakMap: Partial<ISweepstakeMap>) => {
+    async (sweepstakMap: ISweepstakeMap) => {
       const {
         team_one_score_1, team_one_score_2, team_two_score_1, team_two_score_2,
       } = sweepstakMap;
@@ -109,8 +110,8 @@ const SweepstakeMapModalBase: ForwardRefRenderFunction<SweepstakeMapModalHandle>
     },
   );
 
-  const handleOk: SubmitHandler<Partial<ISweepstakeMap>> = async (data) => {
-    await updateSweepstakMap.mutateAsync(data);
+  const handleOk: SubmitHandler<InferType<typeof sweepstakeMapSchema>> = async (data) => {
+    await updateSweepstakMap.mutateAsync(data as ISweepstakeMap);
   };
 
   useImperativeHandle(
