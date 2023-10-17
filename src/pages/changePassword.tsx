@@ -7,6 +7,7 @@ import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
 import * as yup from 'yup';
+import { InferType } from 'yup';
 
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
@@ -33,12 +34,12 @@ const ChangePassword: NextPage<IChangePasswordProps> = ({ user }) => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<IChangePassword>({
+  } = useForm({
     resolver: yupResolver(changePasswordFormSchema),
   });
 
-  const handleChangePassword: SubmitHandler<IChangePassword> = async (data) => {
-    await changePassword(data);
+  const handleChangePassword: SubmitHandler<InferType<typeof changePasswordFormSchema>> = async (data) => {
+    await changePassword(data as IChangePassword);
   };
 
   return (

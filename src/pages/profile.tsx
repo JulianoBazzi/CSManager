@@ -7,6 +7,7 @@ import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
 import * as yup from 'yup';
+import { InferType } from 'yup';
 
 import { games } from '~/assets/games';
 import Card from '~/components/Card';
@@ -17,6 +18,7 @@ import { Select } from '~/components/Form/Select';
 import Template from '~/components/Template';
 import { useAuth } from '~/contexts/AuthContext';
 import IProfile from '~/models/IProfile';
+import ISelectOption from '~/models/ISelectOption';
 import supabase from '~/services/supabase';
 
 interface IProfileProps extends GetServerSideProps {
@@ -44,7 +46,7 @@ const Profile: NextPage<IProfileProps> = ({ user }) => {
     watch,
     setValue,
     formState: { errors, isSubmitting },
-  } = useForm<IProfile>({
+  } = useForm({
     resolver: yupResolver(profileFormSchema),
     defaultValues: {
       name: user.user_metadata.name,
@@ -52,8 +54,8 @@ const Profile: NextPage<IProfileProps> = ({ user }) => {
     },
   });
 
-  const handleUpdateProfile: SubmitHandler<IProfile> = async (data) => {
-    await updateProfile(data);
+  const handleUpdateProfile: SubmitHandler<InferType<typeof profileFormSchema>> = async (data) => {
+    await updateProfile(data as IProfile);
   };
 
   return (
@@ -77,7 +79,7 @@ const Profile: NextPage<IProfileProps> = ({ user }) => {
               <Select
                 label="Jogo Favorito"
                 options={games}
-                value={watch('game_type')}
+                value={watch('game_type') as ISelectOption}
                 error={errors.game_type?.id}
                 {...register('game_type')}
                 isDisabled={isSubmitting}
