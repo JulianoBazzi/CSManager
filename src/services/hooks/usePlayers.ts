@@ -1,4 +1,4 @@
-import { useQuery, QueryOptions } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { patents } from '~/assets/patents';
 import { TABLE_PLAYERS } from '~/config/constants';
@@ -36,13 +36,16 @@ export async function getPlayer(id: string, userId: string): Promise<IPlayerAPI>
   return formatPlayer(data);
 }
 
-export function usePlayers(userId: string, onlyActives?: boolean, options?: QueryOptions<IPlayerAPI[]>) {
-  return useQuery([TABLE_PLAYERS, userId], () => getPlayers(userId, onlyActives), {
-    keepPreviousData: true,
-    ...options,
+export function usePlayers(userId: string, onlyActives?: boolean) {
+  return useQuery({
+    queryKey: [TABLE_PLAYERS, userId, onlyActives],
+    queryFn: () => getPlayers(userId, onlyActives),
   });
 }
 
 export async function fetchPlayers(userId: string) {
-  return queryClient.fetchQuery([TABLE_PLAYERS, userId], () => getPlayers(userId));
+  return queryClient.fetchQuery({
+    queryKey: [TABLE_PLAYERS, userId],
+    queryFn: () => getPlayers(userId),
+  });
 }

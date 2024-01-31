@@ -1,4 +1,4 @@
-import { useQuery, QueryOptions } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { games } from '~/assets/games';
 import { TABLE_SWEEPSTAKES } from '~/config/constants';
@@ -39,13 +39,16 @@ export async function getSweepstake(id: string): Promise<ISweepstakeAPI> {
   return formatSweepstakes(data);
 }
 
-export function useSweepstakes(userId: string, options?: QueryOptions<ISweepstakeAPI[]>) {
-  return useQuery([TABLE_SWEEPSTAKES, userId], () => getSweepstakes(userId), {
-    keepPreviousData: true,
-    ...options,
+export function useSweepstakes(userId: string) {
+  return useQuery({
+    queryKey: [TABLE_SWEEPSTAKES, userId],
+    queryFn: () => getSweepstakes(userId),
   });
 }
 
 export async function fetchSweepstakes(userId: string) {
-  return queryClient.fetchQuery([TABLE_SWEEPSTAKES, userId], () => getSweepstakes(userId));
+  return queryClient.fetchQuery({
+    queryKey: [TABLE_SWEEPSTAKES, userId],
+    queryFn: () => getSweepstakes(userId),
+  });
 }

@@ -102,27 +102,27 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
   );
 
   const createOrUpdateMap = useMutation(
-    async (map: IMap) => {
-      const {
-        id, name, game_type, map_type, active,
-      } = map;
-
-      await supabase.from(TABLE_MAPS).upsert({
-        id,
-        user_id: recordModalProps?.user.id,
-        name,
-        map_type: map_type?.id,
-        game_type: game_type?.id,
-        active,
-      });
-    },
     {
+      mutationFn: async (map: IMap) => {
+        const {
+          id, name, game_type, map_type, active,
+        } = map;
+
+        await supabase.from(TABLE_MAPS).upsert({
+          id,
+          user_id: recordModalProps?.user.id,
+          name,
+          map_type: map_type?.id,
+          game_type: game_type?.id,
+          active,
+        });
+      },
       async onSuccess() {
         successFeedbackToast('Mapa', `${recordModalProps?.id ? 'Atualizado' : 'Cadastrada'} com sucesso!`);
-        await queryClient.invalidateQueries([TABLE_MAPS]);
+        await queryClient.invalidateQueries({ queryKey: [TABLE_MAPS] });
         modalRef.current?.onCloseModal();
       },
-      onError(error) {
+      onError(error: Error) {
         errorFeedbackToast('Mapa', error);
       },
     },

@@ -74,66 +74,67 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
     }
   }
 
-  const { mutateAsync, isLoading: isLoadingCreate } = useMutation(
-    async ({ game_type, departure_at }: ISweepstake) => {
-      const sweepstakeId = uuid();
-      const divisionTeams = splitArray(selectedPlayers);
+  const { mutateAsync, isPending: isLoadingCreate } = useMutation(
+    {
+      mutationFn: async ({ game_type, departure_at }: ISweepstake) => {
+        const sweepstakeId = uuid();
+        const divisionTeams = splitArray(selectedPlayers);
 
-      const playerList: ISweepstakePlayer[] = [];
-      for (let i = 0; i < divisionTeams.length;) {
-        divisionTeams[i].forEach((playerId) => {
-          playerList.push({
+        const playerList: ISweepstakePlayer[] = [];
+        for (let i = 0; i < divisionTeams.length;) {
+          divisionTeams[i].forEach((playerId) => {
+            playerList.push({
+              user_id: user?.id,
+              sweepstake_id: sweepstakeId,
+              player_id: playerId,
+              team: i,
+            });
+          });
+
+          i += 1;
+        }
+
+        const mapList: ISweepstakeMap[] = [];
+        const startFromTerrorist = randomUnique(2, 1)[0] - 1;
+        for (let i = 0; i < selectedMaps.length;) {
+          mapList.push({
             user_id: user?.id,
             sweepstake_id: sweepstakeId,
-            player_id: playerId,
-            team: i,
+            map_id: selectedMaps[i],
+            team_start_from_terrorist: startFromTerrorist,
+            team_one_score_1: 0,
+            team_one_score_2: 0,
+            team_two_score_1: 0,
+            team_two_score_2: 0,
+            order: i,
           });
+
+          i += 1;
+        }
+
+        await supabase.from(TABLE_SWEEPSTAKES).insert({
+          id: sweepstakeId,
+          user_id: user.id,
+          game_type: game_type?.id,
+          departure_at,
+          consider_patents: false,
+          consider_previous_rankings: false,
+          quantity_players: playerList.length,
+          quantity_maps: mapList.length,
         });
 
-        i += 1;
-      }
+        await supabase.from(TABLE_SWEEPSTAKE_PLAYERS).insert(playerList);
 
-      const mapList: ISweepstakeMap[] = [];
-      for (let i = 0; i < selectedMaps.length;) {
-        mapList.push({
-          user_id: user?.id,
-          sweepstake_id: sweepstakeId,
-          map_id: selectedMaps[i],
-          team_start_from_terrorist: randomUnique(2, 1)[0] - 1,
-          team_one_score_1: 0,
-          team_one_score_2: 0,
-          team_two_score_1: 0,
-          team_two_score_2: 0,
-          order: i,
-        });
+        await supabase.from(TABLE_SWEEPSTAKE_MAPS).insert(mapList);
 
-        i += 1;
-      }
-
-      await supabase.from(TABLE_SWEEPSTAKES).insert({
-        id: sweepstakeId,
-        user_id: user.id,
-        game_type: game_type?.id,
-        departure_at,
-        consider_patents: false,
-        consider_previous_rankings: false,
-        quantity_players: playerList.length,
-        quantity_maps: mapList.length,
-      });
-
-      await supabase.from(TABLE_SWEEPSTAKE_PLAYERS).insert(playerList);
-
-      await supabase.from(TABLE_SWEEPSTAKE_MAPS).insert(mapList);
-
-      return sweepstakeId;
-    },
-    {
+        return sweepstakeId;
+      },
       async onSuccess(id) {
         successFeedbackToast('Novo Sorteio', 'Sorteio realizado com sucesso!');
-        await queryClient.invalidateQueries([TABLE_SWEEPSTAKES]);
+        await queryClient.invalidateQueries({ queryKey: [TABLE_SWEEPSTAKES] });
         await Router.push(`/sweepstakes/${id}`);
       },
-      onError(error) {
+      onError(error: Error) {
         errorFeedbackToast('Novo Sorteio', error);
       },
     },

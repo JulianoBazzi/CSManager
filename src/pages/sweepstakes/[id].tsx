@@ -62,20 +62,20 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
     isFetching: isFetchingSweepstakeMaps,
   } = useSweepstakeMaps(sweepstake.id);
 
-  const { mutateAsync: changeTeamMutateAsync, isLoading: isLoadingChangeTeam } = useMutation(
-    async ({ sweepstake_player_id, team }: IChangeTeamPlayer) => {
-      await supabase
-        .from(TABLE_SWEEPSTAKE_PLAYERS)
-        .update({
-          user_id: user?.id,
-          team,
-        })
-        .eq('id', sweepstake_player_id);
-    },
+  const { mutateAsync: changeTeamMutateAsync, isPending: isLoadingChangeTeam } = useMutation(
     {
+      mutationFn: async ({ sweepstake_player_id, team }: IChangeTeamPlayer) => {
+        await supabase
+          .from(TABLE_SWEEPSTAKE_PLAYERS)
+          .update({
+            user_id: user?.id,
+            team,
+          })
+          .eq('id', sweepstake_player_id);
+      },
       async onSuccess() {
         successFeedbackToast('Trocar de Time', 'Jogador movido com sucesso!');
-        await queryClient.invalidateQueries([TABLE_SWEEPSTAKE_PLAYERS, sweepstake.id]);
+        await queryClient.invalidateQueries({ queryKey: [TABLE_SWEEPSTAKE_PLAYERS, sweepstake.id] });
       },
       onError(error) {
         errorFeedbackToast('Trocar de Time', error);

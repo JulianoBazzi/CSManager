@@ -92,27 +92,27 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
   );
 
   const createOrUpdatePlayer = useMutation(
-    async (player: IPlayer) => {
-      const {
-        id, name, username, patent, active,
-      } = player;
-
-      await supabase.from(TABLE_PLAYERS).upsert({
-        id,
-        user_id: recordModalProps?.user.id,
-        name,
-        username,
-        patent: patent?.id,
-        active,
-      });
-    },
     {
+      mutationFn: async (player: IPlayer) => {
+        const {
+          id, name, username, patent, active,
+        } = player;
+
+        await supabase.from(TABLE_PLAYERS).upsert({
+          id,
+          user_id: recordModalProps?.user.id,
+          name,
+          username,
+          patent: patent?.id,
+          active,
+        });
+      },
       async onSuccess() {
         successFeedbackToast('Jogador', `${recordModalProps?.id ? 'Atualizado' : 'Cadastrado'} com sucesso!`);
-        await queryClient.invalidateQueries([TABLE_PLAYERS]);
+        await queryClient.invalidateQueries({ queryKey: [TABLE_PLAYERS] });
         modalRef.current?.onCloseModal();
       },
-      onError(error) {
+      onError(error: Error) {
         errorFeedbackToast('Jogador', error);
       },
     },

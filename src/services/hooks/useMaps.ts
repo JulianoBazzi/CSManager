@@ -1,4 +1,4 @@
-import { useQuery, QueryOptions } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { games } from '~/assets/games';
 import { maps } from '~/assets/maps';
@@ -38,13 +38,16 @@ export async function getMap(id: string, userId: string): Promise<IMapAPI> {
   return formatMap(data);
 }
 
-export function useMaps(userId: string, onlyActives?: boolean, options?: QueryOptions<IMapAPI[]>) {
-  return useQuery([TABLE_MAPS, userId], () => getMaps(userId, onlyActives), {
-    keepPreviousData: true,
-    ...options,
+export function useMaps(userId: string, onlyActives?: boolean) {
+  return useQuery({
+    queryKey: [TABLE_MAPS, userId, onlyActives],
+    queryFn: () => getMaps(userId, onlyActives),
   });
 }
 
 export async function fetchMaps(userId: string) {
-  return queryClient.fetchQuery([TABLE_MAPS, userId], () => getMaps(userId));
+  return queryClient.fetchQuery({
+    queryKey: [TABLE_MAPS, userId],
+    queryFn: () => getMaps(userId),
+  });
 }

@@ -1,4 +1,4 @@
-import { useQuery, QueryOptions } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { TABLE_SWEEPSTAKE_PLAYERS } from '~/config/constants';
 import ISweepstakePlayerAPI from '~/models/Entity/Sweepstake/ISweepstakePlayerAPI';
@@ -28,9 +28,10 @@ export async function getSweepstakePlayers(sweepstakeId: string): Promise<ISweep
   return formattedData;
 }
 
-export function useSweepstakePlayers(sweepstakeId: string, options?: QueryOptions<ISweepstakePlayerAPI[]>) {
-  return useQuery([TABLE_SWEEPSTAKE_PLAYERS, sweepstakeId], () => getSweepstakePlayers(sweepstakeId), {
-    keepPreviousData: true,
-    ...options,
+export function useSweepstakePlayers(sweepstakeId: string) {
+  return useQuery({
+    queryKey: [TABLE_SWEEPSTAKE_PLAYERS, sweepstakeId],
+    queryFn: () => getSweepstakePlayers(sweepstakeId),
+    refetchOnWindowFocus: true,
   });
 }

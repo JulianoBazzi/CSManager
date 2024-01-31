@@ -191,7 +191,7 @@ export default function Template({ user, children }: ITemplateProps) {
             {' '}
             - Desenvolvido por
             {' '}
-            <Link href="https://bazzi.solutions">Bazzi Solutions</Link>
+            <Link href="https://mercurius.app.br">Bazzi Solutions</Link>
           </Text>
         </Flex>
       </Flex>

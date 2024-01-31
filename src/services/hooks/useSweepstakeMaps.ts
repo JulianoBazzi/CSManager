@@ -1,4 +1,4 @@
-import { useQuery, QueryOptions } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { TABLE_SWEEPSTAKE_MAPS } from '~/config/constants';
 import ISweepstakeMapAPI from '~/models/Entity/Sweepstake/ISweepstakeMapAPI';
@@ -23,10 +23,11 @@ export async function getSweepstakeMap(id: string): Promise<ISweepstakeMapAPI> {
   return data;
 }
 
-export function useSweepstakeMaps(sweepstakeId: string, options?: QueryOptions<ISweepstakeMapAPI[]>) {
-  return useQuery([TABLE_SWEEPSTAKE_MAPS, sweepstakeId], () => getSweepstakeMaps(sweepstakeId), {
-    keepPreviousData: true,
+export function useSweepstakeMaps(sweepstakeId: string) {
+  return useQuery({
+    queryKey: [TABLE_SWEEPSTAKE_MAPS, sweepstakeId],
+    queryFn: () => getSweepstakeMaps(sweepstakeId),
+    refetchOnWindowFocus: true,
     refetchInterval: 30000,
-    ...options,
   });
 }

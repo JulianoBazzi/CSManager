@@ -83,28 +83,28 @@ const SweepstakeMapModalBase: ForwardRefRenderFunction<SweepstakeMapModalHandle>
   );
 
   const updateSweepstakMap = useMutation(
-    async (sweepstakMap: ISweepstakeMap) => {
-      const {
-        team_one_score_1, team_one_score_2, team_two_score_1, team_two_score_2,
-      } = sweepstakMap;
-
-      await supabase
-        .from(TABLE_SWEEPSTAKE_MAPS)
-        .update({
-          team_one_score_1,
-          team_one_score_2,
-          team_two_score_1,
-          team_two_score_2,
-        })
-        .eq('id', recordModalProps?.id);
-    },
     {
+      mutationFn: async (sweepstakMap: ISweepstakeMap) => {
+        const {
+          team_one_score_1, team_one_score_2, team_two_score_1, team_two_score_2,
+        } = sweepstakMap;
+
+        await supabase
+          .from(TABLE_SWEEPSTAKE_MAPS)
+          .update({
+            team_one_score_1,
+            team_one_score_2,
+            team_two_score_1,
+            team_two_score_2,
+          })
+          .eq('id', recordModalProps?.id);
+      },
       async onSuccess() {
         successFeedbackToast('Placar', 'Atualizado com sucesso!');
-        await queryClient.invalidateQueries([TABLE_SWEEPSTAKE_MAPS]);
+        await queryClient.invalidateQueries({ queryKey: [TABLE_SWEEPSTAKE_MAPS] });
         modalRef.current?.onCloseModal();
       },
-      onError(error) {
+      onError(error: Error) {
         errorFeedbackToast('Placar', error);
       },
     },
