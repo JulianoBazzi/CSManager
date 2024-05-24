@@ -8,7 +8,6 @@ import { parseCookies } from 'nookies';
 import removeAccents from 'remove-accents';
 
 import { ActiveBadge } from '~/components/Badge/ActiveBadge';
-import { BooleanBadge } from '~/components/Badge/BooleanBadge';
 import { LinkBadge } from '~/components/Badge/LinkBadge';
 import { PremierBadge } from '~/components/Badge/PremierBadge';
 import Card from '~/components/Card';
@@ -67,7 +66,7 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
       header: 'Steam ID',
       enableSorting: false,
       // eslint-disable-next-line react/no-unstable-nested-components
-      cell: ({ row }) => <LinkBadge value={row.original.steam_id} link={`https://csstats.gg/player/${row.original.steam_id}`} />,
+      cell: ({ row }) => <LinkBadge value={row.original.steam_id} link={`https://leetify.com/public/profile/${row.original.steam_id}`} />,
     },
     {
       accessorKey: 'premier',
@@ -76,13 +75,13 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
       // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
     },
-    {
-      accessorKey: 'fetch_data',
-      header: 'Buscar Dados',
-      enableSorting: false,
-      // eslint-disable-next-line react/no-unstable-nested-components
-      cell: ({ row }) => <BooleanBadge active={row.original.active} />,
-    },
+    // {
+    //   accessorKey: 'fetch_data',
+    //   header: 'Buscar Dados',
+    //   enableSorting: false,
+    //   // eslint-disable-next-line react/no-unstable-nested-components
+    //   cell: ({ row }) => <BooleanBadge active={row.original.active} />,
+    // },
     {
       accessorKey: 'active',
       header: 'Status',

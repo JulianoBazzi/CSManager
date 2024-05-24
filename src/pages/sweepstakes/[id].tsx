@@ -3,7 +3,6 @@ import { BsTrophyFill } from 'react-icons/bs';
 import { GiUnlitBomb } from 'react-icons/gi';
 import { MdEmojiPeople } from 'react-icons/md';
 import {
-  RiArrowLeftRightLine,
   RiCalendarEventLine,
   RiEditBoxLine,
   RiMap2Line,
@@ -20,15 +19,20 @@ import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
 
+import { AlertOriginEnum, AlertTypeEnum } from '~/components/Alert';
+import { ConfirmRegisterAlert, ConfirmRegisterAlertHandle } from '~/components/Alert/ConfirmRegisterAlert';
 import { PremierBadge } from '~/components/Badge/PremierBadge';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
+import { ChangeTeamIconButton } from '~/components/IconButton/ChangeTeamIconButton';
+import { DeleteSolidIconButton } from '~/components/IconButton/DeleteSolidIconButton';
 import { SweepstakeMapModal, SweepstakeMapModalHandle } from '~/components/Modal/SweepstakeMapModal';
 import Template from '~/components/Template';
 import { TABLE_SWEEPSTAKE_PLAYERS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import IChangeTeamPlayer from '~/models/Entity/Sweepstake/IChangeTeamPlayer';
+import IDeleteTeamPlayer from '~/models/Entity/Sweepstake/IDeleteTeamPlayer';
 import ISweepstakeAPI from '~/models/Entity/Sweepstake/ISweepstakeAPI';
 import ISweepstakeMapAPI from '~/models/Entity/Sweepstake/ISweepstakeMapAPI';
 import { useSweepstakeMaps } from '~/services/hooks/useSweepstakeMaps';
@@ -44,6 +48,7 @@ interface ISweepstakesProps extends GetServerSideProps {
 
 const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
   const sweepstakeMapModalRef = useRef<SweepstakeMapModalHandle>(null);
+  const confirmRegisterAlertRef = useRef<ConfirmRegisterAlertHandle>(null);
 
   const { errorFeedbackToast, successFeedbackToast } = useFeedback();
   const isMobile = useBreakpointValue({
@@ -62,6 +67,22 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
     isLoading: isLoadingSweepstakeMaps,
     isFetching: isFetchingSweepstakeMaps,
   } = useSweepstakeMaps(sweepstake.id);
+
+  const { mutateAsync: deletePlayerMutateAsync, isPending: isLoadingDeletePlayer } = useMutation({
+    mutationFn: async ({ sweepstake_player_id }: IDeleteTeamPlayer) => {
+      await supabase
+        .from(TABLE_SWEEPSTAKE_PLAYERS)
+        .delete()
+        .eq('id', sweepstake_player_id);
+    },
+    async onSuccess() {
+      successFeedbackToast('Remover Jogador', 'Jogador removido com sucesso!');
+      await queryClient.invalidateQueries({ queryKey: [TABLE_SWEEPSTAKE_PLAYERS, sweepstake.id] });
+    },
+    onError(error: Error) {
+      errorFeedbackToast('Remover Jogador', error);
+    },
+  });
 
   const { mutateAsync: changeTeamMutateAsync, isPending: isLoadingChangeTeam } = useMutation(
     {
@@ -83,6 +104,15 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
       },
     },
   );
+
+  async function handleDeletePlayer(data: IDeleteTeamPlayer) {
+    confirmRegisterAlertRef.current?.onOpenAlert({
+      type: AlertTypeEnum.Delete,
+      origin: AlertOriginEnum.Player,
+      data,
+      onConfirm: async (value) => deletePlayerMutateAsync(value),
+    });
+  }
 
   async function handleChangeTeam(data: IChangeTeamPlayer) {
     await changeTeamMutateAsync(data);
@@ -128,6 +158,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
         />
       </Head>
       <SweepstakeMapModal ref={sweepstakeMapModalRef} />
+      <ConfirmRegisterAlert ref={confirmRegisterAlertRef} isSubmitting={isLoadingDeletePlayer} />
       <Template user={user}>
         <Card>
           <CardHeader title={(isMobile ? sweepstake.format_short_game_type : sweepstake.format_game_type) || ''} />
@@ -184,15 +215,19 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
                         <PremierBadge premier={sweepstakePlayer.players.premier} />
                       </Flex>
                       {!isMobile && user && user.id === sweepstake.user_id && (
-                        <IconButton
-                          colorScheme="gray"
-                          icon={<Icon as={RiArrowLeftRightLine} fontSize="xl" />}
-                          aria-label="Alterar"
-                          title="Mudar de Time"
-                          size="xs"
-                          onClick={() => handleChangeTeam({ sweepstake_player_id: sweepstakePlayer.id, team: 1 })}
-                          isDisabled={isLoadingChangeTeam}
-                        />
+                        <>
+                          <ChangeTeamIconButton
+                            ml="auto"
+                            size="xs"
+                            onClick={() => handleChangeTeam({ sweepstake_player_id: sweepstakePlayer.id, team: 1 })}
+                            isDisabled={isLoadingChangeTeam}
+                          />
+                          <DeleteSolidIconButton
+                            size="xs"
+                            onClick={() => handleDeletePlayer({ sweepstake_player_id: sweepstakePlayer.id })}
+                            isDisabled={isLoadingChangeTeam}
+                          />
+                        </>
                       )}
                     </Stack>
                   ))}
@@ -226,15 +261,19 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
                         <PremierBadge premier={sweepstakePlayer.players.premier} />
                       </Flex>
                       {!isMobile && user && user.id === sweepstake.user_id && (
-                        <IconButton
-                          colorScheme="gray"
-                          icon={<Icon as={RiArrowLeftRightLine} fontSize="xl" />}
-                          aria-label="Alterar"
-                          title="Mudar de Time"
-                          size="xs"
-                          onClick={() => handleChangeTeam({ sweepstake_player_id: sweepstakePlayer.id, team: 0 })}
-                          isDisabled={isLoadingChangeTeam}
-                        />
+                        <>
+                          <ChangeTeamIconButton
+                            ml="auto"
+                            size="xs"
+                            onClick={() => handleChangeTeam({ sweepstake_player_id: sweepstakePlayer.id, team: 0 })}
+                            isDisabled={isLoadingChangeTeam}
+                          />
+                          <DeleteSolidIconButton
+                            size="xs"
+                            onClick={() => handleDeletePlayer({ sweepstake_player_id: sweepstakePlayer.id })}
+                            isDisabled={isLoadingChangeTeam}
+                          />
+                        </>
                       )}
                     </Stack>
                   ))}
