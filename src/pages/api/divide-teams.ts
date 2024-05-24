@@ -17,20 +17,32 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const response = await openai.createChatCompletion({
-      model: 'gpt-3.5-turbo-0125',
+      model: 'gpt-3.5-turbo',
       temperature: 0,
       messages: [
         {
           role: 'system',
-          content: 'Você é um assistente encarregado de criar dois times equilibrados de jogadores de CS2 (Counter-Strike 2) com base em seus rankings no modo Premier (Especial). A entrada é um JSON contendo uma lista de jogadores com nome e pontuação.',
+          content: `Divida estes ${players.length} jogadores em duas equipes, respeitando as seguintes regras:`,
         },
         {
           role: 'system',
-          content: 'Sua tarefa é dividir os jogadores em duas equipes observando as seguintes regras: a somatória de pontuação das duas equipe devem ser próximas e a diferença no número de jogadores de uma equipe para outra não pode ser superior a um jogador.',
+          content: '1: As duas equipes devem ter uma somatória de pontuação dos jogadores próximas;',
         },
         {
           role: 'system',
-          content: 'Retorne somente o texto convertido, nada além disso.',
+          content: '2: A diferença na quantidade de jogadores entre as equipes não deve ser superior a um jogador;',
+        },
+        {
+          role: 'system',
+          content: '3: As equipes devem ser ordenadas do melhor jogador para o pior.',
+        },
+        {
+          role: 'system',
+          content: 'Exemplo: "Pedro (0 pontos)", "Fulano (5000 pontos)", "João (6000 pontos)", "Gustavo (10000 pontos)", "Falen (16000 pontos)". O resultado correto seria, Time 1: Falen e Pedro. Time 2: Gustavo, João e Fulano.',
+        },
+        {
+          role: 'system',
+          content: 'Retorne somente o ids dos jogadores de cada equipe convertido em json, nada além disso.',
         },
         { role: 'user', content: JSON.stringify(players) },
       ],
@@ -38,11 +50,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const data = await response.json();
 
-    console.log('data', data);
-
     res.status(200).json(data.choices[0].message.content);
   } catch (error) {
-    console.log('error', error);
-    res.status(500).json({ error: 'Error processing request' });
+    res.status(500).json({ error });
   }
 }

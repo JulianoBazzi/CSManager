@@ -41,8 +41,8 @@ import { useMaps } from '~/services/hooks/useMaps';
 import { usePlayers } from '~/services/hooks/usePlayers';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';
+import balanceTeams from '~/utils/balanceTeams';
 import randomUnique from '~/utils/randomUnique';
-import splitArray from '~/utils/splitArray';
 
 interface INewSweepstakeProps extends GetServerSideProps {
   user: User;
@@ -53,15 +53,15 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
   const { data: maps, isLoading: isLoadingMaps } = useMaps(user.id, true);
   const { errorFeedbackToast, warningFeedbackToast, successFeedbackToast } = useFeedback();
 
-  const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
+  const [selectedPlayers, setSelectedPlayers] = useState<IPlayerAPI[]>([]);
   const [selectedMaps, setSelectedMaps] = useState<string[]>([]);
 
-  function handleSelectedPlayers(id: string) {
-    const find = selectedPlayers.find((i) => i === id);
+  function handleSelectedPlayers(value: IPlayerAPI) {
+    const find = selectedPlayers.find((player) => player.id === value.id);
     if (find) {
-      setSelectedPlayers((ids) => ids.filter((i) => i !== id));
+      setSelectedPlayers((previousPlayers) => previousPlayers.filter((player) => player.id !== value.id));
     } else {
-      setSelectedPlayers((ids) => [...ids, id]);
+      setSelectedPlayers((previousPlayers) => [...previousPlayers, value]);
     }
   }
 
@@ -78,21 +78,50 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
     {
       mutationFn: async ({ game_type, departure_at }: ISweepstake) => {
         const sweepstakeId = uuid();
-        const divisionTeams = splitArray(selectedPlayers);
+        const divisionTeams = balanceTeams(selectedPlayers);
 
         const playerList: ISweepstakePlayer[] = [];
         for (let i = 0; i < divisionTeams.length;) {
-          divisionTeams[i].forEach((playerId) => {
+          divisionTeams[i].forEach((player) => {
             playerList.push({
               user_id: user?.id,
               sweepstake_id: sweepstakeId,
-              player_id: playerId,
+              player_id: player.id,
               team: i,
             });
           });
 
           i += 1;
         }
+
+        // const divideTeamsResponse = await axios.post('/api/divide-teams', {
+        //   players: selectedPlayers,
+        // });
+
+        // const teams: IDivideTeamData = JSON.parse(divideTeamsResponse.data);
+
+        // const playerList: ISweepstakePlayer[] = [];
+        // for (let i = 0; i < teams.team1.length;) {
+        //   playerList.push({
+        //     user_id: user?.id,
+        //     sweepstake_id: sweepstakeId,
+        //     player_id: teams.team1[i],
+        //     team: 0,
+        //   });
+
+        //   i += 1;
+        // }
+
+        // for (let i = 0; i < teams.team2.length;) {
+        //   playerList.push({
+        //     user_id: user?.id,
+        //     sweepstake_id: sweepstakeId,
+        //     player_id: teams.team2[i],
+        //     team: 1,
+        //   });
+
+        //   i += 1;
+        // }
 
         const mapList: ISweepstakeMap[] = [];
         const startFromTerrorist = randomUnique(2, 1)[0] - 1;
@@ -148,8 +177,8 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
       // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => (
         <Checkbox
-          isChecked={!!selectedPlayers.find((id) => id === row.original.id)}
-          onChange={() => handleSelectedPlayers(row.original.id)}
+          isChecked={!!selectedPlayers.find((player) => player.id === row.original.id)}
+          onChange={() => handleSelectedPlayers(row.original)}
           isDisabled={isLoadingCreate}
         />
       ),
@@ -302,7 +331,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
                   data={players}
                   columns={playerColumns}
                   isLoading={isLoadingPlayers}
-                  onRowClick={({ id }) => handleSelectedPlayers(id)}
+                  onRowClick={(value) => handleSelectedPlayers(value)}
                 />
               </TableContainer>
             </CardBody>
