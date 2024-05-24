@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { patents } from '~/assets/patents';
 import { TABLE_PLAYERS } from '~/config/constants';
 import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
 import { queryClient } from '~/services/queryClient';
@@ -10,7 +9,6 @@ import { formatBoolean } from '~/utils/formatBoolean';
 export function formatPlayer(player: IPlayerAPI): IPlayerAPI {
   return {
     ...player,
-    format_patent: patents.find((patent) => patent.id === player.patent)?.name ?? 'Não Localizado',
     format_active: formatBoolean(player.active),
   };
 }
