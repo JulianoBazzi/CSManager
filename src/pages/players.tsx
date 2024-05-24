@@ -8,6 +8,7 @@ import { parseCookies } from 'nookies';
 import removeAccents from 'remove-accents';
 
 import { ActiveBadge } from '~/components/Badge/ActiveBadge';
+import { BooleanBadge } from '~/components/Badge/BooleanBadge';
 import { PremierBadge } from '~/components/Badge/PremierBadge';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
@@ -66,6 +67,13 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
       enableSorting: false,
       // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
+    },
+    {
+      accessorKey: 'fetch_data',
+      header: 'Buscar Dados',
+      enableSorting: false,
+      // eslint-disable-next-line react/no-unstable-nested-components
+      cell: ({ row }) => <BooleanBadge active={row.original.active} />,
     },
     {
       accessorKey: 'active',

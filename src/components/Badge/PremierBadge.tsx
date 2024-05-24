@@ -1,6 +1,5 @@
 import {
   FlexProps, Flex, Text,
-  Box,
 } from '@chakra-ui/react';
 
 interface IPremierBadgeProps extends FlexProps {
@@ -8,27 +7,47 @@ interface IPremierBadgeProps extends FlexProps {
 }
 
 export function PremierBadge({ premier, ...rest }: IPremierBadgeProps) {
-  function bgColor() {
-    if (premier < 5000) {
-      return '#3a424b';
-    }
-    if (premier < 10000) {
-      return '#2d4355';
-    }
-    if (premier < 15000) {
-      return '#212a5a';
-    }
-    if (premier < 20000) {
-      return '#412157';
-    }
-    if (premier < 25000) {
-      return '#59005d';
-    }
-    if (premier < 30000) {
-      return '#560b0c';
+  function splitNumber(): [number, string] {
+    if (premier < 1000) {
+      return [0, premier.toString().padStart(3, '0')];
     }
 
-    return '#4c3900';
+    const valueStr = premier.toString();
+    let firstPart: number;
+    let secondPart: string;
+
+    if (premier >= 10000) {
+      firstPart = parseInt(valueStr.slice(0, 2), 10);
+      secondPart = valueStr.slice(2).padStart(3, '0');
+    } else {
+      firstPart = parseInt(valueStr[0], 10);
+      secondPart = valueStr.slice(1).padStart(3, '0');
+    }
+
+    return [firstPart, secondPart];
+  }
+
+  function imageBg() {
+    if (premier < 5000) {
+      return 'common';
+    }
+    if (premier < 10000) {
+      return 'uncommon';
+    }
+    if (premier < 15000) {
+      return 'rare';
+    }
+    if (premier < 20000) {
+      return 'mythical';
+    }
+    if (premier < 25000) {
+      return 'legendary';
+    }
+    if (premier < 30000) {
+      return 'ancient';
+    }
+
+    return 'unusual';
   }
 
   function textColor() {
@@ -55,11 +74,20 @@ export function PremierBadge({ premier, ...rest }: IPremierBadgeProps) {
   }
 
   return (
-    <Flex minW="65px" maxW="65px" maxH="4" align="center" bg={bgColor()} transform="skewX(-20deg)" {...rest}>
-      <Box w="1" h="4" bg={textColor()} />
-      <Box ml="2px" w="1" h="4" bg={textColor()} />
-      <Text ml="2" as="small" textColor={textColor()}>
-        {premier}
+    <Flex
+      w="55px"
+      align="center"
+      bgImage={`/assets/premier/${imageBg()}.webp`}
+      bgRepeat="no-repeat"
+      bgPos="center"
+      bgSize="contain"
+      {...rest}
+    >
+      <Text ml="3.5" transform="skewX(-20deg)" textShadow="0 1px black" fontWeight="bold" textColor={textColor()}>
+        {splitNumber()[0]}
+        <Text as="small">
+          {`,${splitNumber()[1]}`}
+        </Text>
       </Text>
     </Flex>
   );

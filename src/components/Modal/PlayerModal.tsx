@@ -38,8 +38,10 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
   const playerSchema = yup.object().shape({
     name: yup.string().min(3).required(),
     username: yup.string().min(3).required(),
+    steam_id: yup.string(),
     premier: yup.number().min(0).required(),
     active: yup.boolean().required(),
+    fetch_data: yup.boolean().required(),
   });
 
   const {
@@ -138,6 +140,14 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
             isDisabled={isSubmitting}
             isRequired
           />
+          <Input
+            label="Steam ID"
+            error={errors.steam_id}
+            {...register('steam_id')}
+            isLoading={isLoading}
+            isDisabled={isSubmitting}
+            isRequired
+          />
           <NumberInput
             label="Ranking no Premier"
             error={errors.premier}
@@ -146,7 +156,10 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
             isDisabled={isSubmitting}
             isRequired
           />
-          <Switch label="Ativo" {...register('active')} isChecked={watch('active')} isDisabled={isLoading || isSubmitting} />
+          <Stack direction="row" spacing="4">
+            <Switch label="Ativo" {...register('active')} isChecked={watch('active')} isDisabled={isLoading || isSubmitting} />
+            <Switch label="Buscar Dados" {...register('fetch_data')} isChecked={watch('fetch_data')} isDisabled={isLoading || isSubmitting} />
+          </Stack>
         </Stack>
       </ModalBody>
       <ModalFooter flexDir="column" gap="4">
