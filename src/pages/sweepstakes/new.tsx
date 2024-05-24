@@ -19,7 +19,7 @@ import { InferType } from 'yup';
 
 import { games } from '~/assets/games';
 import { MapBadge } from '~/components/Badge/MapBadge';
-import { PatentBadge } from '~/components/Badge/PatentBadge';
+import { PremierBadge } from '~/components/Badge/PremierBadge';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
@@ -165,11 +165,11 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
       enableSorting: false,
     },
     {
-      accessorKey: 'patent',
-      header: 'Patente',
+      accessorKey: 'premier',
+      header: 'Premier',
       enableSorting: false,
       // eslint-disable-next-line react/no-unstable-nested-components
-      cell: ({ row }) => <PatentBadge patent={row.original.patent} format_patent={row.original.format_patent} />,
+      cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
     },
   ];
 

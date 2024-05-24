@@ -12,7 +12,7 @@ import {
 } from 'react-icons/ri';
 
 import {
-  Divider, Flex, Icon, IconButton, Stack, Text, useBreakpointValue, Image,
+  Divider, Flex, Icon, IconButton, Stack, Text, useBreakpointValue,
 } from '@chakra-ui/react';
 import { User } from '@supabase/supabase-js';
 import { useMutation } from '@tanstack/react-query';
@@ -20,6 +20,7 @@ import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
 
+import { PremierBadge } from '~/components/Badge/PremierBadge';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
@@ -44,7 +45,7 @@ interface ISweepstakesProps extends GetServerSideProps {
 const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
   const sweepstakeMapModalRef = useRef<SweepstakeMapModalHandle>(null);
 
-  const { infoFeedbackToast, errorFeedbackToast, successFeedbackToast } = useFeedback();
+  const { errorFeedbackToast, successFeedbackToast } = useFeedback();
   const isMobile = useBreakpointValue({
     base: true,
     md: false,
@@ -180,14 +181,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
                           {sweepstakePlayer.players.username}
                           )
                         </Text>
-                        <Image
-                          src={`/assets/patents/${sweepstakePlayer.players.patent}.webp`}
-                          alt={sweepstakePlayer.players.patent}
-                          objectFit="scale-down"
-                          maxH="24px"
-                          title={sweepstakePlayer.players.format_patent}
-                          onClick={() => infoFeedbackToast(sweepstakePlayer.players.name, sweepstakePlayer.players.format_patent)}
-                        />
+                        <PremierBadge premier={sweepstakePlayer.players.premier} />
                       </Flex>
                       {!isMobile && user && user.id === sweepstake.user_id && (
                         <IconButton
@@ -229,14 +223,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
                           {sweepstakePlayer.players.username}
                           )
                         </Text>
-                        <Image
-                          src={`/assets/patents/${sweepstakePlayer.players.patent}.webp`}
-                          alt={sweepstakePlayer.players.patent}
-                          objectFit="scale-down"
-                          maxH="24px"
-                          title={sweepstakePlayer.players.format_patent}
-                          onClick={() => infoFeedbackToast(sweepstakePlayer.players.name, sweepstakePlayer.players.format_patent)}
-                        />
+                        <PremierBadge premier={sweepstakePlayer.players.premier} />
                       </Flex>
                       {!isMobile && user && user.id === sweepstake.user_id && (
                         <IconButton

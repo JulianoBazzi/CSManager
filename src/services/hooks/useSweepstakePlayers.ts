@@ -15,7 +15,7 @@ export function formatSweepstakePlayer(sweepstakePlayer: ISweepstakePlayerAPI): 
 export async function getSweepstakePlayers(sweepstakeId: string): Promise<ISweepstakePlayerAPI[]> {
   const { data } = await supabase
     .from(TABLE_SWEEPSTAKE_PLAYERS)
-    .select('id, sweepstake_id, team, players(name, username, patent)')
+    .select('id, sweepstake_id, team, players(name, username, premier)')
     .order('id', { ascending: true })
     .eq('sweepstake_id', sweepstakeId);
 

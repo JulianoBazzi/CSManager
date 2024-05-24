@@ -9,18 +9,16 @@ import { useMutation } from '@tanstack/react-query';
 import * as yup from 'yup';
 import { InferType } from 'yup';
 
-import { patents } from '~/assets/patents';
 import { AddSolidButton } from '~/components/Button/AddSolidButton';
 import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
 import { SaveSolidButton } from '~/components/Button/SaveSolidButton';
 import { Input } from '~/components/Form/Input';
 import { Modal, ModalHandle } from '~/components/Form/Modal';
-import { Select } from '~/components/Form/Select';
+import { NumberInput } from '~/components/Form/NumberInput';
 import { Switch } from '~/components/Form/Switch';
 import { TABLE_PLAYERS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import IPlayer from '~/models/Entity/Player/IPlayer';
-import ISelectOption from '~/models/ISelectOption';
 import IRecordModal from '~/models/Modal/IRecordModal';
 import { getPlayer } from '~/services/hooks/usePlayers';
 import { queryClient } from '~/services/queryClient';
@@ -40,22 +38,14 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
   const playerSchema = yup.object().shape({
     name: yup.string().min(3).required(),
     username: yup.string().min(3).required(),
+    premier: yup.number().min(0).required(),
     active: yup.boolean().required(),
-    patent: yup
-      .object()
-      .shape({
-        id: yup.string().required(),
-        name: yup.string(),
-      })
-      .nullable()
-      .required(),
   });
 
   const {
     register,
     handleSubmit,
     reset,
-    setValue,
     watch,
     formState: { errors, isSubmitting },
   } = useForm({
@@ -69,10 +59,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
         setIsLoading(true);
         getPlayer(recordModal?.id, recordModal?.user.id)
           .then((response) => {
-            reset({
-              ...response,
-              patent: patents.find((patent) => patent.id === response.patent),
-            });
+            reset(response);
           })
           .catch((error) => {
             errorFeedbackToast('Jogador', error);
@@ -95,7 +82,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
     {
       mutationFn: async (player: IPlayer) => {
         const {
-          id, name, username, patent, active,
+          id, name, username, premier, active,
         } = player;
 
         await supabase.from(TABLE_PLAYERS).upsert({
@@ -103,7 +90,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
           user_id: recordModalProps?.user.id,
           name,
           username,
-          patent: patent?.id,
+          premier,
           active,
         });
       },
@@ -151,18 +138,13 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
             isDisabled={isSubmitting}
             isRequired
           />
-          <Select
-            label="Patente"
-            options={patents}
-            value={watch('patent') as ISelectOption}
-            error={errors.patent?.id}
-            {...register('patent')}
+          <NumberInput
+            label="Ranking no Premier"
+            error={errors.premier}
+            {...register('premier')}
             isLoading={isLoading}
             isDisabled={isSubmitting}
             isRequired
-            onChange={(option) => {
-              setValue('patent', option);
-            }}
           />
           <Switch label="Ativo" {...register('active')} isChecked={watch('active')} isDisabled={isLoading || isSubmitting} />
         </Stack>

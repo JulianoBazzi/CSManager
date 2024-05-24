@@ -12,19 +12,19 @@ export const patents: ISelectOption[] = [
 
   {
     id: 's1',
-    name: 'Prata I',
+    name: 'Prata 1',
   },
   {
     id: 's2',
-    name: 'Prata II',
+    name: 'Prata 2',
   },
   {
     id: 's3',
-    name: 'Prata III',
+    name: 'Prata 3',
   },
   {
     id: 's4',
-    name: 'Prata IV',
+    name: 'Prata 4',
   },
   {
     id: 'se',
@@ -36,15 +36,15 @@ export const patents: ISelectOption[] = [
   },
   {
     id: 'gn1',
-    name: 'Ouro I',
+    name: 'Ouro 1',
   },
   {
     id: 'gn2',
-    name: 'Ouro II',
+    name: 'Ouro 2',
   },
   {
     id: 'gn3',
-    name: 'Ouro III',
+    name: 'Ouro 3',
   },
   {
     id: 'gnm',
@@ -52,11 +52,11 @@ export const patents: ISelectOption[] = [
   },
   {
     id: 'mg1',
-    name: 'AK I',
+    name: 'AK 1',
   },
   {
     id: 'mg2',
-    name: 'AK II',
+    name: 'AK 2',
   },
   {
     id: 'mge',
@@ -68,11 +68,11 @@ export const patents: ISelectOption[] = [
   },
   {
     id: 'le',
-    name: 'Águia I',
+    name: 'Águia 1',
   },
   {
     id: 'lem',
-    name: 'Águia II',
+    name: 'Águia 2',
   },
   {
     id: 'smfc',

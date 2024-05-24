@@ -2,10 +2,9 @@ interface IPlayerAPI {
   id: string;
   name: string;
   username: string;
-  patent: string;
+  premier: number;
   active: boolean;
 
-  format_patent: string;
   format_active: string;
 }
 
