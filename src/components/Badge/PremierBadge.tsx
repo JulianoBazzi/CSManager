@@ -52,25 +52,25 @@ export function PremierBadge({ premier, ...rest }: IPremierBadgeProps) {
 
   function textColor() {
     if (premier < 5000) {
-      return '#b8c7d7';
+      return '#B1C3D9';
     }
     if (premier < 10000) {
-      return '#89bbe6';
+      return '#5E98D7';
     }
     if (premier < 15000) {
-      return '#687de9';
+      return '#4B69FF';
     }
     if (premier < 20000) {
-      return '#bd6bfd';
+      return '#8846FF';
     }
     if (premier < 25000) {
-      return '#e214f0';
+      return '#D22CE6';
     }
     if (premier < 30000) {
-      return '#eb4a49';
+      return '#EB4B4B';
     }
 
-    return '#ffd700';
+    return '#FED700';
   }
 
   return (
@@ -79,11 +79,10 @@ export function PremierBadge({ premier, ...rest }: IPremierBadgeProps) {
       align="center"
       bgImage={`/assets/premier/${imageBg()}.webp`}
       bgRepeat="no-repeat"
-      bgPos="center"
       bgSize="contain"
       {...rest}
     >
-      <Text ml="3.5" transform="skewX(-20deg)" textShadow="0 1px black" fontWeight="bold" textColor={textColor()}>
+      <Text ml="3" transform="skewX(-15deg)" textShadow="0 1px black" fontWeight="bold" textColor={textColor()}>
         {splitNumber()[0]}
         <Text as="small">
           {`,${splitNumber()[1]}`}

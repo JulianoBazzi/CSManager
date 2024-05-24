@@ -73,6 +73,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
       } else {
         reset({
           active: true,
+          fetch_data: true,
         });
       }
       modalRef.current?.onOpenModal();
@@ -84,7 +85,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
     {
       mutationFn: async (player: IPlayer) => {
         const {
-          id, name, username, premier, active,
+          id, name, username, steam_id, premier, active, fetch_data,
         } = player;
 
         await supabase.from(TABLE_PLAYERS).upsert({
@@ -92,8 +93,10 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
           user_id: recordModalProps?.user.id,
           name,
           username,
+          steam_id,
           premier,
           active,
+          fetch_data,
         });
       },
       async onSuccess() {

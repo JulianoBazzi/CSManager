@@ -9,6 +9,7 @@ import removeAccents from 'remove-accents';
 
 import { ActiveBadge } from '~/components/Badge/ActiveBadge';
 import { BooleanBadge } from '~/components/Badge/BooleanBadge';
+import { LinkBadge } from '~/components/Badge/LinkBadge';
 import { PremierBadge } from '~/components/Badge/PremierBadge';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
@@ -58,8 +59,15 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
     },
     {
       accessorKey: 'username',
-      header: 'Steam',
+      header: 'Username',
       enableSorting: false,
+    },
+    {
+      accessorKey: 'steam_id',
+      header: 'Steam ID',
+      enableSorting: false,
+      // eslint-disable-next-line react/no-unstable-nested-components
+      cell: ({ row }) => <LinkBadge value={row.original.steam_id} link={`https://csstats.gg/player/${row.original.steam_id}`} />,
     },
     {
       accessorKey: 'premier',
