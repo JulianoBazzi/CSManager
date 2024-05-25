@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { BsTrophyFill } from 'react-icons/bs';
 import { GiUnlitBomb } from 'react-icons/gi';
 import { MdEmojiPeople } from 'react-icons/md';
@@ -31,7 +31,7 @@ import { DeleteSolidIconButton } from '~/components/IconButton/DeleteSolidIconBu
 import { NewSweepstakePlayerModal, NewSweepstakePlayerModalHandle } from '~/components/Modal/NewSweepstakePlayerModal';
 import { SweepstakeMapModal, SweepstakeMapModalHandle } from '~/components/Modal/SweepstakeMapModal';
 import Template from '~/components/Template';
-import { TABLE_SWEEPSTAKE_PLAYERS } from '~/config/constants';
+import { TABLE_SWEEPSTAKES, TABLE_SWEEPSTAKE_PLAYERS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import IChangeTeamPlayer from '~/models/Entity/Sweepstake/IChangeTeamPlayer';
 import IDeleteTeamPlayer from '~/models/Entity/Sweepstake/IDeleteTeamPlayer';
@@ -48,7 +48,7 @@ interface ISweepstakesProps extends GetServerSideProps {
   sweepstake: ISweepstakeAPI;
 }
 
-const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
+const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstakeProp }) => {
   const sweepstakeMapModalRef = useRef<SweepstakeMapModalHandle>(null);
   const newSweepstakePlayerModalRef = useRef<NewSweepstakePlayerModalHandle>(null);
   const confirmRegisterAlertRef = useRef<ConfirmRegisterAlertHandle>(null);
@@ -58,6 +58,8 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
     base: true,
     md: false,
   });
+
+  const [sweepstake, setSweepstake] = useState(sweepstakeProp);
 
   const {
     data: sweepstakePlayers,
@@ -77,6 +79,18 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
         .from(TABLE_SWEEPSTAKE_PLAYERS)
         .delete()
         .eq('id', sweepstake_player_id);
+
+      await supabase
+        .from(TABLE_SWEEPSTAKES)
+        .update({
+          quantity_players: sweepstake.quantity_players - 1,
+        })
+        .eq('id', sweepstake.id);
+
+      setSweepstake((previousSweepstake) => ({
+        ...previousSweepstake,
+        quantity_players: previousSweepstake.quantity_players - 1,
+      }));
     },
     async onSuccess() {
       successFeedbackToast('Remover Jogador', 'Jogador removido com sucesso!');
@@ -109,7 +123,24 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
   );
 
   async function handleAddPlayer(team: number) {
-    newSweepstakePlayerModalRef.current?.onOpenModal({ id: sweepstake.id, team, user });
+    newSweepstakePlayerModalRef.current?.onOpenModal({
+      id: sweepstake.id,
+      team,
+      user,
+      onSubmit: async (numberPlayers) => {
+        await supabase
+          .from(TABLE_SWEEPSTAKES)
+          .update({
+            quantity_players: sweepstake.quantity_players + numberPlayers,
+          })
+          .eq('id', sweepstake.id);
+
+        setSweepstake((previousSweepstake) => ({
+          ...previousSweepstake,
+          quantity_players: previousSweepstake.quantity_players + numberPlayers,
+        }));
+      },
+    });
   }
 
   async function handleDeletePlayer(data: IDeleteTeamPlayer) {

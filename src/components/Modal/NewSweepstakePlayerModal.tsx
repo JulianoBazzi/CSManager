@@ -133,6 +133,7 @@ const NewSweepstakePlayerModalBase: ForwardRefRenderFunction<NewSweepstakePlayer
       },
       async onSuccess() {
         successFeedbackToast('Adicionar Jogadores', 'Jogadores adicionados com sucesso!');
+        recordModalProps?.onSubmit(selectedPlayers.length);
         await queryClient.invalidateQueries({ queryKey: [TABLE_SWEEPSTAKE_PLAYERS, recordModalProps?.id] });
         modalRef.current?.onCloseModal();
       },
