@@ -37,8 +37,9 @@ const SweepstakeMapModalBase: ForwardRefRenderFunction<SweepstakeMapModalHandle>
   const modalRef = useRef<ModalHandle>(null);
 
   const { errorFeedbackToast, successFeedbackToast } = useFeedback();
+
   const [isLoading, setIsLoading] = useState(false);
-  const [recordModalProps, setRecordModalProps] = useState<ISweepstakeMapModal | undefined>({} as ISweepstakeMapModal);
+  const [recordModalProps, setRecordModalProps] = useState<ISweepstakeMapModal | undefined>();
 
   const sweepstakeMapSchema = yup.object().shape({
     team_one_score_1: yup.number().min(0).max(99).required(),

@@ -49,12 +49,13 @@ interface INewSweepstakeProps extends GetServerSideProps {
 }
 
 const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
-  const { data: players, isLoading: isLoadingPlayers } = usePlayers(user.id, true);
-  const { data: maps, isLoading: isLoadingMaps } = useMaps(user.id, true);
   const { errorFeedbackToast, warningFeedbackToast, successFeedbackToast } = useFeedback();
 
   const [selectedPlayers, setSelectedPlayers] = useState<IPlayerAPI[]>([]);
   const [selectedMaps, setSelectedMaps] = useState<string[]>([]);
+
+  const { data: players, isLoading: isLoadingPlayers } = usePlayers(user.id, { active: true });
+  const { data: maps, isLoading: isLoadingMaps } = useMaps(user.id, { active: true });
 
   function handleSelectedPlayers(value: IPlayerAPI) {
     const find = selectedPlayers.find((player) => player.id === value.id);

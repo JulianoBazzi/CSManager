@@ -2,8 +2,9 @@ import { useQuery } from '@tanstack/react-query';
 
 import { games } from '~/assets/games';
 import { maps } from '~/assets/maps';
-import { TABLE_MAPS } from '~/config/constants';
+import { TABLE_MAPS, TABLE_SWEEPSTAKE_MAPS } from '~/config/constants';
 import IMapAPI from '~/models/Entity/Map/IMapAPI';
+import IParamsRequest from '~/models/Request/IParamsRequest';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';
 import { formatBoolean } from '~/utils/formatBoolean';
@@ -17,9 +18,26 @@ export function formatMap(map: IMapAPI): IMapAPI {
   };
 }
 
-export async function getMaps(userId: string, onlyActives?: boolean): Promise<IMapAPI[]> {
-  const { data } = await supabase.from(TABLE_MAPS).select().eq('user_id', userId).in('active', onlyActives ? [true] : [true, false])
-    .order('name', { ascending: true });
+export async function getMaps(userId: string, params?: IParamsRequest): Promise<IMapAPI[]> {
+  let query = supabase
+    .from(TABLE_MAPS)
+    .select()
+    .eq('user_id', userId);
+
+  if (params?.active) {
+    query = query.eq('active', true);
+  }
+
+  if (params?.sweepstakeId) {
+    query = query.not('id', 'in', supabase
+      .from(TABLE_SWEEPSTAKE_MAPS)
+      .select('map_id')
+      .eq('sweepstake_id', params.sweepstakeId));
+  }
+
+  query = query.order('name', { ascending: true });
+
+  const { data } = await query;
 
   const formattedData: IMapAPI[] = [];
 
@@ -38,10 +56,10 @@ export async function getMap(id: string, userId: string): Promise<IMapAPI> {
   return formatMap(data);
 }
 
-export function useMaps(userId: string, onlyActives?: boolean) {
+export function useMaps(userId: string, params?: IParamsRequest) {
   return useQuery({
-    queryKey: [TABLE_MAPS, userId, onlyActives],
-    queryFn: () => getMaps(userId, onlyActives),
+    queryKey: [TABLE_MAPS, userId, params],
+    queryFn: () => getMaps(userId, params),
   });
 }
 

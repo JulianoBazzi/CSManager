@@ -33,7 +33,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
 
   const { errorFeedbackToast, successFeedbackToast } = useFeedback();
   const [isLoading, setIsLoading] = useState(false);
-  const [recordModalProps, setRecordModalProps] = useState<IRecordModal | undefined>({} as IRecordModal);
+  const [recordModalProps, setRecordModalProps] = useState<IRecordModal | undefined>();
 
   const playerSchema = yup.object().shape({
     name: yup.string().min(3).required(),

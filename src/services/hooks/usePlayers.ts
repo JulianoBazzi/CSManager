@@ -2,6 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 
 import { TABLE_PLAYERS } from '~/config/constants';
 import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
+import IParamsRequest from '~/models/Request/IParamsRequest';
+import { getSweepstakePlayers } from '~/services/hooks/useSweepstakePlayers';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';
 import { formatBoolean } from '~/utils/formatBoolean';
@@ -13,9 +15,25 @@ export function formatPlayer(player: IPlayerAPI): IPlayerAPI {
   };
 }
 
-export async function getPlayers(userId: string, onlyActives?: boolean): Promise<IPlayerAPI[]> {
-  const { data } = await supabase.from(TABLE_PLAYERS).select().eq('user_id', userId).in('active', onlyActives ? [true] : [true, false])
-    .order('name', { ascending: true });
+export async function getPlayers(userId: string, params?: IParamsRequest): Promise<IPlayerAPI[]> {
+  let query = supabase
+    .from(TABLE_PLAYERS)
+    .select()
+    .eq('user_id', userId);
+
+  if (params?.active) {
+    query = query.eq('active', true);
+  }
+
+  let sweepstakePlayers: string[] = [];
+  if (params?.sweepstakeId) {
+    const players = await getSweepstakePlayers(params?.sweepstakeId);
+    sweepstakePlayers = players.map((sweepstakePlayer) => sweepstakePlayer.players.id);
+  }
+
+  query = query.order('name', { ascending: true });
+
+  const { data } = await query;
 
   const formattedData: IPlayerAPI[] = [];
 
@@ -23,7 +41,7 @@ export async function getPlayers(userId: string, onlyActives?: boolean): Promise
     formattedData.push(formatPlayer(player));
   });
 
-  return formattedData;
+  return formattedData.filter((player) => !sweepstakePlayers.includes(player.id));
 }
 
 export async function getPlayer(id: string, userId: string): Promise<IPlayerAPI> {
@@ -34,10 +52,10 @@ export async function getPlayer(id: string, userId: string): Promise<IPlayerAPI>
   return formatPlayer(data);
 }
 
-export function usePlayers(userId: string, onlyActives?: boolean) {
+export function usePlayers(userId: string, params?: IParamsRequest) {
   return useQuery({
-    queryKey: [TABLE_PLAYERS, userId, onlyActives],
-    queryFn: () => getPlayers(userId, onlyActives),
+    queryKey: [TABLE_PLAYERS, userId, params],
+    queryFn: () => getPlayers(userId, params),
   });
 }
 

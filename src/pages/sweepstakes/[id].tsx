@@ -25,8 +25,10 @@ import { PremierBadge } from '~/components/Badge/PremierBadge';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
+import { AddIconButton } from '~/components/IconButton/AddIconButton';
 import { ChangeTeamIconButton } from '~/components/IconButton/ChangeTeamIconButton';
 import { DeleteSolidIconButton } from '~/components/IconButton/DeleteSolidIconButton';
+import { NewSweepstakePlayerModal, NewSweepstakePlayerModalHandle } from '~/components/Modal/NewSweepstakePlayerModal';
 import { SweepstakeMapModal, SweepstakeMapModalHandle } from '~/components/Modal/SweepstakeMapModal';
 import Template from '~/components/Template';
 import { TABLE_SWEEPSTAKE_PLAYERS } from '~/config/constants';
@@ -48,6 +50,7 @@ interface ISweepstakesProps extends GetServerSideProps {
 
 const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
   const sweepstakeMapModalRef = useRef<SweepstakeMapModalHandle>(null);
+  const newSweepstakePlayerModalRef = useRef<NewSweepstakePlayerModalHandle>(null);
   const confirmRegisterAlertRef = useRef<ConfirmRegisterAlertHandle>(null);
 
   const { errorFeedbackToast, successFeedbackToast } = useFeedback();
@@ -105,6 +108,10 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
     },
   );
 
+  async function handleAddPlayer(team: number) {
+    newSweepstakePlayerModalRef.current?.onOpenModal({ id: sweepstake.id, team, user });
+  }
+
   async function handleDeletePlayer(data: IDeleteTeamPlayer) {
     confirmRegisterAlertRef.current?.onOpenAlert({
       type: AlertTypeEnum.Delete,
@@ -158,6 +165,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
         />
       </Head>
       <SweepstakeMapModal ref={sweepstakeMapModalRef} />
+      <NewSweepstakePlayerModal ref={newSweepstakePlayerModalRef} />
       <ConfirmRegisterAlert ref={confirmRegisterAlertRef} isSubmitting={isLoadingDeletePlayer} />
       <Template user={user}>
         <Card>
@@ -193,7 +201,9 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
               icon={RiUser3Line}
               title="Time 1"
               isFetching={isFetchingSweepstakePlayers && !isLoadingSweepstakePlayers}
-            />
+            >
+              {!isMobile && user && user.id === sweepstake.user_id && (<AddIconButton size="sm" onClick={() => handleAddPlayer(0)} />)}
+            </CardHeader>
             <CardBody>
               <Stack divider={<Divider />}>
                 {sweepstakePlayers
@@ -239,7 +249,9 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake }) => {
               icon={RiUser3Fill}
               title="Time 2"
               isFetching={isFetchingSweepstakePlayers && !isLoadingSweepstakePlayers}
-            />
+            >
+              {!isMobile && user && user.id === sweepstake.user_id && (<AddIconButton size="sm" onClick={() => handleAddPlayer(1)} />)}
+            </CardHeader>
             <CardBody>
               <Stack divider={<Divider />}>
                 {sweepstakePlayers

@@ -2,7 +2,7 @@ import { forwardRef, ForwardRefRenderFunction } from 'react';
 
 import { ButtonProps } from '@chakra-ui/react';
 
-import { SolidGreenButton } from '~/components/Button/Base/SolidGreenButton';
+import { SolidBlueButton } from '~/components/Button/Base/SolidBlueButton';
 
 const ConfirmSolidButtonBase: ForwardRefRenderFunction<HTMLButtonElement, ButtonProps> = (
   {
@@ -10,13 +10,13 @@ const ConfirmSolidButtonBase: ForwardRefRenderFunction<HTMLButtonElement, Button
   }: ButtonProps,
   ref,
 ) => (
-  <SolidGreenButton
+  <SolidBlueButton
     ref={ref}
     w={['100%', 200]}
     {...rest}
   >
     Confirmar
-  </SolidGreenButton>
+  </SolidBlueButton>
 );
 
 export const ConfirmSolidButton = forwardRef(ConfirmSolidButtonBase);

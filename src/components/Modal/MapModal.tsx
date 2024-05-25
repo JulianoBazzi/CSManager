@@ -36,7 +36,7 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
 
   const { errorFeedbackToast, successFeedbackToast } = useFeedback();
   const [isLoading, setIsLoading] = useState(false);
-  const [recordModalProps, setRecordModalProps] = useState<IRecordModal | undefined>({} as IRecordModal);
+  const [recordModalProps, setRecordModalProps] = useState<IRecordModal | undefined>();
 
   const mapSchema = yup.object().shape({
     name: yup.string().min(3).required(),
