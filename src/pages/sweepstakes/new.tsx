@@ -13,7 +13,7 @@ import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import Router from 'next/router';
 import { parseCookies } from 'nookies';
-import { uuid } from 'uuidv4';
+import { v4 } from 'uuid';
 import * as yup from 'yup';
 import { InferType } from 'yup';
 
@@ -78,7 +78,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
   const { mutateAsync, isPending: isLoadingCreate } = useMutation(
     {
       mutationFn: async ({ game_type, departure_at }: ISweepstake) => {
-        const sweepstakeId = uuid();
+        const sweepstakeId = v4();
         const divisionTeams = balanceTeams(selectedPlayers);
 
         const playerList: ISweepstakePlayer[] = [];

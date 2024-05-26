@@ -5,6 +5,7 @@ import { MdEmojiPeople } from 'react-icons/md';
 import {
   RiCalendarEventLine,
   RiEditBoxLine,
+  RiFileImageLine,
   RiMap2Line,
   RiUser3Fill,
   RiUser3Line,
@@ -28,6 +29,7 @@ import CardHeader from '~/components/Card/CardHeader';
 import { AddIconButton } from '~/components/IconButton/AddIconButton';
 import { ChangeTeamIconButton } from '~/components/IconButton/ChangeTeamIconButton';
 import { DeleteSolidIconButton } from '~/components/IconButton/DeleteSolidIconButton';
+import { ImportImageLeaderboardModal, ImportImageLeaderboardModalHandle } from '~/components/Modal/ImportImageLeaderboardModal';
 import { NewSweepstakePlayerModal, NewSweepstakePlayerModalHandle } from '~/components/Modal/NewSweepstakePlayerModal';
 import { SweepstakeMapModal, SweepstakeMapModalHandle } from '~/components/Modal/SweepstakeMapModal';
 import Template from '~/components/Template';
@@ -49,6 +51,7 @@ interface ISweepstakesProps extends GetServerSideProps {
 }
 
 const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstakeProp }) => {
+  const importImageLeaderboardModalRef = useRef<ImportImageLeaderboardModalHandle>(null);
   const sweepstakeMapModalRef = useRef<SweepstakeMapModalHandle>(null);
   const newSweepstakePlayerModalRef = useRef<NewSweepstakePlayerModalHandle>(null);
   const confirmRegisterAlertRef = useRef<ConfirmRegisterAlertHandle>(null);
@@ -156,6 +159,14 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
     await changeTeamMutateAsync(data);
   }
 
+  function handleImportImageLeaderboards(sweepstakeMap: ISweepstakeMapAPI) {
+    importImageLeaderboardModalRef.current?.onOpenModal({
+      id: sweepstakeMap.id,
+      user,
+      sweepstakeMap,
+    });
+  }
+
   function handleUpdateScore(sweepstakeMap: ISweepstakeMapAPI) {
     sweepstakeMapModalRef.current?.onOpenModal({
       id: sweepstakeMap.id,
@@ -195,6 +206,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
           content={`Partida com ${sweepstake.quantity_players} jogadores e ${sweepstake.quantity_maps} mapas.`}
         />
       </Head>
+      <ImportImageLeaderboardModal ref={importImageLeaderboardModalRef} />
       <SweepstakeMapModal ref={sweepstakeMapModalRef} />
       <NewSweepstakePlayerModal ref={newSweepstakePlayerModalRef} />
       <ConfirmRegisterAlert ref={confirmRegisterAlertRef} isSubmitting={isLoadingDeletePlayer} />
@@ -341,14 +353,26 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                     size="sm"
                   >
                     {user && user.id === sweepstake.user_id && (
-                      <IconButton
-                        colorScheme="gray"
-                        icon={<Icon as={RiEditBoxLine} fontSize="xl" />}
-                        aria-label="Placar"
-                        title="Atualizar Placares"
-                        onClick={() => handleUpdateScore(sweepstakeMap)}
-                        size="sm"
-                      />
+                      <Flex gap="2">
+                        {!isMobile && (
+                          <IconButton
+                            colorScheme="gray"
+                            icon={<Icon as={RiFileImageLine} fontSize="xl" />}
+                            aria-label="Imagem"
+                            title="Importar Pontuação"
+                            onClick={() => handleImportImageLeaderboards(sweepstakeMap)}
+                            size="sm"
+                          />
+                        )}
+                        <IconButton
+                          colorScheme="gray"
+                          icon={<Icon as={RiEditBoxLine} fontSize="xl" />}
+                          aria-label="Placar"
+                          title="Atualizar Placares"
+                          onClick={() => handleUpdateScore(sweepstakeMap)}
+                          size="sm"
+                        />
+                      </Flex>
                     )}
                   </CardHeader>
                   <CardBody>

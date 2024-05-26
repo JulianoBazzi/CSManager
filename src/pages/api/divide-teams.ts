@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const response = await openai.createChatCompletion({
+    const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       temperature: 0,
       messages: [
@@ -48,9 +48,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ],
     });
 
-    const data = await response.json();
-
-    res.status(200).json(data.choices[0].message.content);
+    res.status(200).json(response.choices[0].message.content);
   } catch (error) {
     res.status(500).json({ error });
   }
