@@ -31,6 +31,11 @@ export async function getPlayers(userId: string, params?: IParamsRequest): Promi
     sweepstakePlayers = players.map((sweepstakePlayer) => sweepstakePlayer.players.id);
   }
 
+  if (params?.sweepstakeIdNot) {
+    const players = await getSweepstakePlayers(params?.sweepstakeIdNot);
+    sweepstakePlayers = players.map((sweepstakePlayer) => sweepstakePlayer.players.id);
+  }
+
   query = query.order('name', { ascending: true });
 
   const { data } = await query;
@@ -41,7 +46,15 @@ export async function getPlayers(userId: string, params?: IParamsRequest): Promi
     formattedData.push(formatPlayer(player));
   });
 
-  return formattedData.filter((player) => !sweepstakePlayers.includes(player.id));
+  if (params?.sweepstakeId) {
+    return formattedData.filter((player) => sweepstakePlayers.includes(player.id));
+  }
+
+  if (params?.sweepstakeIdNot) {
+    return formattedData.filter((player) => !sweepstakePlayers.includes(player.id));
+  }
+
+  return formattedData;
 }
 
 export async function getPlayer(id: string, userId: string): Promise<IPlayerAPI> {

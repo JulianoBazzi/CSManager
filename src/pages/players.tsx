@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
+import { Flex } from '@chakra-ui/react';
 import { User } from '@supabase/supabase-js';
 import { ColumnDef } from '@tanstack/react-table';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
@@ -8,6 +9,7 @@ import { parseCookies } from 'nookies';
 import removeAccents from 'remove-accents';
 
 import { ActiveBadge } from '~/components/Badge/ActiveBadge';
+import { BooleanBadge } from '~/components/Badge/BooleanBadge';
 import { LinkBadge } from '~/components/Badge/LinkBadge';
 import { PremierBadge } from '~/components/Badge/PremierBadge';
 import Card from '~/components/Card';
@@ -15,7 +17,9 @@ import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
 import { Table } from '~/components/Form/Table';
 import { AddIconButton } from '~/components/IconButton/AddIconButton';
+import { RefreshIconButton } from '~/components/IconButton/RefreshIconButton';
 import { PlayerModal, PlayerModalHandle } from '~/components/Modal/PlayerModal';
+import { UpdatePlayerScoresModal, UpdatePlayerScoresModalHandle } from '~/components/Modal/UpdatePlayerScoresModal';
 import { SearchBar } from '~/components/SearchBar';
 import Template from '~/components/Template';
 import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
@@ -28,6 +32,7 @@ interface IPlayersProps extends GetServerSideProps {
 
 const Players: NextPage<IPlayersProps> = ({ user }) => {
   const playerModalRef = useRef<PlayerModalHandle>(null);
+  const updatePlayerScoresModalRef = useRef<UpdatePlayerScoresModalHandle>(null);
 
   const { data, isLoading, isFetching } = usePlayers(user.id);
 
@@ -42,6 +47,12 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
       ),
     );
   }, [search, data]);
+
+  function handleUpdateScorePlayersShowModal() {
+    updatePlayerScoresModalRef.current?.onOpenModal({
+      user,
+    });
+  }
 
   function handleShowModal(id?: string) {
     playerModalRef.current?.onOpenModal({
@@ -75,13 +86,13 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
       // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
     },
-    // {
-    //   accessorKey: 'fetch_data',
-    //   header: 'Buscar Dados',
-    //   enableSorting: false,
-    //   // eslint-disable-next-line react/no-unstable-nested-components
-    //   cell: ({ row }) => <BooleanBadge active={row.original.active} />,
-    // },
+    {
+      accessorKey: 'fetch_data',
+      header: 'Buscar Dados',
+      enableSorting: false,
+      // eslint-disable-next-line react/no-unstable-nested-components
+      cell: ({ row }) => <BooleanBadge active={row.original.active} />,
+    },
     {
       accessorKey: 'active',
       header: 'Status',
@@ -97,10 +108,14 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
         <title>Jogadores - CS Manager</title>
       </Head>
       <PlayerModal ref={playerModalRef} />
+      <UpdatePlayerScoresModal ref={updatePlayerScoresModalRef} />
       <Template user={user}>
         <Card>
           <CardHeader title="Jogadores" isFetching={isFetching && !isLoading}>
-            <AddIconButton onClick={() => handleShowModal()} />
+            <Flex gap="2">
+              <RefreshIconButton onClick={() => handleUpdateScorePlayersShowModal()} />
+              <AddIconButton onClick={() => handleShowModal()} />
+            </Flex>
           </CardHeader>
           <CardBody>
             <SearchBar onSearch={(value) => setSearch(value)} isDisabled={isFetching} />

@@ -2,8 +2,12 @@ import {
   forwardRef, ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
 } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { RiRepeatFill } from 'react-icons/ri';
 
-import { ModalBody, ModalFooter, Stack } from '@chakra-ui/react';
+import {
+  Icon,
+  InputRightElement, ModalBody, ModalFooter, Spinner, Stack,
+} from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@tanstack/react-query';
 import * as yup from 'yup';
@@ -20,6 +24,7 @@ import { TABLE_PLAYERS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import IPlayer from '~/models/Entity/Player/IPlayer';
 import IRecordModal from '~/models/Modal/IRecordModal';
+import { getLeetifyProfileScore } from '~/services/hooks/useLeetifyProfile';
 import { getPlayer } from '~/services/hooks/usePlayers';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';
@@ -49,6 +54,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
     handleSubmit,
     reset,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(playerSchema),
@@ -110,6 +116,24 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
     },
   );
 
+  const { mutateAsync: refreshScoreMutateAsync, isPending: isRefreshScore } = useMutation(
+    {
+      mutationFn: async () => {
+        const skillLevel = await getLeetifyProfileScore(watch('steam_id'));
+
+        if (skillLevel) {
+          setValue('premier', skillLevel);
+        }
+      },
+      async onSuccess() {
+        successFeedbackToast('Atualizar Score', 'Score atualizado com sucesso!');
+      },
+      onError(error: Error) {
+        errorFeedbackToast('Atualizar Score', error);
+      },
+    },
+  );
+
   const handleOk: SubmitHandler<InferType<typeof playerSchema>> = async (data) => {
     await createOrUpdatePlayer.mutateAsync(data as IPlayer);
   };
@@ -158,7 +182,17 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
             isLoading={isLoading}
             isDisabled={isSubmitting}
             isRequired
-          />
+          >
+            {watch('steam_id') && (
+              <InputRightElement>
+                {isRefreshScore ? (
+                  <Spinner size="sm" />
+                ) : (
+                  <Icon as={RiRepeatFill} title="Atualizar Ranking" fontSize="xl" cursor="pointer" onClick={() => refreshScoreMutateAsync()} />
+                )}
+              </InputRightElement>
+            )}
+          </NumberInput>
           <Stack direction="row" spacing="4">
             <Switch label="Ativo" {...register('active')} isChecked={watch('active')} isDisabled={isLoading || isSubmitting} />
             <Switch label="Buscar Dados" {...register('fetch_data')} isChecked={watch('fetch_data')} isDisabled={isLoading || isSubmitting} />

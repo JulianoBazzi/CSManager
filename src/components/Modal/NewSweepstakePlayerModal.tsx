@@ -93,7 +93,7 @@ const NewSweepstakePlayerModalBase: ForwardRefRenderFunction<NewSweepstakePlayer
         setIsLoading(true);
         getPlayers(recordModal.user.id, {
           active: true,
-          sweepstakeId: recordModal.id,
+          sweepstakeIdNot: recordModal.id,
         })
           .then((response) => {
             setPlayers(response);

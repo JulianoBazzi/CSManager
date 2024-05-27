@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { games } from '~/assets/games';
 import { maps } from '~/assets/maps';
-import { TABLE_MAPS, TABLE_SWEEPSTAKE_MAPS } from '~/config/constants';
+import { TABLE_MAPS } from '~/config/constants';
 import IMapAPI from '~/models/Entity/Map/IMapAPI';
 import IParamsRequest from '~/models/Request/IParamsRequest';
 import { queryClient } from '~/services/queryClient';
@@ -26,13 +26,6 @@ export async function getMaps(userId: string, params?: IParamsRequest): Promise<
 
   if (params?.active) {
     query = query.eq('active', true);
-  }
-
-  if (params?.sweepstakeId) {
-    query = query.not('id', 'in', supabase
-      .from(TABLE_SWEEPSTAKE_MAPS)
-      .select('map_id')
-      .eq('sweepstake_id', params.sweepstakeId));
   }
 
   query = query.order('name', { ascending: true });

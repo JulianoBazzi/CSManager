@@ -2,6 +2,22 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { openai } from '~/config/openai';
+import IEntityBase from '~/models/Entity/Base/IEntityBase';
+
+export interface IPlayerLeaderboardAPI extends IEntityBase {
+  name: string;
+  kills: number;
+  deaths: number;
+  assistances: number;
+  headshot_percentage: number;
+  damage: number;
+}
+
+export interface ILeaderboardAPI {
+  game: string;
+  map: string;
+  players: IPlayerLeaderboardAPI[];
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -42,7 +58,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ],
     });
 
-    res.status(200).json(response.choices[0].message.content);
+    if (!response.choices[0].message.content) {
+      res.status(400).json({ error: 'An error occurred while generating the data' });
+      return;
+    }
+
+    const leaderboard: ILeaderboardAPI = JSON.parse(response.choices[0].message.content);
+    res.status(200).json(leaderboard);
   } catch (error) {
     res.status(500).json({ error });
   }

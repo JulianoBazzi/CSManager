@@ -52,9 +52,9 @@ const NumberInputBase: ForwardRefRenderFunction<HTMLInputElement, INumberInputPr
         {...rest}
       />
       {isSearching && (
-      <InputRightElement>
-        <Spinner ml="2" color="orange.500" size="sm" />
-      </InputRightElement>
+        <InputRightElement>
+          <Spinner ml="2" size="sm" />
+        </InputRightElement>
       )}
       {children}
     </InputGroup>
