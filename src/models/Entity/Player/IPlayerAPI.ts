@@ -1,5 +1,6 @@
-interface IPlayerAPI {
-  id: string;
+import IEntityBase from '~/models/Entity/Base/IEntityBase';
+
+interface IPlayerAPI extends IEntityBase {
   name: string;
   username: string;
   steam_id: string;

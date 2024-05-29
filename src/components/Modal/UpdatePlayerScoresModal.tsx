@@ -13,7 +13,7 @@ import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
 import { Modal, ModalHandle } from '~/components/Form/Modal';
-import { TABLE_PLAYERS, TABLE_SWEEPSTAKE_PLAYERS } from '~/config/constants';
+import { TABLE_PLAYERS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
 import IRecordModal from '~/models/Modal/IRecordModal';
@@ -82,7 +82,7 @@ const UpdatePlayerScoresModalBase: ForwardRefRenderFunction<UpdatePlayerScoresMo
       },
       async onSuccess() {
         successFeedbackToast('Pontuações', 'Pontuações atualizadas com sucesso!');
-        await queryClient.invalidateQueries({ queryKey: [TABLE_SWEEPSTAKE_PLAYERS] });
+        await queryClient.invalidateQueries({ queryKey: [TABLE_PLAYERS] });
         modalRef.current?.onCloseModal();
       },
       onError(error: Error) {

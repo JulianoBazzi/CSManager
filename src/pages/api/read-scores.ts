@@ -2,22 +2,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { openai } from '~/config/openai';
-import IEntityBase from '~/models/Entity/Base/IEntityBase';
-
-export interface IPlayerLeaderboardAPI extends IEntityBase {
-  name: string;
-  kills: number;
-  deaths: number;
-  assistances: number;
-  headshot_percentage: number;
-  damage: number;
-}
-
-export interface ILeaderboardAPI {
-  game: string;
-  map: string;
-  players: IPlayerLeaderboardAPI[];
-}
+import ILeaderboardAPI from '~/models/Entity/Leaderboard/ILeaderboardAPI';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {

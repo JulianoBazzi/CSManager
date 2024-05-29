@@ -96,7 +96,6 @@ export function Table<T extends IEntityBase>({
             <Tr
               key={row.id}
               {...(onRowClick && {
-                onClick: () => onRowClick(row.original),
                 transition: 'background-color 0.3s ease-in-out',
                 _hover: {
                   cursor: 'pointer',
@@ -104,7 +103,14 @@ export function Table<T extends IEntityBase>({
               })}
             >
               {row.getVisibleCells().map((cell) => (
-                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
+                <Td
+                  key={cell.id}
+                  {...(onRowClick && cell.column.id !== 'actions' && {
+                    onClick: () => onRowClick(row.original),
+                  })}
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </Td>
               ))}
             </Tr>
           ))}

@@ -1,12 +1,12 @@
 import { useRef, useState } from 'react';
-import { BsTrophyFill } from 'react-icons/bs';
 import { GiUnlitBomb } from 'react-icons/gi';
 import { MdEmojiPeople } from 'react-icons/md';
 import {
   RiCalendarEventLine,
   RiEditBoxLine,
-  RiFileImageLine,
   RiMap2Line,
+  RiNumbersLine,
+  RiTrophyFill,
   RiUser3Fill,
   RiUser3Line,
 } from 'react-icons/ri';
@@ -254,7 +254,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                   .map((sweepstakePlayer, index) => (
                     <Stack direction={['column', 'row']} key={sweepstakePlayer.id}>
                       <Flex align="center" gap="2" justify={isMobile ? 'space-between' : 'inherit'}>
-                        <Text>
+                        <Text noOfLines={1}>
                           {index + 1}
                           {' '}
                           -
@@ -302,7 +302,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                   .map((sweepstakePlayer, index) => (
                     <Stack direction={['column', 'row']} key={sweepstakePlayer.id}>
                       <Flex align="center" gap="2" justify={isMobile ? 'space-between' : 'inherit'}>
-                        <Text>
+                        <Text noOfLines={1}>
                           {index + 1}
                           {' '}
                           -
@@ -357,7 +357,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                         {!isMobile && (
                           <IconButton
                             colorScheme="gray"
-                            icon={<Icon as={RiFileImageLine} fontSize="xl" />}
+                            icon={<Icon as={RiNumbersLine} fontSize="xl" />}
                             aria-label="Imagem"
                             title="Importar Pontuação"
                             onClick={() => handleImportImageLeaderboards(sweepstakeMap)}
@@ -389,8 +389,8 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                           {' '}
                           {sweepstakeMap.team_one_score_2}
                         </Text>
-                        {isNoWinner(sweepstakeMap) && <Icon as={BsTrophyFill} color="gray.400" />}
-                        {isWinnerTeam(sweepstakeMap, 0) && <Icon as={BsTrophyFill} color="yellow.400" />}
+                        {isNoWinner(sweepstakeMap) && <Icon as={RiTrophyFill} color="gray.400" />}
+                        {isWinnerTeam(sweepstakeMap, 0) && <Icon as={RiTrophyFill} color="yellow.400" />}
                       </Flex>
                       <Flex align="center" gap="2">
                         <Icon
@@ -404,8 +404,8 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                           {' '}
                           {sweepstakeMap.team_two_score_2}
                         </Text>
-                        {isNoWinner(sweepstakeMap) && <Icon as={BsTrophyFill} color="gray.400" />}
-                        {isWinnerTeam(sweepstakeMap, 1) && <Icon as={BsTrophyFill} color="yellow.400" />}
+                        {isNoWinner(sweepstakeMap) && <Icon as={RiTrophyFill} color="gray.400" />}
+                        {isWinnerTeam(sweepstakeMap, 1) && <Icon as={RiTrophyFill} color="yellow.400" />}
                       </Flex>
                     </Stack>
                   </CardBody>

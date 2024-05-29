@@ -42,8 +42,8 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
   useEffect(() => {
     setDataFiltered(
       data?.filter(
-        (player) => removeAccents(player.name.toLowerCase()).includes(removeAccents(search.toLowerCase()))
-          || removeAccents(player.username.toLowerCase()).includes(removeAccents(search.toLowerCase())),
+        (player) => removeAccents(player.name.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase()))
+          || removeAccents(player.username.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase())),
       ),
     );
   }, [search, data]);
@@ -73,7 +73,7 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
       enableSorting: false,
     },
     {
-      accessorKey: 'steam_id',
+      accessorKey: 'actions',
       header: 'Steam ID',
       enableSorting: false,
       // eslint-disable-next-line react/no-unstable-nested-components

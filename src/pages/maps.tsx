@@ -36,9 +36,9 @@ const Maps: NextPage<IMapsProps> = ({ user }) => {
   useEffect(() => {
     setDataFiltered(
       data?.filter(
-        (map) => removeAccents(map.name.toLowerCase()).includes(removeAccents(search.toLowerCase()))
-          || removeAccents(map.format_short_game_type.toLowerCase()).includes(removeAccents(search.toLowerCase()))
-          || removeAccents(map.format_map_type.toLowerCase()).includes(removeAccents(search.toLowerCase())),
+        (map) => removeAccents(map.name.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase()))
+          || removeAccents(map.format_short_game_type.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase()))
+          || removeAccents(map.format_map_type.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase())),
       ),
     );
   }, [search, data]);

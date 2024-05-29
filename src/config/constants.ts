@@ -7,6 +7,7 @@ export const NEXT_PUBLIC_IMGBB_API_KEY = String(process.env.NEXT_PUBLIC_IMGBB_AP
 
 export const TABLE_MAPS = 'maps';
 export const TABLE_PLAYERS = 'players';
+export const TABLE_RANKING = 'ranking';
 export const TABLE_SWEEPSTAKES = 'sweepstakes';
 export const TABLE_SWEEPSTAKE_MAPS = 'sweepstake_maps';
 export const TABLE_SWEEPSTAKE_PLAYERS = 'sweepstake_players';
