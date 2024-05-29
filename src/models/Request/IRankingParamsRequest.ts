@@ -1,6 +1,6 @@
 interface IRankingParamsRequest {
-  sweepstakeId: string;
-  mapId: string;
+  sweepstakeId?: string;
+  mapId?: string;
 }
 
 export default IRankingParamsRequest;

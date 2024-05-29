@@ -24,7 +24,7 @@ import { ImportImageLeaderboardModal, ImportImageLeaderboardModalHandle } from '
 import { useFeedback } from '~/contexts/FeedbackContext';
 import IRankingAPI from '~/models/Entity/Ranking/IRankingAPI';
 import ISweepstakeMapModal from '~/models/Modal/ISweepstakeMapModal';
-import { getSweepstakeMapRanking } from '~/services/hooks/useSweepstakeMapRanking';
+import { useSweepstakeMapRanking } from '~/services/hooks/useSweepstakeMapRanking';
 
 export type SweepstakeMapRankingModalHandle = {
   onOpenModal: (recordModal: ISweepstakeMapModal) => void;
@@ -34,15 +34,18 @@ const SweepstakeMapRankingModalBase: ForwardRefRenderFunction<SweepstakeMapRanki
   const modalRef = useRef<ModalHandle>(null);
   const importImageLeaderboardModalRef = useRef<ImportImageLeaderboardModalHandle>(null);
 
-  const { warningFeedbackToast, errorFeedbackToast } = useFeedback();
+  const { warningFeedbackToast } = useFeedback();
   const isMobile = useBreakpointValue({
     base: true,
     md: false,
   });
 
-  const [isLoading, setIsLoading] = useState(false);
   const [recordModalProps, setRecordModalProps] = useState<ISweepstakeMapModal | undefined>();
-  const [rankings, setRankings] = useState<IRankingAPI[]>([]);
+
+  const { data: rankings, isLoading } = useSweepstakeMapRanking({
+    mapId: recordModalProps?.sweepstakeMap?.map_id,
+    sweepstakeId: recordModalProps?.sweepstakeMap?.sweepstake_id,
+  });
 
   const rankingColumns: ColumnDef<IRankingAPI>[] = [
     {
@@ -92,30 +95,14 @@ const SweepstakeMapRankingModalBase: ForwardRefRenderFunction<SweepstakeMapRanki
   const onOpenModal = useCallback(
     (recordModal: ISweepstakeMapModal) => {
       setRecordModalProps(recordModal);
-      setRankings([]);
-      if (recordModal?.sweepstakeMap) {
-        setIsLoading(true);
-        getSweepstakeMapRanking({
-          mapId: recordModal.sweepstakeMap.map_id,
-          sweepstakeId: recordModal.sweepstakeMap.sweepstake_id,
-        })
-          .then((response) => {
-            setRankings(response);
-          })
-          .catch((error) => {
-            errorFeedbackToast('Ranking', error);
-            modalRef.current?.onCloseModal();
-          })
-          .finally(() => {
-            setIsLoading(false);
-          });
-      } else {
+      if (!recordModal?.sweepstakeMap) {
         warningFeedbackToast('Ranking', 'Mapa não informado!');
         modalRef.current?.onCloseModal();
+        return;
       }
       modalRef.current?.onOpenModal();
     },
-    [errorFeedbackToast, warningFeedbackToast],
+    [warningFeedbackToast],
   );
 
   function handleImportImageLeaderboards() {
