@@ -9,6 +9,7 @@ export async function getSweepstakeMaps(sweepstakeId: string): Promise<ISweepsta
     .from(TABLE_SWEEPSTAKE_MAPS)
     .select(`
       id,
+      user_id,
       sweepstake_id,
       map_id,
       team_start_from_terrorist,

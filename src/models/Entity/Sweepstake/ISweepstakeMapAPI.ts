@@ -2,6 +2,7 @@ import IMapAPI from '~/models/Entity/Map/IMapAPI';
 
 interface ISweepstakeMapAPI {
   id: string;
+  user_id: string;
   sweepstake_id: string;
   map_id: string;
   team_start_from_terrorist: number;
