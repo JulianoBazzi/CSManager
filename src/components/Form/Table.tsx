@@ -2,6 +2,8 @@ import { RiArrowDownSFill, RiArrowUpSFill, RiSubtractLine } from 'react-icons/ri
 
 import {
   Table as ChakraTable, Thead, Tbody, Tr, Th, Td, Flex, Text, Skeleton, Icon,
+  useBreakpointValue,
+  TableContainer,
 } from '@chakra-ui/react';
 import {
   useReactTable,
@@ -30,6 +32,11 @@ const emptyArray: never[] = [];
 export function Table<T extends IEntityBase>({
   columns, data = emptyArray, isLoading, onRowClick,
 }: ITableProps<T>) {
+  const isMobile = useBreakpointValue({
+    base: true,
+    md: false,
+  });
+
   const totalRecords = data.length || 0;
 
   const {
@@ -49,73 +56,77 @@ export function Table<T extends IEntityBase>({
     getPaginationRowModel: getPaginationRowModel(),
   });
 
+  const table = () => (
+    <ChakraTable size="sm" variant="striped" colorScheme="blue">
+      <Thead>
+        {getHeaderGroups().map((headerGroup) => (
+          <Tr key={headerGroup.id}>
+            {headerGroup.headers.map((header) => (
+              <Th key={header.id} colSpan={header.colSpan} textTransform="none">
+                <Flex
+                  align="center"
+                  cursor={header.column.getCanSort() ? 'pointer' : 'inherit'}
+                  onClick={header.column.getToggleSortingHandler()}
+                >
+                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                  {
+                  {
+                    asc: <Icon as={RiArrowUpSFill} aria-label="sorted ascending" />,
+                    desc: <Icon as={RiArrowDownSFill} aria-label="sorted descending" />,
+                  }[header.column.getIsSorted() as string]
+                }
+                  {!header.column.getIsSorted() && header.column.getCanSort() && (
+                  <Icon as={RiSubtractLine} aria-label="sorted ascending" />
+                  )}
+                </Flex>
+              </Th>
+            ))}
+          </Tr>
+        ))}
+      </Thead>
+      <Tbody>
+        {isLoading
+        && [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => (
+          <Tr key={index}>
+            {columns.map((column, columnIndex) => (
+              <Td
+                // eslint-disable-next-line react/no-array-index-key
+                key={`${columnIndex}-${index}`}
+              >
+                <Skeleton height="16px" />
+              </Td>
+            ))}
+          </Tr>
+        ))}
+        {getRowModel().rows.map((row) => (
+          <Tr
+            key={row.id}
+            {...(onRowClick && {
+              transition: 'background-color 0.3s ease-in-out',
+              _hover: {
+                cursor: 'pointer',
+              },
+            })}
+          >
+            {row.getVisibleCells().map((cell) => (
+              <Td
+                key={cell.id}
+                {...(onRowClick && cell.column.id !== 'actions' && {
+                  onClick: () => onRowClick(row.original),
+                })}
+              >
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </Td>
+            ))}
+          </Tr>
+        ))}
+      </Tbody>
+    </ChakraTable>
+  );
+
   return (
     <>
-      <ChakraTable size="sm" variant="striped" colorScheme="blue">
-        <Thead>
-          {getHeaderGroups().map((headerGroup) => (
-            <Tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <Th key={header.id} colSpan={header.colSpan} textTransform="none">
-                  <Flex
-                    align="center"
-                    cursor={header.column.getCanSort() ? 'pointer' : 'inherit'}
-                    onClick={header.column.getToggleSortingHandler()}
-                  >
-                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                    {
-                      {
-                        asc: <Icon as={RiArrowUpSFill} aria-label="sorted ascending" />,
-                        desc: <Icon as={RiArrowDownSFill} aria-label="sorted descending" />,
-                      }[header.column.getIsSorted() as string]
-                    }
-                    {!header.column.getIsSorted() && header.column.getCanSort() && (
-                      <Icon as={RiSubtractLine} aria-label="sorted ascending" />
-                    )}
-                  </Flex>
-                </Th>
-              ))}
-            </Tr>
-          ))}
-        </Thead>
-        <Tbody>
-          {isLoading
-            && [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => (
-              <Tr key={index}>
-                {columns.map((column, columnIndex) => (
-                  <Td
-                    // eslint-disable-next-line react/no-array-index-key
-                    key={`${columnIndex}-${index}`}
-                  >
-                    <Skeleton height="16px" />
-                  </Td>
-                ))}
-              </Tr>
-            ))}
-          {getRowModel().rows.map((row) => (
-            <Tr
-              key={row.id}
-              {...(onRowClick && {
-                transition: 'background-color 0.3s ease-in-out',
-                _hover: {
-                  cursor: 'pointer',
-                },
-              })}
-            >
-              {row.getVisibleCells().map((cell) => (
-                <Td
-                  key={cell.id}
-                  {...(onRowClick && cell.column.id !== 'actions' && {
-                    onClick: () => onRowClick(row.original),
-                  })}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </Td>
-              ))}
-            </Tr>
-          ))}
-        </Tbody>
-      </ChakraTable>
+      {isMobile ? <TableContainer>{table()}</TableContainer> : table()}
 
       {totalRecords > 0 ? (
         <Flex mt="4" align="center" direction={['column', 'row']} gap={['3', '0']}>

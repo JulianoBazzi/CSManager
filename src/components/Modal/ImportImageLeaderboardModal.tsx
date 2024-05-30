@@ -19,7 +19,6 @@ import {
   ModalBody,
   ModalFooter,
   Stack,
-  TableContainer,
   Flex,
 } from '@chakra-ui/react';
 import { useMutation } from '@tanstack/react-query';
@@ -327,14 +326,12 @@ const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeade
                   isDisabled={isLoading || isLoadingAnalyzeImage || isLoadingRanking}
                 />
                 {(leaderboard || isLoadingAnalyzeImage) && (
-                <TableContainer>
                   <Table
                     data={playerLeaderboards}
                     columns={playerLeaderboardColumns}
                     isLoading={isLoadingAnalyzeImage}
                     onRowClick={(playerLeaderboard) => handlePlayerLeaderboardModal(playerLeaderboard)}
                   />
-                </TableContainer>
                 )}
               </CardBody>
             </Card>

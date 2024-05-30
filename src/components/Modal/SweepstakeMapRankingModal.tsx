@@ -9,7 +9,6 @@ import {
   Icon,
   IconButton,
   ModalBody, ModalFooter, Stack,
-  TableContainer,
   useBreakpointValue,
 } from '@chakra-ui/react';
 import { ColumnDef } from '@tanstack/react-table';
@@ -149,13 +148,11 @@ const SweepstakeMapRankingModalBase: ForwardRefRenderFunction<SweepstakeMapRanki
                 )}
               </CardHeader>
               <CardBody>
-                <TableContainer>
-                  <Table
-                    data={rankings}
-                    columns={rankingColumns}
-                    isLoading={isLoading}
-                  />
-                </TableContainer>
+                <Table
+                  data={rankings}
+                  columns={rankingColumns}
+                  isLoading={isLoading}
+                />
               </CardBody>
             </Card>
           </Stack>

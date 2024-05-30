@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 import {
-  Checkbox, Flex, Stack, TableContainer,
+  Checkbox, Flex, Stack,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { User } from '@supabase/supabase-js';
@@ -327,27 +327,23 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
           <Card w={['100%', '60%']}>
             <CardHeader title="Jogadores" />
             <CardBody>
-              <TableContainer>
-                <Table
-                  data={players}
-                  columns={playerColumns}
-                  isLoading={isLoadingPlayers}
-                  onRowClick={(value) => handleSelectedPlayers(value)}
-                />
-              </TableContainer>
+              <Table
+                data={players}
+                columns={playerColumns}
+                isLoading={isLoadingPlayers}
+                onRowClick={(value) => handleSelectedPlayers(value)}
+              />
             </CardBody>
           </Card>
           <Card w={['100%', '40%']}>
             <CardHeader title="Mapas" />
             <CardBody>
-              <TableContainer>
-                <Table
-                  data={maps}
-                  columns={mapColumns}
-                  isLoading={isLoadingMaps}
-                  onRowClick={({ id }) => handleSelectedMaps(id)}
-                />
-              </TableContainer>
+              <Table
+                data={maps}
+                columns={mapColumns}
+                isLoading={isLoadingMaps}
+                onRowClick={({ id }) => handleSelectedMaps(id)}
+              />
             </CardBody>
           </Card>
         </Flex>

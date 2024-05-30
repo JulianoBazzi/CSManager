@@ -6,7 +6,6 @@ import { RiUser3Fill, RiUser3Line } from 'react-icons/ri';
 import {
   Checkbox,
   ModalBody, ModalFooter, Stack,
-  TableContainer,
 } from '@chakra-ui/react';
 import { useMutation } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
@@ -167,14 +166,12 @@ const NewSweepstakePlayerModalBase: ForwardRefRenderFunction<NewSweepstakePlayer
               size="sm"
             />
             <CardBody>
-              <TableContainer>
-                <Table
-                  data={players}
-                  columns={playerColumns}
-                  isLoading={isLoading}
-                  onRowClick={(value) => handleSelectedPlayers(value)}
-                />
-              </TableContainer>
+              <Table
+                data={players}
+                columns={playerColumns}
+                isLoading={isLoading}
+                onRowClick={(value) => handleSelectedPlayers(value)}
+              />
             </CardBody>
           </Card>
         </Stack>
