@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* eslint-disable max-len */
 import { NextApiRequest, NextApiResponse } from 'next';
 
@@ -18,7 +17,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    console.log('image_url', image_url);
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
       temperature: 0,
@@ -45,8 +43,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ],
     });
 
-    console.log('response', response);
-
     if (!response.choices[0].message.content) {
       res.status(400).json({ error: 'An error occurred while generating the data' });
       return;
@@ -55,7 +51,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const leaderboard: ILeaderboardAPI = JSON.parse(response.choices[0].message.content);
     res.status(200).json(leaderboard);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error });
   }
 }

@@ -12,10 +12,11 @@ import {
 } from 'react-icons/ri';
 
 import {
-  Divider, Flex, Icon, IconButton, Stack, Text, useBreakpointValue,
+  Divider, Flex, Icon, IconButton, Stack, TableContainer, Text, useBreakpointValue,
 } from '@chakra-ui/react';
 import { User } from '@supabase/supabase-js';
 import { useMutation } from '@tanstack/react-query';
+import { ColumnDef } from '@tanstack/react-table';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
@@ -26,6 +27,7 @@ import { PremierBadge } from '~/components/Badge/PremierBadge';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
+import { Table } from '~/components/Form/Table';
 import { AddIconButton } from '~/components/IconButton/AddIconButton';
 import { ChangeTeamIconButton } from '~/components/IconButton/ChangeTeamIconButton';
 import { DeleteSolidIconButton } from '~/components/IconButton/DeleteSolidIconButton';
@@ -35,12 +37,14 @@ import { SweepstakeMapRankingModal, SweepstakeMapRankingModalHandle } from '~/co
 import Template from '~/components/Template';
 import { TABLE_SWEEPSTAKES, TABLE_SWEEPSTAKE_PLAYERS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
+import IViewSeepstakeRankingAPI from '~/models/Entity/Ranking/IViewSeepstakeRankingAPI';
 import IChangeTeamPlayer from '~/models/Entity/Sweepstake/IChangeTeamPlayer';
 import IDeleteTeamPlayer from '~/models/Entity/Sweepstake/IDeleteTeamPlayer';
 import ISweepstakeAPI from '~/models/Entity/Sweepstake/ISweepstakeAPI';
 import ISweepstakeMapAPI from '~/models/Entity/Sweepstake/ISweepstakeMapAPI';
 import { useSweepstakeMaps } from '~/services/hooks/useSweepstakeMaps';
 import { useSweepstakePlayers } from '~/services/hooks/useSweepstakePlayers';
+import { useSweepstakeRanking } from '~/services/hooks/useSweepstakeRanking';
 import { getSweepstake } from '~/services/hooks/useSweepstakes';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';
@@ -75,6 +79,57 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
     isLoading: isLoadingSweepstakeMaps,
     isFetching: isFetchingSweepstakeMaps,
   } = useSweepstakeMaps(sweepstake.id);
+
+  const {
+    data: sweepstakeRankings,
+    isLoading: isLoadingSweepstakeRankings,
+    isFetching: isFetchingSweepstakeRankings,
+  } = useSweepstakeRanking(sweepstake.id);
+
+  const rankingColumns: ColumnDef<IViewSeepstakeRankingAPI>[] = [
+    {
+      accessorKey: 'name',
+      header: 'Nome',
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'username',
+      header: 'Steam',
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'premier',
+      header: 'Premier',
+      enableSorting: false,
+      // eslint-disable-next-line react/no-unstable-nested-components
+      cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
+    },
+    {
+      accessorKey: 'kills',
+      header: 'Vítimas',
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'deaths',
+      header: 'Mortes',
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'assistances',
+      header: 'Assist.',
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'headshot_percentage',
+      header: '%TC',
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'damage',
+      header: 'Dano',
+      enableSorting: false,
+    },
+  ];
 
   const { mutateAsync: deletePlayerMutateAsync, isPending: isLoadingDeletePlayer } = useMutation({
     mutationFn: async ({ sweepstake_player_id }: IDeleteTeamPlayer) => {
@@ -354,23 +409,26 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                   >
                     <Flex gap="2">
                       {user && user.id === sweepstake.user_id && (
-                      <IconButton
-                        colorScheme="gray"
-                        icon={<Icon as={RiEditBoxLine} fontSize="xl" />}
-                        aria-label="Placar"
-                        title="Atualizar Placares"
-                        onClick={() => handleUpdateScore(sweepstakeMap)}
-                        size="sm"
-                      />
+                        <IconButton
+                          colorScheme="gray"
+                          icon={<Icon as={RiEditBoxLine} fontSize="xl" />}
+                          aria-label="Placar"
+                          title="Atualizar Placares"
+                          onClick={() => handleUpdateScore(sweepstakeMap)}
+                          size="sm"
+                        />
                       )}
-                      <IconButton
-                        colorScheme="gray"
-                        icon={<Icon as={RiNumbersLine} fontSize="xl" />}
-                        aria-label="Ranking"
-                        title="Ver Ranking"
-                        onClick={() => handleShowRankingModal(sweepstakeMap)}
-                        size="sm"
-                      />
+                      {(sweepstakeMap.team_one_score_1 + sweepstakeMap.team_one_score_2
+                        + sweepstakeMap.team_two_score_1 + sweepstakeMap.team_two_score_2 > 0) && (
+                        <IconButton
+                          colorScheme="gray"
+                          icon={<Icon as={RiNumbersLine} fontSize="xl" />}
+                          aria-label="Ranking"
+                          title="Ver Ranking"
+                          onClick={() => handleShowRankingModal(sweepstakeMap)}
+                          size="sm"
+                        />
+                      )}
                     </Flex>
                   </CardHeader>
                   <CardBody>
@@ -410,6 +468,22 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                 </Card>
               ))}
             </Stack>
+          </CardBody>
+        </Card>
+        <Card>
+          <CardHeader
+            icon={RiNumbersLine}
+            title="Ranking"
+            isFetching={isFetchingSweepstakeRankings && !isLoadingSweepstakeRankings}
+          />
+          <CardBody>
+            <TableContainer>
+              <Table
+                data={sweepstakeRankings}
+                columns={rankingColumns}
+                isLoading={isLoadingSweepstakeRankings}
+              />
+            </TableContainer>
           </CardBody>
         </Card>
       </Template>
