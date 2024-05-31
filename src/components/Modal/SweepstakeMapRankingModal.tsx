@@ -1,22 +1,16 @@
 import {
   forwardRef, ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
 } from 'react';
-import { GiUnlitBomb } from 'react-icons/gi';
-import { MdEmojiPeople } from 'react-icons/md';
-import { RiUploadCloudLine } from 'react-icons/ri';
 
 import {
-  Icon,
-  IconButton,
-  ModalBody, ModalFooter, Stack,
+  ModalBody, ModalFooter,
+  Stack,
   useBreakpointValue,
 } from '@chakra-ui/react';
 import { ColumnDef } from '@tanstack/react-table';
 
 import { PremierBadge } from '~/components/Badge/PremierBadge';
-import Card from '~/components/Card';
-import CardBody from '~/components/Card/CardBody';
-import CardHeader from '~/components/Card/CardHeader';
+import { OutlineGrayButton } from '~/components/Button/Base/OutlineGrayButton';
 import { Modal, ModalHandle } from '~/components/Form/Modal';
 import { Table } from '~/components/Form/Table';
 import { ImportImageLeaderboardModal, ImportImageLeaderboardModalHandle } from '~/components/Modal/ImportImageLeaderboardModal';
@@ -127,34 +121,17 @@ const SweepstakeMapRankingModalBase: ForwardRefRenderFunction<SweepstakeMapRanki
   return (
     <>
       <ImportImageLeaderboardModal ref={importImageLeaderboardModalRef} />
-      <Modal ref={modalRef} title="Ranking" size="4xl">
+      <Modal ref={modalRef} title={`Ranking: ${recordModalProps?.sweepstakeMap?.maps?.name}`} size="4xl">
         <ModalBody>
-          <Stack>
-            <Card>
-              <CardHeader
-                icon={recordModalProps?.sweepstakeMap?.maps?.map_type === 'bomb' ? GiUnlitBomb : MdEmojiPeople}
-                title={recordModalProps?.sweepstakeMap?.maps?.name || ''}
-                size="sm"
-              >
-                {!isMobile && recordModalProps?.user && recordModalProps?.user.id === recordModalProps?.sweepstakeMap.user_id && (
-                  <IconButton
-                    colorScheme="gray"
-                    icon={<Icon as={RiUploadCloudLine} fontSize="xl" />}
-                    aria-label="Imagem"
-                    title="Importar Pontuação"
-                    onClick={() => handleImportImageLeaderboards()}
-                    size="sm"
-                  />
-                )}
-              </CardHeader>
-              <CardBody>
-                <Table
-                  data={rankings}
-                  columns={rankingColumns}
-                  isLoading={isLoading}
-                />
-              </CardBody>
-            </Card>
+          <Stack spacing="4">
+            {!isMobile && recordModalProps?.user && recordModalProps?.user.id === recordModalProps?.sweepstakeMap.user_id && (
+              <OutlineGrayButton onClick={() => handleImportImageLeaderboards()}>Importar Pontuação</OutlineGrayButton>
+            )}
+            <Table
+              data={rankings}
+              columns={rankingColumns}
+              isLoading={isLoading}
+            />
           </Stack>
         </ModalBody>
         <ModalFooter />

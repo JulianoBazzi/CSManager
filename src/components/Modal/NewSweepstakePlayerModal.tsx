@@ -1,11 +1,10 @@
 import {
   forwardRef, ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
 } from 'react';
-import { RiUser3Fill, RiUser3Line } from 'react-icons/ri';
 
 import {
   Checkbox,
-  ModalBody, ModalFooter, Stack,
+  ModalBody, ModalFooter,
 } from '@chakra-ui/react';
 import { useMutation } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
@@ -13,9 +12,6 @@ import { ColumnDef } from '@tanstack/react-table';
 import { PremierBadge } from '~/components/Badge/PremierBadge';
 import { SolidBlueButton } from '~/components/Button/Base/SolidBlueButton';
 import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
-import Card from '~/components/Card';
-import CardBody from '~/components/Card/CardBody';
-import CardHeader from '~/components/Card/CardHeader';
 import { Modal, ModalHandle } from '~/components/Form/Modal';
 import { Table } from '~/components/Form/Table';
 import { TABLE_SWEEPSTAKE_PLAYERS } from '~/config/constants';
@@ -154,27 +150,16 @@ const NewSweepstakePlayerModalBase: ForwardRefRenderFunction<NewSweepstakePlayer
   return (
     <Modal
       ref={modalRef}
-      title="Adicionar Jogadores"
+      title={`Adicionar Jogadores ao Time ${recordModalProps?.team === 0 ? '1' : '2'}`}
       size="xl"
     >
       <ModalBody>
-        <Stack>
-          <Card>
-            <CardHeader
-              icon={recordModalProps?.team === 0 ? RiUser3Line : RiUser3Fill}
-              title={`Time ${recordModalProps?.team === 0 ? '1' : '2'}`}
-              size="sm"
-            />
-            <CardBody>
-              <Table
-                data={players}
-                columns={playerColumns}
-                isLoading={isLoading}
-                onRowClick={(value) => handleSelectedPlayers(value)}
-              />
-            </CardBody>
-          </Card>
-        </Stack>
+        <Table
+          data={players}
+          columns={playerColumns}
+          isLoading={isLoading}
+          onRowClick={(value) => handleSelectedPlayers(value)}
+        />
       </ModalBody>
       <ModalFooter flexDir="column" gap="4">
         <SolidBlueButton w="100%" onClick={() => createMutateAsync()} isLoading={isLoadingCreate} isDisabled={selectedPlayers.length === 0}>

@@ -9,8 +9,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import { GiUnlitBomb } from 'react-icons/gi';
-import { MdEmojiPeople } from 'react-icons/md';
 import { RiAlertLine } from 'react-icons/ri';
 
 import {
@@ -23,22 +21,21 @@ import {
 } from '@chakra-ui/react';
 import { useMutation } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
-import axios from 'axios';
 import imgbbUpload from 'imgbb-image-uploader';
 import removeAccents from 'remove-accents';
 import { v4 } from 'uuid';
 
 import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
 import { SaveSolidButton } from '~/components/Button/SaveSolidButton';
-import Card from '~/components/Card';
-import CardBody from '~/components/Card/CardBody';
-import CardHeader from '~/components/Card/CardHeader';
 import { Input } from '~/components/Form/Input';
 import { Modal, ModalHandle } from '~/components/Form/Modal';
 import { Table } from '~/components/Form/Table';
 import { DeleteSolidIconButton } from '~/components/IconButton/DeleteSolidIconButton';
 import { PlayerLeaderboardModal, PlayerLeaderboardModalHandle } from '~/components/Modal/PlayerLeaderboardModal';
-import { NEXT_PUBLIC_IMGBB_API_KEY, TABLE_PLAYERS, TABLE_RANKING } from '~/config/constants';
+import {
+  NEXT_PUBLIC_IMGBB_API_KEY, TABLE_PLAYERS, TABLE_RANKING, VIEW_MAP_RANKING, VIEW_SWEEPSTAKE_RANKING,
+} from '~/config/constants';
+import { openai } from '~/config/openai';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import ILeaderboardAPI from '~/models/Entity/Leaderboard/ILeaderboardAPI';
 import IPlayerLeaderboardAPI from '~/models/Entity/Leaderboard/IPlayerLeaderboardAPI';
@@ -99,11 +96,37 @@ const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeade
           name: v4(),
         });
 
-        const response = await axios.post<ILeaderboardAPI>('/api/read-scores', {
-          image_url: data.data.url,
+        const response = await openai.chat.completions.create({
+          model: 'gpt-4o',
+          temperature: 0,
+          messages: [
+            {
+              role: 'system',
+              content: 'Return only the text, nothing more.',
+            },
+            {
+              role: 'user',
+              content: [
+                {
+                  type: 'text',
+                  text: 'Read the image and return its data to me in a string. Give me back: game, map and an array of players with: name, kills, deaths, assistances, headshot_percentage and damage.',
+                },
+                {
+                  type: 'image_url',
+                  image_url: {
+                    url: data.data.url,
+                  },
+                },
+              ],
+            },
+          ],
         });
 
-        return response.data;
+        if (!response.choices[0].message.content) {
+          throw new Error('An error occurred while generating the data');
+        }
+
+        return JSON.parse(response.choices[0].message.content) as ILeaderboardAPI;
       },
       async onSuccess(data) {
         setLeaderboard(data);
@@ -167,6 +190,8 @@ const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeade
       async onSuccess() {
         successFeedbackToast('Ranking', 'Ranking atualizado com sucesso!');
         await queryClient.invalidateQueries({ queryKey: [TABLE_RANKING] });
+        await queryClient.invalidateQueries({ queryKey: [VIEW_MAP_RANKING] });
+        await queryClient.invalidateQueries({ queryKey: [VIEW_SWEEPSTAKE_RANKING] });
         modalRef.current?.onCloseModal();
       },
       onError(error: Error) {
@@ -303,38 +328,29 @@ const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeade
       <PlayerLeaderboardModal ref={playerLeaderboardModalRef} />
       <Modal
         ref={modalRef}
-        title="Importar Ranking via Imagem"
+        title={`Importar Ranking: ${recordModalProps?.sweepstakeMap?.maps?.name}`}
         size={leaderboard ? '4xl' : '2xl'}
       >
         <ModalBody>
-          <Stack>
-            <Card>
-              <CardHeader
-                icon={recordModalProps?.sweepstakeMap?.maps?.map_type === 'bomb' ? GiUnlitBomb : MdEmojiPeople}
-                title={leaderboard
-                  ? `${recordModalProps?.sweepstakeMap?.maps?.name} (${leaderboard.map})`
-                  : `${recordModalProps?.sweepstakeMap?.maps?.name}`}
-                size="sm"
-              />
-              <CardBody>
-                <Input
-                  type="file"
-                  name="file"
-                  accept="image/*"
-                  capture="environment"
-                  onChange={(event) => handleFileChange(event)}
-                  isDisabled={isLoading || isLoadingAnalyzeImage || isLoadingRanking}
-                />
-                {(leaderboard || isLoadingAnalyzeImage) && (
-                  <Table
-                    data={playerLeaderboards}
-                    columns={playerLeaderboardColumns}
-                    isLoading={isLoadingAnalyzeImage}
-                    onRowClick={(playerLeaderboard) => handlePlayerLeaderboardModal(playerLeaderboard)}
-                  />
-                )}
-              </CardBody>
-            </Card>
+          <Stack spacing="4">
+            <Input
+              pt="2"
+              h="50px"
+              type="file"
+              name="file"
+              accept="image/*"
+              capture="environment"
+              onChange={(event) => handleFileChange(event)}
+              isDisabled={isLoading || isLoadingAnalyzeImage || isLoadingRanking}
+            />
+            {(leaderboard || isLoadingAnalyzeImage) && (
+            <Table
+              data={playerLeaderboards}
+              columns={playerLeaderboardColumns}
+              isLoading={isLoadingAnalyzeImage}
+              onRowClick={(playerLeaderboard) => handlePlayerLeaderboardModal(playerLeaderboard)}
+            />
+            )}
           </Stack>
         </ModalBody>
         <ModalFooter flexDir="column" gap="4">

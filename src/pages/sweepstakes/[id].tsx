@@ -31,6 +31,7 @@ import { Table } from '~/components/Form/Table';
 import { AddIconButton } from '~/components/IconButton/AddIconButton';
 import { ChangeTeamIconButton } from '~/components/IconButton/ChangeTeamIconButton';
 import { DeleteSolidIconButton } from '~/components/IconButton/DeleteSolidIconButton';
+import { RankingIconButton } from '~/components/IconButton/RankingIconButton';
 import { NewSweepstakePlayerModal, NewSweepstakePlayerModalHandle } from '~/components/Modal/NewSweepstakePlayerModal';
 import { SweepstakeMapModal, SweepstakeMapModalHandle } from '~/components/Modal/SweepstakeMapModal';
 import { SweepstakeMapRankingModal, SweepstakeMapRankingModalHandle } from '~/components/Modal/SweepstakeMapRankingModal';
@@ -420,14 +421,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                       )}
                       {(sweepstakeMap.team_one_score_1 + sweepstakeMap.team_one_score_2
                         + sweepstakeMap.team_two_score_1 + sweepstakeMap.team_two_score_2 > 0) && (
-                        <IconButton
-                          colorScheme="gray"
-                          icon={<Icon as={RiNumbersLine} fontSize="xl" />}
-                          aria-label="Ranking"
-                          title="Ver Ranking"
-                          onClick={() => handleShowRankingModal(sweepstakeMap)}
-                          size="sm"
-                        />
+                        <RankingIconButton onClick={() => handleShowRankingModal(sweepstakeMap)} size="sm" />
                       )}
                     </Flex>
                   </CardHeader>

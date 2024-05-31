@@ -17,7 +17,9 @@ import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
 import { Table } from '~/components/Form/Table';
 import { AddIconButton } from '~/components/IconButton/AddIconButton';
+import { RankingIconButton } from '~/components/IconButton/RankingIconButton';
 import { RefreshIconButton } from '~/components/IconButton/RefreshIconButton';
+import { PlayerMapRankingModal, PlayerMapRankingModalHandle } from '~/components/Modal/PlayerMapRankingModal';
 import { PlayerModal, PlayerModalHandle } from '~/components/Modal/PlayerModal';
 import { UpdatePlayerScoresModal, UpdatePlayerScoresModalHandle } from '~/components/Modal/UpdatePlayerScoresModal';
 import { SearchBar } from '~/components/SearchBar';
@@ -33,6 +35,7 @@ interface IPlayersProps extends GetServerSideProps {
 const Players: NextPage<IPlayersProps> = ({ user }) => {
   const playerModalRef = useRef<PlayerModalHandle>(null);
   const updatePlayerScoresModalRef = useRef<UpdatePlayerScoresModalHandle>(null);
+  const playerMapRankingModalRef = useRef<PlayerMapRankingModalHandle>(null);
 
   const { data, isLoading, isFetching } = usePlayers(user.id);
 
@@ -58,6 +61,14 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
     playerModalRef.current?.onOpenModal({
       id,
       user,
+    });
+  }
+
+  function handleShowRankingModal(player: IPlayerAPI) {
+    playerMapRankingModalRef.current?.onOpenModal({
+      id: player.id,
+      user,
+      player,
     });
   }
 
@@ -100,6 +111,13 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
       // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <ActiveBadge active={row.original.active} />,
     },
+    {
+      accessorKey: 'actions',
+      header: '',
+      enableSorting: false,
+      // eslint-disable-next-line react/no-unstable-nested-components
+      cell: ({ row }) => <RankingIconButton onClick={() => handleShowRankingModal(row.original)} size="xs" />,
+    },
   ];
 
   return (
@@ -109,6 +127,7 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
       </Head>
       <PlayerModal ref={playerModalRef} />
       <UpdatePlayerScoresModal ref={updatePlayerScoresModalRef} />
+      <PlayerMapRankingModal ref={playerMapRankingModalRef} />
       <Template user={user}>
         <Card>
           <CardHeader title="Jogadores" isFetching={isFetching && !isLoading}>
