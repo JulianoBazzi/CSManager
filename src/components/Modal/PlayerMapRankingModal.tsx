@@ -42,6 +42,11 @@ const PlayerMapRankingModalBase: ForwardRefRenderFunction<PlayerMapRankingModalH
       cell: ({ row }) => <MapBadge type={row.original.map_type} format_type={row.original.map_type} />,
     },
     {
+      accessorKey: 'quantity',
+      header: 'N° Vezes',
+      enableSorting: false,
+    },
+    {
       accessorKey: 'kills',
       header: 'Vítimas',
       enableSorting: false,

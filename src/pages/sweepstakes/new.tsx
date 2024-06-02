@@ -18,6 +18,7 @@ import * as yup from 'yup';
 import { InferType } from 'yup';
 
 import { games } from '~/assets/games';
+import { sweepstakeEngines } from '~/assets/sweepstakeEngines';
 import { MapBadge } from '~/components/Badge/MapBadge';
 import { PremierBadge } from '~/components/Badge/PremierBadge';
 import Card from '~/components/Card';
@@ -29,7 +30,9 @@ import { Select } from '~/components/Form/Select';
 import { Table } from '~/components/Form/Table';
 import { SweepstakeIconButton } from '~/components/IconButton/SweepstakeIconButton';
 import Template from '~/components/Template';
-import { TABLE_SWEEPSTAKES, TABLE_SWEEPSTAKE_MAPS, TABLE_SWEEPSTAKE_PLAYERS } from '~/config/constants';
+import {
+  TABLE_RANKING, TABLE_SWEEPSTAKES, TABLE_SWEEPSTAKE_MAPS, TABLE_SWEEPSTAKE_PLAYERS,
+} from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import IMapAPI from '~/models/Entity/Map/IMapAPI';
 import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
@@ -77,52 +80,36 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
 
   const { mutateAsync, isPending: isLoadingCreate } = useMutation(
     {
-      mutationFn: async ({ game_type, departure_at }: ISweepstake) => {
+      mutationFn: async ({ game_type, departure_at, engine }: ISweepstake) => {
         const sweepstakeId = v4();
-        const divisionTeams = balanceTeams(selectedPlayers);
-
         const playerList: ISweepstakePlayer[] = [];
-        for (let i = 0; i < divisionTeams.length;) {
-          divisionTeams[i].forEach((player) => {
-            playerList.push({
-              user_id: user?.id,
-              sweepstake_id: sweepstakeId,
-              player_id: player.id,
-              team: i,
+
+        if (engine?.id === 'ranking') {
+          // Somar o dano causado de cada mapa e dividir pela quantidade de mapas que o player possui ranking cadastrado
+          // Exemplo: Se ele só tem ranking em 3 mapas, a média da média sera divido por 3
+
+          const { data } = await supabase
+            .from(TABLE_RANKING)
+            .select()
+            .eq('user_id', user?.id)
+            .eq('map_id', selectedMaps)
+            .order('created_at', { ascending: false });
+        } else {
+          const divisionTeams = balanceTeams(selectedPlayers);
+
+          for (let i = 0; i < divisionTeams.length;) {
+            divisionTeams[i].forEach((player) => {
+              playerList.push({
+                user_id: user?.id,
+                sweepstake_id: sweepstakeId,
+                player_id: player.id,
+                team: i,
+              });
             });
-          });
 
-          i += 1;
+            i += 1;
+          }
         }
-
-        // const divideTeamsResponse = await axios.post('/api/divide-teams', {
-        //   players: selectedPlayers,
-        // });
-
-        // const teams: IDivideTeamData = JSON.parse(divideTeamsResponse.data);
-
-        // const playerList: ISweepstakePlayer[] = [];
-        // for (let i = 0; i < teams.team1.length;) {
-        //   playerList.push({
-        //     user_id: user?.id,
-        //     sweepstake_id: sweepstakeId,
-        //     player_id: teams.team1[i],
-        //     team: 0,
-        //   });
-
-        //   i += 1;
-        // }
-
-        // for (let i = 0; i < teams.team2.length;) {
-        //   playerList.push({
-        //     user_id: user?.id,
-        //     sweepstake_id: sweepstakeId,
-        //     player_id: teams.team2[i],
-        //     team: 1,
-        //   });
-
-        //   i += 1;
-        // }
 
         const mapList: ISweepstakeMap[] = [];
         const startFromTerrorist = randomUnique(2, 1)[0] - 1;
@@ -146,9 +133,8 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
           id: sweepstakeId,
           user_id: user.id,
           game_type: game_type?.id,
+          engine: engine?.id,
           departure_at,
-          consider_patents: false,
-          consider_previous_rankings: false,
           quantity_players: playerList.length,
           quantity_maps: mapList.length,
         });
@@ -241,6 +227,14 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
       })
       .nullable()
       .required(),
+    engine: yup
+      .object()
+      .shape({
+        id: yup.string().required(),
+        name: yup.string(),
+      })
+      .nullable()
+      .required(),
   });
 
   const {
@@ -253,6 +247,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
     resolver: yupResolver(sweepstakeSchema),
     defaultValues: {
       game_type: games.find((game) => game.id === user.user_metadata.gameType),
+      engine: sweepstakeEngines.find((engine) => engine.id === user.user_metadata.sweepstakeEngine),
       departure_at: dayjs().set('hour', 21).set('minute', 0).set('second', 0)
         .format('YYYY-MM-DD HH:mm'),
     },
@@ -303,6 +298,18 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
                 {...register('departure_at')}
                 isDisabled={isLoadingCreate}
                 isRequired
+              />
+              <Select
+                label="Método de Sorteio"
+                options={sweepstakeEngines}
+                value={watch('engine') as ISelectOption}
+                error={errors.engine?.id}
+                {...register('engine')}
+                isDisabled={isLoadingCreate}
+                isRequired
+                onChange={(option) => {
+                  setValue('engine', option);
+                }}
               />
               <Stack direction="row" spacing="4" w="100%">
                 <NumberInput

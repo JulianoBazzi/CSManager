@@ -57,6 +57,11 @@ const NAV_ITEMS: Array<INavItem> = [
     href: '/sweepstakes',
     auth: true,
   },
+  {
+    label: 'Ranking',
+    href: '/ranking',
+    auth: true,
+  },
 ];
 
 const DesktopNav = ({ user }: INav) => {

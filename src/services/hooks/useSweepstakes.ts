@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { games } from '~/assets/games';
+import { sweepstakeEngines } from '~/assets/sweepstakeEngines';
 import { TABLE_SWEEPSTAKES } from '~/config/constants';
 import ISweepstakeAPI from '~/models/Entity/Sweepstake/ISweepstakeAPI';
 import { queryClient } from '~/services/queryClient';
@@ -12,6 +13,7 @@ export function formatSweepstakes(sweepstake: ISweepstakeAPI): ISweepstakeAPI {
     ...sweepstake,
     format_game_type: games.find((game) => game.id === sweepstake.game_type)?.name ?? 'Não Localizado',
     format_short_game_type: games.find((game) => game.id === sweepstake.game_type)?.shortName ?? 'Não Localizado',
+    format_engine: sweepstakeEngines.find((engine) => engine.id === sweepstake.engine)?.name ?? 'Não Localizado',
     format_departure_at: formatDatetime(sweepstake.departure_at),
   };
 }

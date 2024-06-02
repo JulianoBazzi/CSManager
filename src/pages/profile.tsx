@@ -10,6 +10,7 @@ import * as yup from 'yup';
 import { InferType } from 'yup';
 
 import { games } from '~/assets/games';
+import { sweepstakeEngines } from '~/assets/sweepstakeEngines';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
@@ -38,6 +39,14 @@ const Profile: NextPage<IProfileProps> = ({ user }) => {
       })
       .nullable()
       .required(),
+    engine: yup
+      .object()
+      .shape({
+        id: yup.string().required(),
+        name: yup.string(),
+      })
+      .nullable()
+      .required(),
   });
 
   const {
@@ -51,6 +60,7 @@ const Profile: NextPage<IProfileProps> = ({ user }) => {
     defaultValues: {
       name: user.user_metadata.name,
       game_type: games.find((game) => game.id === user.user_metadata.gameType),
+      engine: sweepstakeEngines.find((engine) => engine.id === user.user_metadata.sweepstakeEngine),
     },
   });
 
@@ -86,6 +96,19 @@ const Profile: NextPage<IProfileProps> = ({ user }) => {
                 isRequired
                 onChange={(option) => {
                   setValue('game_type', option);
+                }}
+              />
+
+              <Select
+                label="Método de Sorteio"
+                options={sweepstakeEngines}
+                value={watch('engine') as ISelectOption}
+                error={errors.engine?.id}
+                {...register('engine')}
+                isDisabled={isSubmitting}
+                isRequired
+                onChange={(option) => {
+                  setValue('engine', option);
                 }}
               />
             </Stack>

@@ -88,11 +88,12 @@ export function AuthProvider({ children }: IAuthProviderProps) {
   );
 
   const updateProfile = useCallback(
-    async ({ name, game_type }: IProfile) => {
+    async ({ name, game_type, engine }: IProfile) => {
       const { data, error } = await supabase.auth.updateUser({
         data: {
           name,
           gameType: game_type?.id,
+          sweepstakeEngine: engine?.id,
         },
       });
 

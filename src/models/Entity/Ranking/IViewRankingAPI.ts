@@ -1,12 +1,11 @@
 import IEntityBase from '~/models/Entity/Base/IEntityBase';
 
-interface IViewMapRankingAPI extends IEntityBase {
+interface IViewRankingAPI extends IEntityBase {
   user_id: string;
-  map_id: string;
-  player_id: string;
-  quantity: string;
   name: string;
-  map_type: string;
+  username: string;
+  premier: number;
+  sweepstake_count: number;
   kills: number;
   deaths: number;
   assistances: number;
@@ -14,4 +13,4 @@ interface IViewMapRankingAPI extends IEntityBase {
   damage: number;
 }
 
-export default IViewMapRankingAPI;
+export default IViewRankingAPI;

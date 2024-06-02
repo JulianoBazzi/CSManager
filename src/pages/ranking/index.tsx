@@ -4,27 +4,26 @@ import { User } from '@supabase/supabase-js';
 import { ColumnDef } from '@tanstack/react-table';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
-import Router from 'next/router';
 import { parseCookies } from 'nookies';
 import removeAccents from 'remove-accents';
 
+import { PremierBadge } from '~/components/Badge/PremierBadge';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
 import { Table } from '~/components/Form/Table';
-import { AddIconButton } from '~/components/IconButton/AddIconButton';
 import { SearchBar } from '~/components/SearchBar';
 import Template from '~/components/Template';
-import ISweepstakeAPI from '~/models/Entity/Sweepstake/ISweepstakeAPI';
-import { useSweepstakes } from '~/services/hooks/useSweepstakes';
+import IViewRankingAPI from '~/models/Entity/Ranking/IViewRankingAPI';
+import { useRanking } from '~/services/hooks/useRanking';
 import supabase from '~/services/supabase';
 
-interface ISweepstakesProps extends GetServerSideProps {
+interface IRankingProps extends GetServerSideProps {
   user: User;
 }
 
-const Sweepstakes: NextPage<ISweepstakesProps> = ({ user }) => {
-  const { data, isLoading, isFetching } = useSweepstakes(user.id);
+const Ranking: NextPage<IRankingProps> = ({ user }) => {
+  const { data, isLoading, isFetching } = useRanking(user.id);
 
   const [search, setSearch] = useState('');
   const [dataFiltered, setDataFiltered] = useState(data);
@@ -32,46 +31,58 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user }) => {
   useEffect(() => {
     setDataFiltered(
       data?.filter(
-        (sweepstake) => removeAccents(sweepstake.format_departure_at.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase()))
-          || removeAccents(sweepstake.format_short_game_type.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase()))
-          || removeAccents(sweepstake.format_game_type.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase())),
+        (player) => removeAccents(player.name.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase()))
+          || removeAccents(player.username.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase())),
       ),
     );
   }, [search, data]);
 
-  async function handleVisualization(id?: string) {
-    if (id) {
-      await Router.push(`/sweepstakes/${id}`);
-      return;
-    }
-
-    await Router.push('/sweepstakes/new');
-  }
-
-  const columns: ColumnDef<ISweepstakeAPI>[] = [
+  const columns: ColumnDef<IViewRankingAPI>[] = [
     {
-      accessorKey: 'format_departure_at',
-      header: 'Data/Hora Sorteio',
+      accessorKey: 'name',
+      header: 'Nome',
       enableSorting: false,
     },
     {
-      accessorKey: 'format_short_game_type',
-      header: 'Jogo',
+      accessorKey: 'username',
+      header: 'Steam',
       enableSorting: false,
     },
     {
-      accessorKey: 'format_engine',
-      header: 'Engine',
+      accessorKey: 'premier',
+      header: 'Premier',
+      enableSorting: false,
+      // eslint-disable-next-line react/no-unstable-nested-components
+      cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
+    },
+    {
+      accessorKey: 'sweepstake_count',
+      header: 'Partidas',
       enableSorting: false,
     },
     {
-      accessorKey: 'quantity_players',
-      header: 'Nº Jogadores',
+      accessorKey: 'kills',
+      header: 'Vítimas',
       enableSorting: false,
     },
     {
-      accessorKey: 'quantity_maps',
-      header: 'Nº Mapas',
+      accessorKey: 'deaths',
+      header: 'Mortes',
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'assistances',
+      header: 'Assist.',
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'headshot_percentage',
+      header: '%TC',
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'damage',
+      header: 'Dano',
       enableSorting: false,
     },
   ];
@@ -79,20 +90,17 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user }) => {
   return (
     <>
       <Head>
-        <title>Sorteios - CS Manager</title>
+        <title>Ranking - CS Manager</title>
       </Head>
       <Template user={user}>
         <Card>
-          <CardHeader title="Sorteios" isFetching={isFetching && !isLoading}>
-            <AddIconButton onClick={() => handleVisualization()} />
-          </CardHeader>
+          <CardHeader title="Ranking" isFetching={isFetching && !isLoading} />
           <CardBody>
             <SearchBar onSearch={(value) => setSearch(value)} isDisabled={isFetching} />
             <Table
               data={dataFiltered}
               columns={columns}
               isLoading={isLoading}
-              onRowClick={({ id }) => handleVisualization(id)}
             />
           </CardBody>
         </Card>
@@ -101,7 +109,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user }) => {
   );
 };
 
-export default Sweepstakes;
+export default Ranking;
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   try {
