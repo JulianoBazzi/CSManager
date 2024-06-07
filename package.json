@@ -1,6 +1,6 @@
 {
   "name": "csmanager",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -17,7 +17,7 @@
     "@hookform/resolvers": "3.4.2",
     "@next/bundle-analyzer": "14.2.3",
     "@supabase/supabase-js": "2.43.4",
-    "@tanstack/react-query": "5.40.0",
+    "@tanstack/react-query": "5.40.1",
     "@tanstack/react-table": "8.17.3",
     "axios": "1.7.2",
     "chakra-react-select": "4.7.6",
@@ -26,7 +26,7 @@
     "imgbb-image-uploader": "1.0.6",
     "next": "14.2.3",
     "nookies": "2.5.2",
-    "openai": "4.47.3",
+    "openai": "4.49.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-hook-form": "7.51.5",
@@ -37,7 +37,7 @@
     "yup-locale-pt": "0.0.9"
   },
   "devDependencies": {
-    "@types/node": "20.14.0",
+    "@types/node": "20.14.2",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
     "@types/uuid": "9.0.8",

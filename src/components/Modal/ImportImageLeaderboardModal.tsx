@@ -21,6 +21,7 @@ import {
 } from '@chakra-ui/react';
 import { useMutation } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
+import axios from 'axios';
 import imgbbUpload from 'imgbb-image-uploader';
 import removeAccents from 'remove-accents';
 import { v4 } from 'uuid';
@@ -35,7 +36,6 @@ import { PlayerLeaderboardModal, PlayerLeaderboardModalHandle } from '~/componen
 import {
   NEXT_PUBLIC_IMGBB_API_KEY, TABLE_PLAYERS, TABLE_RANKING, VIEW_MAP_RANKING, VIEW_SWEEPSTAKE_RANKING,
 } from '~/config/constants';
-import { openai } from '~/config/openai';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import ILeaderboardAPI from '~/models/Entity/Leaderboard/ILeaderboardAPI';
 import IPlayerLeaderboardAPI from '~/models/Entity/Leaderboard/IPlayerLeaderboardAPI';
@@ -96,37 +96,11 @@ const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeade
           name: v4(),
         });
 
-        const response = await openai.chat.completions.create({
-          model: 'gpt-4o',
-          temperature: 0,
-          messages: [
-            {
-              role: 'system',
-              content: 'Return only the text, nothing more.',
-            },
-            {
-              role: 'user',
-              content: [
-                {
-                  type: 'text',
-                  text: 'Read the image and return its data to me in a string. Give me back: game, map and an array of players with: name, kills, deaths, assistances, headshot_percentage and damage.',
-                },
-                {
-                  type: 'image_url',
-                  image_url: {
-                    url: data.data.url,
-                  },
-                },
-              ],
-            },
-          ],
+        const response = await axios.post<ILeaderboardAPI>('/api/read-scores', {
+          image_url: data.data.url,
         });
 
-        if (!response.choices[0].message.content) {
-          throw new Error('An error occurred while generating the data');
-        }
-
-        return JSON.parse(response.choices[0].message.content) as ILeaderboardAPI;
+        return response.data;
       },
       async onSuccess(data) {
         setLeaderboard(data);
