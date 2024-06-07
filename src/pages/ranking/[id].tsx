@@ -3,9 +3,11 @@ import {
 } from 'react-icons/ri';
 
 import { TableContainer } from '@chakra-ui/react';
+import { User } from '@supabase/supabase-js';
 import { ColumnDef } from '@tanstack/react-table';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
+import { parseCookies } from 'nookies';
 
 import { PremierBadge } from '~/components/Badge/PremierBadge';
 import Card from '~/components/Card';
@@ -15,12 +17,14 @@ import { Table } from '~/components/Form/Table';
 import Template from '~/components/Template';
 import IViewRankingAPI from '~/models/Entity/Ranking/IViewRankingAPI';
 import { useRanking } from '~/services/hooks/useRanking';
+import supabase from '~/services/supabase';
 
 interface IRankingProps extends GetServerSideProps {
+  user: User;
   userId: string;
 }
 
-const RankingPublic: NextPage<IRankingProps> = ({ userId }) => {
+const RankingPublic: NextPage<IRankingProps> = ({ user, userId }) => {
   const {
     data: ranking,
     isLoading: isLoadingRanking,
@@ -83,7 +87,7 @@ const RankingPublic: NextPage<IRankingProps> = ({ userId }) => {
         <title>Ranking - CS Manager</title>
         <meta name="description" content="Veja o ranking com os melhores jogadores." />
       </Head>
-      <Template>
+      <Template user={user}>
         <Card>
           <CardHeader
             icon={RiNumbersLine}
@@ -112,9 +116,33 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
     const { id } = context.query;
 
     if (id) {
+      const userId = String(id);
+
+      const { 'csm.token': token } = parseCookies(context);
+      if (!token) {
+        return {
+          props: {
+            userId,
+          },
+        };
+      }
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser(token);
+
+      if (!user) {
+        return {
+          props: {
+            userId,
+          },
+        };
+      }
+
       return {
         props: {
-          userId: String(id),
+          user,
+          userId,
         },
       };
     }
