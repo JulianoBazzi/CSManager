@@ -48,7 +48,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return;
     }
 
-    const leaderboard: ILeaderboardAPI = JSON.parse(response.choices[0].message.content);
+    const leaderboard: ILeaderboardAPI = JSON.parse(response.choices[0].message.content.replace(/`/g, '').replace('json', ''));
     res.status(200).json(leaderboard);
   } catch (error) {
     res.status(500).json({ error });
