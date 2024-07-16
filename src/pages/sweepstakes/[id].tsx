@@ -476,6 +476,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                 data={sweepstakeRankings}
                 columns={rankingColumns}
                 isLoading={isLoadingSweepstakeRankings}
+                perPage={20}
               />
             </TableContainer>
           </CardBody>

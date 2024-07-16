@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react';
 import { RiArrowDownSFill, RiArrowUpSFill, RiSubtractLine } from 'react-icons/ri';
 
 import {
@@ -12,6 +13,7 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   getPaginationRowModel,
+  PaginationState,
 } from '@tanstack/react-table';
 
 import { FirstPageGhostIconButton } from '~/components/IconButton/FirstPageGhostIconButton';
@@ -23,6 +25,7 @@ import IEntityBase from '~/models/Entity/Base/IEntityBase';
 export type ITableProps<T extends IEntityBase> = {
   columns: ColumnDef<T>[];
   data?: T[];
+  perPage?: number;
   isLoading?: boolean;
   onRowClick?: (data: T) => void;
 };
@@ -30,7 +33,7 @@ export type ITableProps<T extends IEntityBase> = {
 const emptyArray: never[] = [];
 
 export function Table<T extends IEntityBase>({
-  columns, data = emptyArray, isLoading, onRowClick,
+  columns, data = emptyArray, perPage = 10, isLoading, onRowClick,
 }: ITableProps<T>) {
   const isMobile = useBreakpointValue({
     base: true,
@@ -38,6 +41,19 @@ export function Table<T extends IEntityBase>({
   });
 
   const totalRecords = data.length || 0;
+
+  const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: perPage,
+  });
+
+  const pagination = useMemo(
+    () => ({
+      pageIndex,
+      pageSize,
+    }),
+    [pageIndex, pageSize],
+  );
 
   const {
     getRowModel,
@@ -54,6 +70,10 @@ export function Table<T extends IEntityBase>({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onPaginationChange: setPagination,
+    state: {
+      pagination,
+    },
   });
 
   const table = () => (
