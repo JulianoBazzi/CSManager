@@ -1,5 +1,6 @@
 interface IPlayerScoreAPI {
-  player_id: string;
+  id: string;
+  star: number;
   score: number;
 }
 

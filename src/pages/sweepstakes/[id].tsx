@@ -44,6 +44,7 @@ import IChangeTeamPlayer from '~/models/Entity/Sweepstake/IChangeTeamPlayer';
 import IDeleteTeamPlayer from '~/models/Entity/Sweepstake/IDeleteTeamPlayer';
 import ISweepstakeAPI, { SeepstakeEngineEnum } from '~/models/Entity/Sweepstake/ISweepstakeAPI';
 import ISweepstakeMapAPI from '~/models/Entity/Sweepstake/ISweepstakeMapAPI';
+import { SweepstakeTeamEnum } from '~/models/Entity/Sweepstake/ISweepstakePlayerAPI';
 import { useSweepstakeMaps } from '~/services/hooks/useSweepstakeMaps';
 import { useSweepstakePlayers } from '~/services/hooks/useSweepstakePlayers';
 import { useSweepstakeRanking } from '~/services/hooks/useSweepstakeRanking';
@@ -134,7 +135,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
   ];
 
   const { mutateAsync: deletePlayerMutateAsync, isPending: isLoadingDeletePlayer } = useMutation({
-    mutationFn: async ({ sweepstake_player_id }: IDeleteTeamPlayer) => {
+    mutationFn: async ({ sweepstake_player_id, score, team }: IDeleteTeamPlayer) => {
       await supabase
         .from(TABLE_SWEEPSTAKE_PLAYERS)
         .delete()
@@ -144,12 +145,16 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
         .from(TABLE_SWEEPSTAKES)
         .update({
           quantity_players: sweepstake.quantity_players - 1,
+          score_team_one: sweepstake.score_team_one - (team === SweepstakeTeamEnum.One ? score : 0),
+          score_team_two: sweepstake.score_team_two - (team === SweepstakeTeamEnum.Two ? score : 0),
         })
         .eq('id', sweepstake.id);
 
       setSweepstake((previousSweepstake) => ({
         ...previousSweepstake,
         quantity_players: previousSweepstake.quantity_players - 1,
+        score_team_one: sweepstake.score_team_one - (team === SweepstakeTeamEnum.One ? score : 0),
+        score_team_two: sweepstake.score_team_two - (team === SweepstakeTeamEnum.Two ? score : 0),
       }));
     },
     async onSuccess() {
@@ -163,14 +168,28 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
 
   const { mutateAsync: changeTeamMutateAsync, isPending: isLoadingChangeTeam } = useMutation(
     {
-      mutationFn: async ({ sweepstake_player_id, team }: IChangeTeamPlayer) => {
+      mutationFn: async ({ sweepstake_player_id, score, team: newTeam }: IChangeTeamPlayer) => {
         await supabase
           .from(TABLE_SWEEPSTAKE_PLAYERS)
           .update({
             user_id: user?.id,
-            team,
+            team: newTeam,
           })
           .eq('id', sweepstake_player_id);
+
+        await supabase
+          .from(TABLE_SWEEPSTAKES)
+          .update({
+            score_team_one: sweepstake.score_team_one + (newTeam === SweepstakeTeamEnum.One ? score : score * -1),
+            score_team_two: sweepstake.score_team_two + (newTeam === SweepstakeTeamEnum.Two ? score : score * -1),
+          })
+          .eq('id', sweepstake.id);
+
+        setSweepstake((previousSweepstake) => ({
+          ...previousSweepstake,
+          score_team_one: sweepstake.score_team_one + (newTeam === SweepstakeTeamEnum.One ? score : score * -1),
+          score_team_two: sweepstake.score_team_two + (newTeam === SweepstakeTeamEnum.Two ? score : score * -1),
+        }));
       },
       async onSuccess() {
         successFeedbackToast('Trocar de Time', 'Jogador movido com sucesso!');
@@ -189,17 +208,23 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
       maps: sweepstakeMaps,
       team,
       user,
-      onSubmit: async (numberPlayers) => {
+      onSubmit: async (data) => {
+        const score = data.reduce((sum, player) => sum + player.score, 0);
+
         await supabase
           .from(TABLE_SWEEPSTAKES)
           .update({
-            quantity_players: sweepstake.quantity_players + numberPlayers,
+            quantity_players: sweepstake.quantity_players + data.length,
+            score_team_one: sweepstake.score_team_one + (team === SweepstakeTeamEnum.One ? score : 0),
+            score_team_two: sweepstake.score_team_two + (team === SweepstakeTeamEnum.Two ? score : 0),
           })
           .eq('id', sweepstake.id);
 
         setSweepstake((previousSweepstake) => ({
           ...previousSweepstake,
-          quantity_players: previousSweepstake.quantity_players + numberPlayers,
+          quantity_players: previousSweepstake.quantity_players + data.length,
+          score_team_one: sweepstake.score_team_one + (team === SweepstakeTeamEnum.One ? score : 0),
+          score_team_two: sweepstake.score_team_two + (team === SweepstakeTeamEnum.Two ? score : 0),
         }));
       },
     });
@@ -309,7 +334,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
             <CardBody>
               <Stack divider={<Divider />}>
                 {sweepstakePlayers
-                  ?.filter((sweepstakePlayer) => sweepstakePlayer.team === 0)
+                  ?.filter((sweepstakePlayer) => sweepstakePlayer.team === SweepstakeTeamEnum.One)
                   .map((sweepstakePlayer, index) => (
                     <Stack direction={['column', 'row']} key={sweepstakePlayer.id}>
                       <Flex align="center" gap="2" justify={isMobile ? 'space-between' : 'inherit'}>
@@ -333,12 +358,20 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                           <ChangeTeamIconButton
                             ml="auto"
                             size="xs"
-                            onClick={() => handleChangeTeam({ sweepstake_player_id: sweepstakePlayer.id, team: 1 })}
+                            onClick={() => handleChangeTeam({
+                              sweepstake_player_id: sweepstakePlayer.id,
+                              team: SweepstakeTeamEnum.Two,
+                              score: sweepstakePlayer.score,
+                            })}
                             isDisabled={isLoadingChangeTeam}
                           />
                           <DeleteSolidIconButton
                             size="xs"
-                            onClick={() => handleDeletePlayer({ sweepstake_player_id: sweepstakePlayer.id })}
+                            onClick={() => handleDeletePlayer({
+                              sweepstake_player_id: sweepstakePlayer.id,
+                              team: sweepstakePlayer.team,
+                              score: sweepstakePlayer.score,
+                            })}
                             isDisabled={isLoadingChangeTeam}
                           />
                         </>
@@ -359,7 +392,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
             <CardBody>
               <Stack divider={<Divider />}>
                 {sweepstakePlayers
-                  ?.filter((sweepstakePlayer) => sweepstakePlayer.team === 1)
+                  ?.filter((sweepstakePlayer) => sweepstakePlayer.team === SweepstakeTeamEnum.Two)
                   .map((sweepstakePlayer, index) => (
                     <Stack direction={['column', 'row']} key={sweepstakePlayer.id}>
                       <Flex align="center" gap="2" justify={isMobile ? 'space-between' : 'inherit'}>
@@ -383,12 +416,20 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                           <ChangeTeamIconButton
                             ml="auto"
                             size="xs"
-                            onClick={() => handleChangeTeam({ sweepstake_player_id: sweepstakePlayer.id, team: 0 })}
+                            onClick={() => handleChangeTeam({
+                              sweepstake_player_id: sweepstakePlayer.id,
+                              team: SweepstakeTeamEnum.One,
+                              score: sweepstakePlayer.score,
+                            })}
                             isDisabled={isLoadingChangeTeam}
                           />
                           <DeleteSolidIconButton
                             size="xs"
-                            onClick={() => handleDeletePlayer({ sweepstake_player_id: sweepstakePlayer.id })}
+                            onClick={() => handleDeletePlayer({
+                              sweepstake_player_id: sweepstakePlayer.id,
+                              team: sweepstakePlayer.team,
+                              score: sweepstakePlayer.score,
+                            })}
                             isDisabled={isLoadingChangeTeam}
                           />
                         </>
@@ -437,7 +478,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                       <Flex align="center" gap="2">
                         <Icon
                           as={RiUser3Line}
-                          color={sweepstakeMap.team_start_from_terrorist === 0 ? 'red.500' : 'inherit'}
+                          color={sweepstakeMap.team_start_from_terrorist === SweepstakeTeamEnum.One ? 'red.500' : 'inherit'}
                         />
                         <Text>
                           {sweepstakeMap.team_one_score_1}
@@ -452,7 +493,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                       <Flex align="center" gap="2">
                         <Icon
                           as={RiUser3Fill}
-                          color={sweepstakeMap.team_start_from_terrorist === 1 ? 'red.500' : 'inherit'}
+                          color={sweepstakeMap.team_start_from_terrorist === SweepstakeTeamEnum.Two ? 'red.500' : 'inherit'}
                         />
                         <Text>
                           {sweepstakeMap.team_two_score_1}

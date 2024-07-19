@@ -17,8 +17,10 @@ import { Table } from '~/components/Form/Table';
 import { TABLE_SWEEPSTAKE_PLAYERS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
+import IPlayerScoreAPI from '~/models/Entity/Player/IPlayerScoreAPI';
 import { SeepstakeEngineEnum } from '~/models/Entity/Sweepstake/ISweepstakeAPI';
 import ISweepstakePlayer from '~/models/Entity/Sweepstake/ISweepstakePlayer';
+import { SweepstakeTeamEnum } from '~/models/Entity/Sweepstake/ISweepstakePlayerAPI';
 import INewSweepstakePlayerModal from '~/models/Modal/INewSweepstakePlayerModal';
 import { getPlayers } from '~/services/hooks/usePlayers';
 import { getPlayersScoresOnMaps } from '~/services/hooks/usePlayerScoresOnMaps';
@@ -112,37 +114,45 @@ const NewSweepstakePlayerModalBase: ForwardRefRenderFunction<NewSweepstakePlayer
     {
       mutationFn: async () => {
         if (!recordModalProps?.user || !recordModalProps?.id || !recordModalProps?.sweepstake || !recordModalProps?.maps) {
-          return;
+          return [];
         }
+
+        let playerScoreList: IPlayerScoreAPI[] = [];
 
         if (recordModalProps?.sweepstake?.engine === SeepstakeEngineEnum.Ranking) {
-          const playerScoreList = await getPlayersScoresOnMaps(
-            recordModalProps.maps.map((map) => map.map_id),
+          playerScoreList = await getPlayersScoresOnMaps(
             selectedPlayers.map((player) => player.id),
+            recordModalProps.maps.map((map) => map.map_id),
             recordModalProps.user.id,
-          );
+          ) ?? [];
         }
-
-        // Colocar aqui a questão
 
         const playerList: ISweepstakePlayer[] = [];
         for (let i = 0; i < selectedPlayers.length;) {
+          let score = selectedPlayers[i].premier;
+          const ranking = playerScoreList.find((player) => player.id === selectedPlayers[i].id);
+          if (recordModalProps?.sweepstake?.engine === SeepstakeEngineEnum.Ranking && ranking) {
+            score = ranking.score;
+          }
+
           playerList.push({
             user_id: recordModalProps.user.id,
             sweepstake_id: recordModalProps.id,
             player_id: selectedPlayers[i].id,
             team: recordModalProps.team,
-            score: selectedPlayers[i].premier,
+            score,
           });
 
           i += 1;
         }
 
         await supabase.from(TABLE_SWEEPSTAKE_PLAYERS).insert(playerList);
+
+        return playerList;
       },
-      async onSuccess() {
+      async onSuccess(data) {
         successFeedbackToast('Adicionar Jogadores', 'Jogadores adicionados com sucesso!');
-        recordModalProps?.onSubmit(selectedPlayers.length);
+        recordModalProps?.onSubmit(data);
         await queryClient.invalidateQueries({ queryKey: [TABLE_SWEEPSTAKE_PLAYERS, recordModalProps?.id] });
         modalRef.current?.onCloseModal();
       },
@@ -163,7 +173,7 @@ const NewSweepstakePlayerModalBase: ForwardRefRenderFunction<NewSweepstakePlayer
   return (
     <Modal
       ref={modalRef}
-      title={`Adicionar Jogadores ao Time ${recordModalProps?.team === 0 ? '1' : '2'}`}
+      title={`Adicionar Jogadores ao Time ${recordModalProps?.team === SweepstakeTeamEnum.One ? '1' : '2'}`}
       size="xl"
     >
       <ModalBody>

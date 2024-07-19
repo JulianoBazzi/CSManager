@@ -39,6 +39,7 @@ import ISweepstake from '~/models/Entity/Sweepstake/ISweepstake';
 import { SeepstakeEngineEnum } from '~/models/Entity/Sweepstake/ISweepstakeAPI';
 import ISweepstakeMap from '~/models/Entity/Sweepstake/ISweepstakeMap';
 import ISweepstakePlayer from '~/models/Entity/Sweepstake/ISweepstakePlayer';
+import { SweepstakeTeamEnum } from '~/models/Entity/Sweepstake/ISweepstakePlayerAPI';
 import ISelectOption from '~/models/ISelectOption';
 import { useMaps } from '~/services/hooks/useMaps';
 import { usePlayers } from '~/services/hooks/usePlayers';
@@ -89,20 +90,22 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
 
         if (engine?.id === SeepstakeEngineEnum.Ranking) {
           const playerScoreList = await getPlayersScoresOnMaps(
-            selectedMaps,
             selectedPlayers.map((player) => player.id),
+            selectedMaps,
             user?.id,
           );
 
           if (playerScoreList) {
             divisionTeams = balanceTeams(playerScoreList.map((item) => ({
-              player_id: item.player_id,
+              id: item.id,
+              star: item.star,
               score: item.score,
             })));
           }
         } else {
           divisionTeams = balanceTeams(selectedPlayers.map((player) => ({
-            player_id: player.id,
+            id: player.id,
+            star: player.star,
             score: player.premier,
           })));
         }
@@ -112,7 +115,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
             playerList.push({
               user_id: user?.id,
               sweepstake_id: sweepstakeId,
-              player_id: player.player_id,
+              player_id: player.id,
               team: i,
               score: player.score,
             });
@@ -147,8 +150,8 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
           departure_at,
           quantity_players: playerList.length,
           quantity_maps: mapList.length,
-          score_team_one: playerList.filter((player) => player.team === 0).reduce((sum, player) => sum + player.score, 0),
-          score_team_two: playerList.filter((player) => player.team === 1).reduce((sum, player) => sum + player.score, 0),
+          score_team_one: playerList.filter((player) => player.team === SweepstakeTeamEnum.One).reduce((sum, player) => sum + player.score, 0),
+          score_team_two: playerList.filter((player) => player.team === SweepstakeTeamEnum.Two).reduce((sum, player) => sum + player.score, 0),
         });
 
         await supabase.from(TABLE_SWEEPSTAKE_PLAYERS).insert(playerList);

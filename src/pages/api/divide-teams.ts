@@ -9,46 +9,54 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return;
   }
 
-  const { players } = req.body;
-  if (!players || players.length === 0) {
+  if (!req.body || req.body.length === 0) {
     res.status(400).json({ error: 'No players provided' });
     return;
   }
 
   try {
     const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-4o',
       temperature: 0,
       messages: [
         {
           role: 'system',
-          content: `Divida estes ${players.length} jogadores em duas equipes, respeitando as seguintes regras:`,
+          content: `Divida estes ${req.body.length} jogadores em duas equipes, respeitando as seguintes regras:`,
         },
         {
           role: 'system',
-          content: '1: As duas equipes devem ter uma somatória de pontuação dos jogadores próximas;',
+          content: '1º As duas equipes devem ter uma somatória de pontuação dos jogadores próximas;',
         },
         {
           role: 'system',
-          content: '2: A diferença na quantidade de jogadores entre as equipes não deve ser superior a um jogador;',
+          content: '2º Leve em consideração o campo Star (Sendo 5 o melhor e 1 o pior jogador). Exemplo: Se o time 1 tem um jogador 5 estrelas, o time 2 deve ter um jogador 5 estrelas também (se houver);',
         },
         {
           role: 'system',
-          content: '3: As equipes devem ser ordenadas do melhor jogador para o pior.',
+          content: '3º A diferença na quantidade de jogadores entre as equipes não deve ser superior a um jogador;',
         },
         {
           role: 'system',
-          content: 'Exemplo: "Pedro (0 pontos)", "Fulano (5000 pontos)", "João (6000 pontos)", "Gustavo (10000 pontos)", "Falen (16000 pontos)". O resultado correto seria, Time 1: Falen e Pedro. Time 2: Gustavo, João e Fulano.',
+          content: '4º As equipes devem ser ordenadas do melhor jogador para o pior.',
         },
         {
           role: 'system',
-          content: 'Retorne somente o ids dos jogadores de cada equipe convertido em json, nada além disso.',
+          content: 'Exemplo: "Pedro (0 pontos)", "Fulano (50 pontos)", "João (60 pontos)", "Gustavo (100 pontos)", "Falen (160 pontos)". O resultado correto seria, Time 1: Falen e Pedro. Time 2: Gustavo, João e Fulano.',
         },
-        { role: 'user', content: JSON.stringify(players) },
+        {
+          role: 'system',
+          content: 'Retorne somente o proprio objeto dos jogadores de cada equipe convertido em json, nada além disso.',
+        },
+        { role: 'user', content: JSON.stringify(req.body) },
       ],
     });
 
-    res.status(200).json(response.choices[0].message.content);
+    if (!response.choices[0].message.content) {
+      res.status(400).json({ error: 'An error occurred while generating the data' });
+      return;
+    }
+
+    res.status(200).json(JSON.parse(response.choices[0].message.content.replace(/`/g, '').replace('json', '')));
   } catch (error) {
     res.status(500).json({ error });
   }
