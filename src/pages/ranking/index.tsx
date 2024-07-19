@@ -8,6 +8,7 @@ import { parseCookies } from 'nookies';
 import removeAccents from 'remove-accents';
 
 import { PremierBadge } from '~/components/Badge/PremierBadge';
+import { StarBadge } from '~/components/Badge/StarBadge';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
@@ -54,6 +55,13 @@ const Ranking: NextPage<IRankingProps> = ({ user }) => {
       enableSorting: false,
       // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
+    },
+    {
+      accessorKey: 'star',
+      header: '',
+      enableSorting: false,
+      // eslint-disable-next-line react/no-unstable-nested-components
+      cell: ({ row }) => <StarBadge star={row.original.star} />,
     },
     {
       accessorKey: 'sweepstake_count',

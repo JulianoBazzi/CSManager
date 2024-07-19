@@ -30,18 +30,19 @@ import { Select } from '~/components/Form/Select';
 import { Table } from '~/components/Form/Table';
 import { SweepstakeIconButton } from '~/components/IconButton/SweepstakeIconButton';
 import Template from '~/components/Template';
-import {
-  TABLE_RANKING, TABLE_SWEEPSTAKES, TABLE_SWEEPSTAKE_MAPS, TABLE_SWEEPSTAKE_PLAYERS,
-} from '~/config/constants';
+import { TABLE_SWEEPSTAKE_MAPS, TABLE_SWEEPSTAKE_PLAYERS, TABLE_SWEEPSTAKES } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import IMapAPI from '~/models/Entity/Map/IMapAPI';
 import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
+import IPlayerScoreAPI from '~/models/Entity/Player/IPlayerScoreAPI';
 import ISweepstake from '~/models/Entity/Sweepstake/ISweepstake';
+import { SeepstakeEngineEnum } from '~/models/Entity/Sweepstake/ISweepstakeAPI';
 import ISweepstakeMap from '~/models/Entity/Sweepstake/ISweepstakeMap';
 import ISweepstakePlayer from '~/models/Entity/Sweepstake/ISweepstakePlayer';
 import ISelectOption from '~/models/ISelectOption';
 import { useMaps } from '~/services/hooks/useMaps';
 import { usePlayers } from '~/services/hooks/usePlayers';
+import { getPlayersScoresOnMaps } from '~/services/hooks/usePlayerScoresOnMaps';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';
 import balanceTeams from '~/utils/balanceTeams';
@@ -84,31 +85,40 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
         const sweepstakeId = v4();
         const playerList: ISweepstakePlayer[] = [];
 
-        if (engine?.id === 'ranking') {
-          // Somar o dano causado de cada mapa e dividir pela quantidade de mapas que o player possui ranking cadastrado
-          // Exemplo: Se ele só tem ranking em 3 mapas, a média da média sera divido por 3
+        let divisionTeams: [IPlayerScoreAPI[], IPlayerScoreAPI[]] = [[], []];
 
-          const { data } = await supabase
-            .from(TABLE_RANKING)
-            .select()
-            .eq('user_id', user?.id)
-            .eq('map_id', selectedMaps)
-            .order('created_at', { ascending: false });
-        } else {
-          const divisionTeams = balanceTeams(selectedPlayers);
+        if (engine?.id === SeepstakeEngineEnum.Ranking) {
+          const playerScoreList = await getPlayersScoresOnMaps(
+            selectedMaps,
+            selectedPlayers.map((player) => player.id),
+            user?.id,
+          );
 
-          for (let i = 0; i < divisionTeams.length;) {
-            divisionTeams[i].forEach((player) => {
-              playerList.push({
-                user_id: user?.id,
-                sweepstake_id: sweepstakeId,
-                player_id: player.id,
-                team: i,
-              });
-            });
-
-            i += 1;
+          if (playerScoreList) {
+            divisionTeams = balanceTeams(playerScoreList.map((item) => ({
+              player_id: item.player_id,
+              score: item.score,
+            })));
           }
+        } else {
+          divisionTeams = balanceTeams(selectedPlayers.map((player) => ({
+            player_id: player.id,
+            score: player.premier,
+          })));
+        }
+
+        for (let i = 0; i < divisionTeams.length;) {
+          divisionTeams[i].forEach((player) => {
+            playerList.push({
+              user_id: user?.id,
+              sweepstake_id: sweepstakeId,
+              player_id: player.player_id,
+              team: i,
+              score: player.score,
+            });
+          });
+
+          i += 1;
         }
 
         const mapList: ISweepstakeMap[] = [];
@@ -137,6 +147,8 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
           departure_at,
           quantity_players: playerList.length,
           quantity_maps: mapList.length,
+          score_team_one: playerList.filter((player) => player.team === 0).reduce((sum, player) => sum + player.score, 0),
+          score_team_two: playerList.filter((player) => player.team === 1).reduce((sum, player) => sum + player.score, 0),
         });
 
         await supabase.from(TABLE_SWEEPSTAKE_PLAYERS).insert(playerList);

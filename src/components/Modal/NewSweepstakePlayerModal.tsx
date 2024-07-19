@@ -17,9 +17,11 @@ import { Table } from '~/components/Form/Table';
 import { TABLE_SWEEPSTAKE_PLAYERS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
+import { SeepstakeEngineEnum } from '~/models/Entity/Sweepstake/ISweepstakeAPI';
 import ISweepstakePlayer from '~/models/Entity/Sweepstake/ISweepstakePlayer';
 import INewSweepstakePlayerModal from '~/models/Modal/INewSweepstakePlayerModal';
 import { getPlayers } from '~/services/hooks/usePlayers';
+import { getPlayersScoresOnMaps } from '~/services/hooks/usePlayerScoresOnMaps';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';
 
@@ -109,9 +111,19 @@ const NewSweepstakePlayerModalBase: ForwardRefRenderFunction<NewSweepstakePlayer
   const { mutateAsync: createMutateAsync, isPending: isLoadingCreate } = useMutation(
     {
       mutationFn: async () => {
-        if (!recordModalProps?.user || !recordModalProps?.id) {
+        if (!recordModalProps?.user || !recordModalProps?.id || !recordModalProps?.sweepstake || !recordModalProps?.maps) {
           return;
         }
+
+        if (recordModalProps?.sweepstake?.engine === SeepstakeEngineEnum.Ranking) {
+          const playerScoreList = await getPlayersScoresOnMaps(
+            recordModalProps.maps.map((map) => map.map_id),
+            selectedPlayers.map((player) => player.id),
+            recordModalProps.user.id,
+          );
+        }
+
+        // Colocar aqui a questão
 
         const playerList: ISweepstakePlayer[] = [];
         for (let i = 0; i < selectedPlayers.length;) {
@@ -120,6 +132,7 @@ const NewSweepstakePlayerModalBase: ForwardRefRenderFunction<NewSweepstakePlayer
             sweepstake_id: recordModalProps.id,
             player_id: selectedPlayers[i].id,
             team: recordModalProps.team,
+            score: selectedPlayers[i].premier,
           });
 
           i += 1;

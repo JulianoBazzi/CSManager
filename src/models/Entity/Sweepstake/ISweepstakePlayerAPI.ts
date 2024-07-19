@@ -4,6 +4,7 @@ interface ISweepstakePlayerAPI {
   id: string;
   sweepstake_id: string;
   team: number;
+  score: number;
   players: IPlayerAPI;
 }
 

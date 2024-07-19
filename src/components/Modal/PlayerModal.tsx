@@ -3,10 +3,17 @@ import {
 } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { RiRepeatFill } from 'react-icons/ri';
+import StarRatings from 'react-star-ratings';
 
 import {
+  Flex,
   Icon,
-  InputRightElement, ModalBody, ModalFooter, Spinner, Stack,
+  InputRightElement,
+  ModalBody,
+  ModalFooter,
+  Spinner,
+  Stack,
+  Text,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@tanstack/react-query';
@@ -45,6 +52,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
     username: yup.string().min(3).required(),
     steam_id: yup.string(),
     premier: yup.number().min(0).required(),
+    star: yup.number().min(0).max(5).required(),
     active: yup.boolean().required(),
     fetch_data: yup.boolean().required(),
   });
@@ -91,7 +99,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
     {
       mutationFn: async (player: IPlayer) => {
         const {
-          id, name, username, steam_id, premier, active, fetch_data,
+          id, name, username, steam_id, premier, star, active, fetch_data,
         } = player;
 
         await supabase.from(TABLE_PLAYERS).upsert({
@@ -101,6 +109,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
           username,
           steam_id,
           premier,
+          star,
           active,
           fetch_data,
         });
@@ -147,7 +156,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
   );
 
   return (
-    <Modal title="Jogador" ref={modalRef} size="md" onSubmit={handleSubmit(handleOk)}>
+    <Modal title="Jogador" ref={modalRef} size="lg" onSubmit={handleSubmit(handleOk)}>
       <ModalBody>
         <Stack spacing="4">
           <Input
@@ -167,23 +176,24 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
             isDisabled={isSubmitting}
             isRequired
           />
-          <Input
-            label="Steam ID"
-            error={errors.steam_id}
-            {...register('steam_id')}
-            isLoading={isLoading}
-            isDisabled={isSubmitting}
-            isRequired
-          />
-          <NumberInput
-            label="Ranking no Premier"
-            error={errors.premier}
-            {...register('premier')}
-            isLoading={isLoading}
-            isDisabled={isSubmitting}
-            isRequired
-          >
-            {watch('steam_id') && (
+          <Stack direction={['column', 'row']} spacing="4">
+            <Input
+              label="Steam ID"
+              error={errors.steam_id}
+              {...register('steam_id')}
+              isLoading={isLoading}
+              isDisabled={isSubmitting}
+              isRequired
+            />
+            <NumberInput
+              label="Ranking no Premier"
+              error={errors.premier}
+              {...register('premier')}
+              isLoading={isLoading}
+              isDisabled={isSubmitting}
+              isRequired
+            >
+              {watch('steam_id') && (
               <InputRightElement>
                 {isRefreshScore ? (
                   <Spinner size="sm" />
@@ -191,8 +201,24 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
                   <Icon as={RiRepeatFill} title="Atualizar Ranking" fontSize="xl" cursor="pointer" onClick={() => refreshScoreMutateAsync()} />
                 )}
               </InputRightElement>
-            )}
-          </NumberInput>
+              )}
+            </NumberInput>
+          </Stack>
+          <Text mr="auto" cursor="pointer" onClick={() => setValue('star', 0)}>Avaliação</Text>
+          <Flex mt="-4" justify="center">
+            <StarRatings
+              rating={watch('star')}
+              starRatedColor="#ECC94B"
+              starHoverColor="#D69E2E"
+              numberOfStars={5}
+              changeRating={(value: number) => {
+                setValue('star', value);
+              }}
+              name="ratingAvailable"
+              starDimension="40px"
+              starSpacing="13px"
+            />
+          </Flex>
           <Stack direction="row" spacing="4">
             <Switch label="Ativo" {...register('active')} isChecked={watch('active')} isDisabled={isLoading || isSubmitting} />
             <Switch label="Buscar Dados" {...register('fetch_data')} isChecked={watch('fetch_data')} isDisabled={isLoading || isSubmitting} />

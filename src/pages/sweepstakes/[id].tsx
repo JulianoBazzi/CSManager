@@ -24,6 +24,7 @@ import { parseCookies } from 'nookies';
 import { AlertOriginEnum, AlertTypeEnum } from '~/components/Alert';
 import { ConfirmRegisterAlert, ConfirmRegisterAlertHandle } from '~/components/Alert/ConfirmRegisterAlert';
 import { PremierBadge } from '~/components/Badge/PremierBadge';
+import { ScoreBadge } from '~/components/Badge/ScoreBadge';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
@@ -41,7 +42,7 @@ import { useFeedback } from '~/contexts/FeedbackContext';
 import IViewSeepstakeRankingAPI from '~/models/Entity/Ranking/IViewSeepstakeRankingAPI';
 import IChangeTeamPlayer from '~/models/Entity/Sweepstake/IChangeTeamPlayer';
 import IDeleteTeamPlayer from '~/models/Entity/Sweepstake/IDeleteTeamPlayer';
-import ISweepstakeAPI from '~/models/Entity/Sweepstake/ISweepstakeAPI';
+import ISweepstakeAPI, { SeepstakeEngineEnum } from '~/models/Entity/Sweepstake/ISweepstakeAPI';
 import ISweepstakeMapAPI from '~/models/Entity/Sweepstake/ISweepstakeMapAPI';
 import { useSweepstakeMaps } from '~/services/hooks/useSweepstakeMaps';
 import { useSweepstakePlayers } from '~/services/hooks/useSweepstakePlayers';
@@ -184,6 +185,8 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
   async function handleAddPlayer(team: number) {
     newSweepstakePlayerModalRef.current?.onOpenModal({
       id: sweepstake.id,
+      sweepstake,
+      maps: sweepstakeMaps,
       team,
       user,
       onSubmit: async (numberPlayers) => {
@@ -298,7 +301,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
           <Card>
             <CardHeader
               icon={RiUser3Line}
-              title="Time 1"
+              title={`Time 1 (${sweepstake.score_team_one} pontos)`}
               isFetching={isFetchingSweepstakePlayers && !isLoadingSweepstakePlayers}
             >
               {!isMobile && user && user.id === sweepstake.user_id && (<AddIconButton size="sm" onClick={() => handleAddPlayer(0)} />)}
@@ -321,7 +324,9 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                           {sweepstakePlayer.players.username}
                           )
                         </Text>
-                        <PremierBadge premier={sweepstakePlayer.players.premier} />
+                        {sweepstake.engine === SeepstakeEngineEnum.Premier
+                          ? <PremierBadge premier={sweepstakePlayer.score} />
+                          : <ScoreBadge score={sweepstakePlayer.score} star={sweepstakePlayer.players.star} />}
                       </Flex>
                       {!isMobile && user && user.id === sweepstake.user_id && (
                         <>
@@ -346,7 +351,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
           <Card>
             <CardHeader
               icon={RiUser3Fill}
-              title="Time 2"
+              title={`Time 2 (${sweepstake.score_team_two} pontos)`}
               isFetching={isFetchingSweepstakePlayers && !isLoadingSweepstakePlayers}
             >
               {!isMobile && user && user.id === sweepstake.user_id && (<AddIconButton size="sm" onClick={() => handleAddPlayer(1)} />)}
@@ -369,7 +374,9 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                           {sweepstakePlayer.players.username}
                           )
                         </Text>
-                        <PremierBadge premier={sweepstakePlayer.players.premier} />
+                        {sweepstake.engine === SeepstakeEngineEnum.Premier
+                          ? <PremierBadge premier={sweepstakePlayer.score} />
+                          : <ScoreBadge score={sweepstakePlayer.score} star={sweepstakePlayer.players.star} />}
                       </Flex>
                       {!isMobile && user && user.id === sweepstake.user_id && (
                         <>

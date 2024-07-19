@@ -6,7 +6,7 @@ export const sweepstakeEngines: ISelectOption[] = [
     name: 'Premier',
   },
   {
-    id: 'panking',
+    id: 'ranking',
     name: 'Ranking',
   },
 ];

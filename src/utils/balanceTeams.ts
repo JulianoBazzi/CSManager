@@ -1,10 +1,10 @@
-import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
+import IPlayerScoreAPI from '~/models/Entity/Player/IPlayerScoreAPI';
 
-function balanceTeams(players: IPlayerAPI[]): [IPlayerAPI[], IPlayerAPI[]] {
-  const sortedPlayers = players.sort((a, b) => a.premier - b.premier);
+function balanceTeams(players: IPlayerScoreAPI[]): [IPlayerScoreAPI[], IPlayerScoreAPI[]] {
+  const sortedPlayers = players.sort((a, b) => a.score - b.score);
 
-  const team1: IPlayerAPI[] = [];
-  const team2: IPlayerAPI[] = [];
+  const team1: IPlayerScoreAPI[] = [];
+  const team2: IPlayerScoreAPI[] = [];
 
   sortedPlayers.forEach((player, index) => {
     const targetTeam = index % 2 === 0 ? team1 : team2;

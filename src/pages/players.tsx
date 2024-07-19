@@ -12,6 +12,7 @@ import { ActiveBadge } from '~/components/Badge/ActiveBadge';
 import { BooleanBadge } from '~/components/Badge/BooleanBadge';
 import { LinkBadge } from '~/components/Badge/LinkBadge';
 import { PremierBadge } from '~/components/Badge/PremierBadge';
+import { StarBadge } from '~/components/Badge/StarBadge';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
@@ -96,6 +97,13 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
       enableSorting: false,
       // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
+    },
+    {
+      accessorKey: 'star',
+      header: '',
+      enableSorting: false,
+      // eslint-disable-next-line react/no-unstable-nested-components
+      cell: ({ row }) => <StarBadge star={row.original.star} />,
     },
     {
       accessorKey: 'fetch_data',

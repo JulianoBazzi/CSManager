@@ -4,6 +4,7 @@ interface IPlayer {
   username: string;
   steam_id: string;
   premier: number;
+  star: number;
   active: boolean;
   fetch_data: boolean;
 }
