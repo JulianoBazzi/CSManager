@@ -25,6 +25,7 @@ import { AlertOriginEnum, AlertTypeEnum } from '~/components/Alert';
 import { ConfirmRegisterAlert, ConfirmRegisterAlertHandle } from '~/components/Alert/ConfirmRegisterAlert';
 import { PremierBadge } from '~/components/Badge/PremierBadge';
 import { ScoreBadge } from '~/components/Badge/ScoreBadge';
+import { StarBadge } from '~/components/Badge/StarBadge';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
@@ -355,8 +356,8 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                       </Flex>
                       {!isMobile && user && user.id === sweepstake.user_id && (
                         <>
+                          <StarBadge ml="auto" mr="4" star={sweepstakePlayer.players.star} />
                           <ChangeTeamIconButton
-                            ml="auto"
                             size="xs"
                             onClick={() => handleChangeTeam({
                               sweepstake_player_id: sweepstakePlayer.id,
@@ -413,8 +414,8 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                       </Flex>
                       {!isMobile && user && user.id === sweepstake.user_id && (
                         <>
+                          <StarBadge ml="auto" mr="4" star={sweepstakePlayer.players.star} />
                           <ChangeTeamIconButton
-                            ml="auto"
                             size="xs"
                             onClick={() => handleChangeTeam({
                               sweepstake_player_id: sweepstakePlayer.id,

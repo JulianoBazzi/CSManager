@@ -8,24 +8,26 @@ function balanceTeams(players: IPlayerScoreAPI[]): [IPlayerScoreAPI[], IPlayerSc
   }
 
   function generateTeams(playerList: IPlayerScoreAPI[]): [IPlayerScoreAPI[], IPlayerScoreAPI[]] {
-    const shuffledPlayers = [...playerList].sort(() => Math.random() - 0.5);
+    const playersByStart: { [key: number]: IPlayerScoreAPI[] } = {};
+    for (let i = 0; i <= 5; i += 1) {
+      playersByStart[i] = [];
+    }
+
+    playerList.forEach((player) => {
+      playersByStart[player.star].push(player);
+    });
 
     const team1: IPlayerScoreAPI[] = [];
     const team2: IPlayerScoreAPI[] = [];
 
-    shuffledPlayers.forEach((player, index) => {
-      const targetTeam = index % 2 === 0 ? team1 : team2;
-      targetTeam.push(player);
-    });
+    for (let i = 5; i >= 0; i -= 1) {
+      const currentPlayers = playersByStart[i];
+      currentPlayers.sort((a, b) => b.score - a.score);
 
-    while (Math.abs(team1.length - team2.length) > 1) {
-      const sourceTeam = team1.length > team2.length ? team1 : team2;
-      const targetTeam = team1.length < team2.length ? team1 : team2;
-
-      const playerToMove = sourceTeam.shift();
-      if (playerToMove) {
-        targetTeam.push(playerToMove);
-      }
+      currentPlayers.forEach((player, index) => {
+        const targetTeam = index % 2 === 0 ? team1 : team2;
+        targetTeam.push(player);
+      });
     }
 
     return [team1, team2];
@@ -34,7 +36,7 @@ function balanceTeams(players: IPlayerScoreAPI[]): [IPlayerScoreAPI[], IPlayerSc
   let bestTeams: [IPlayerScoreAPI[], IPlayerScoreAPI[]] = [[], []];
   let smallestDifference = Infinity;
 
-  for (let i = 0; i < 10;) {
+  for (let i = 0; i < 100; i += 1) {
     const [team1, team2] = generateTeams(players);
     const difference = calculateScoreDifference(team1, team2);
 
@@ -42,8 +44,6 @@ function balanceTeams(players: IPlayerScoreAPI[]): [IPlayerScoreAPI[], IPlayerSc
       smallestDifference = difference;
       bestTeams = [team1, team2];
     }
-
-    i += 1;
   }
 
   return bestTeams;
