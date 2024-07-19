@@ -109,6 +109,7 @@ const Ranking: NextPage<IRankingProps> = ({ user }) => {
               data={dataFiltered}
               columns={columns}
               isLoading={isLoading}
+              perPage={50}
             />
           </CardBody>
         </Card>

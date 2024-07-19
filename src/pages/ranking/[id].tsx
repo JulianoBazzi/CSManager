@@ -100,6 +100,7 @@ const RankingPublic: NextPage<IRankingProps> = ({ user, userId }) => {
                 data={ranking}
                 columns={rankingColumns}
                 isLoading={isLoadingRanking}
+                perPage={50}
               />
             </TableContainer>
           </CardBody>
