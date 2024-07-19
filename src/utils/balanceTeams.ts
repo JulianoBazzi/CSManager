@@ -1,12 +1,6 @@
 import IPlayerScoreAPI from '~/models/Entity/Player/IPlayerScoreAPI';
 
 function balanceTeams(players: IPlayerScoreAPI[]): [IPlayerScoreAPI[], IPlayerScoreAPI[]] {
-  function calculateScoreDifference(team1: IPlayerScoreAPI[], team2: IPlayerScoreAPI[]): number {
-    const score1 = team1.reduce((sum, player) => sum + player.score, 0);
-    const score2 = team2.reduce((sum, player) => sum + player.score, 0);
-    return Math.abs(score1 - score2);
-  }
-
   function calculateTeamScore(team: IPlayerScoreAPI[]): number {
     return team.reduce((sum, player) => sum + player.score, 0);
   }
@@ -75,20 +69,7 @@ function balanceTeams(players: IPlayerScoreAPI[]): [IPlayerScoreAPI[], IPlayerSc
     return [team1, team2];
   }
 
-  let bestTeams: [IPlayerScoreAPI[], IPlayerScoreAPI[]] = [[], []];
-  let smallestDifference = Infinity;
-
-  for (let i = 0; i < 10; i += 1) {
-    const [team1, team2] = generateTeams(players);
-    const difference = calculateScoreDifference(team1, team2);
-
-    if (difference < smallestDifference) {
-      smallestDifference = difference;
-      bestTeams = [team1, team2];
-    }
-  }
-
-  return bestTeams;
+  return generateTeams(players);
 }
 
 export default balanceTeams;
