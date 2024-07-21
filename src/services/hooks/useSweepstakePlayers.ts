@@ -16,7 +16,6 @@ export async function getSweepstakePlayers(sweepstakeId: string): Promise<ISweep
   const { data } = await supabase
     .from(TABLE_SWEEPSTAKE_PLAYERS)
     .select('id, sweepstake_id, team, score, players(id, name, username, rating)')
-    .order('score', { ascending: false })
     .eq('sweepstake_id', sweepstakeId);
 
   const formattedData: ISweepstakePlayerAPI[] = [];
@@ -25,7 +24,14 @@ export async function getSweepstakePlayers(sweepstakeId: string): Promise<ISweep
     formattedData.push(formatSweepstakePlayer(sweepstakePlayer as unknown as ISweepstakePlayerAPI));
   });
 
-  return formattedData;
+  const sortedData = formattedData.sort((a, b) => {
+    if (b.players.rating !== a.players.rating) {
+      return b.players.rating - a.players.rating;
+    }
+    return b.score - a.score;
+  });
+
+  return sortedData;
 }
 
 export function useSweepstakePlayers(sweepstakeId: string) {

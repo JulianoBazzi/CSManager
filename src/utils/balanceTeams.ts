@@ -6,26 +6,20 @@ function balanceTeams(players: IPlayerScoreAPI[]): [IPlayerScoreAPI[], IPlayerSc
   }
 
   function generateTeams(playerList: IPlayerScoreAPI[]): [IPlayerScoreAPI[], IPlayerScoreAPI[]] {
-    const playersByRating: { [key: number]: IPlayerScoreAPI[] } = {};
-    for (let i = 0; i <= 5; i += 0.5) {
-      playersByRating[i] = [];
-    }
-    playerList.forEach((player) => {
-      playersByRating[player.rating].push(player);
-    });
-
     const team1: IPlayerScoreAPI[] = [];
     const team2: IPlayerScoreAPI[] = [];
 
-    for (let i = 5; i >= 0; i -= 0.5) {
-      const currentPlayers = playersByRating[i];
-      currentPlayers.sort((a, b) => b.score - a.score);
+    const sortedPlayerList = playerList.sort((a, b) => {
+      if (b.rating !== a.rating) {
+        return b.rating - a.rating;
+      }
+      return b.score - a.score;
+    });
 
-      currentPlayers.forEach((player, index) => {
-        const targetTeam = index % 2 === 0 ? team1 : team2;
-        targetTeam.push(player);
-      });
-    }
+    sortedPlayerList.forEach((player, index) => {
+      const targetTeam = index % 2 === 0 ? team1 : team2;
+      targetTeam.push(player);
+    });
 
     while (Math.abs(team1.length - team2.length) > 1) {
       const sourceTeam = team1.length > team2.length ? team1 : team2;
