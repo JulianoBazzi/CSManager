@@ -6,19 +6,19 @@ function balanceTeams(players: IPlayerScoreAPI[]): [IPlayerScoreAPI[], IPlayerSc
   }
 
   function generateTeams(playerList: IPlayerScoreAPI[]): [IPlayerScoreAPI[], IPlayerScoreAPI[]] {
-    const playersByStart: { [key: number]: IPlayerScoreAPI[] } = {};
-    for (let i = 0; i <= 5; i += 1) {
-      playersByStart[i] = [];
+    const playersByRating: { [key: number]: IPlayerScoreAPI[] } = {};
+    for (let i = 0; i <= 5; i += 0.5) {
+      playersByRating[i] = [];
     }
     playerList.forEach((player) => {
-      playersByStart[player.star].push(player);
+      playersByRating[player.rating].push(player);
     });
 
     const team1: IPlayerScoreAPI[] = [];
     const team2: IPlayerScoreAPI[] = [];
 
-    for (let i = 5; i >= 0; i -= 1) {
-      const currentPlayers = playersByStart[i];
+    for (let i = 5; i >= 0; i -= 0.5) {
+      const currentPlayers = playersByRating[i];
       currentPlayers.sort((a, b) => b.score - a.score);
 
       currentPlayers.forEach((player, index) => {
@@ -33,7 +33,7 @@ function balanceTeams(players: IPlayerScoreAPI[]): [IPlayerScoreAPI[], IPlayerSc
 
       const worstPlayerIndex = sourceTeam.reduce((worstIdx, player, idx, arr) => {
         const worstPlayer = arr[worstIdx];
-        if (player.star < worstPlayer.star || (player.star === worstPlayer.star && player.score < worstPlayer.score)) {
+        if (player.rating < worstPlayer.rating || (player.rating === worstPlayer.rating && player.score < worstPlayer.score)) {
           return idx;
         }
         return worstIdx;
@@ -54,7 +54,7 @@ function balanceTeams(players: IPlayerScoreAPI[]): [IPlayerScoreAPI[], IPlayerSc
 
       const worstPlayerIndex = sourceTeam.reduce((worstIdx, player, idx, arr) => {
         const worstPlayer = arr[worstIdx];
-        if (player.star < worstPlayer.star || (player.star === worstPlayer.star && player.score < worstPlayer.score)) {
+        if (player.rating < worstPlayer.rating || (player.rating === worstPlayer.rating && player.score < worstPlayer.score)) {
           return idx;
         }
         return worstIdx;

@@ -352,11 +352,11 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                         </Text>
                         {sweepstake.engine === SeepstakeEngineEnum.Premier
                           ? <PremierBadge premier={sweepstakePlayer.score} />
-                          : <ScoreBadge score={sweepstakePlayer.score} star={sweepstakePlayer.players.star} />}
+                          : <ScoreBadge score={sweepstakePlayer.score} rating={sweepstakePlayer.players.rating} />}
                       </Flex>
                       {!isMobile && user && user.id === sweepstake.user_id && (
                         <>
-                          <StarBadge ml="auto" mr="4" star={sweepstakePlayer.players.star} />
+                          <StarBadge ml="auto" mr="4" rating={sweepstakePlayer.players.rating} />
                           <ChangeTeamIconButton
                             size="xs"
                             onClick={() => handleChangeTeam({
@@ -410,11 +410,11 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                         </Text>
                         {sweepstake.engine === SeepstakeEngineEnum.Premier
                           ? <PremierBadge premier={sweepstakePlayer.score} />
-                          : <ScoreBadge score={sweepstakePlayer.score} star={sweepstakePlayer.players.star} />}
+                          : <ScoreBadge score={sweepstakePlayer.score} rating={sweepstakePlayer.players.rating} />}
                       </Flex>
                       {!isMobile && user && user.id === sweepstake.user_id && (
                         <>
-                          <StarBadge ml="auto" mr="4" star={sweepstakePlayer.players.star} />
+                          <StarBadge ml="auto" mr="4" rating={sweepstakePlayer.players.rating} />
                           <ChangeTeamIconButton
                             size="xs"
                             onClick={() => handleChangeTeam({

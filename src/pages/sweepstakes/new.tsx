@@ -21,6 +21,7 @@ import { games } from '~/assets/games';
 import { sweepstakeEngines } from '~/assets/sweepstakeEngines';
 import { MapBadge } from '~/components/Badge/MapBadge';
 import { PremierBadge } from '~/components/Badge/PremierBadge';
+import { StarBadge } from '~/components/Badge/StarBadge';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
@@ -98,14 +99,14 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
           if (playerScoreList) {
             divisionTeams = balanceTeams(playerScoreList.map((item) => ({
               id: item.id,
-              star: item.star,
+              rating: item.rating,
               score: item.score,
             })));
           }
         } else {
           divisionTeams = balanceTeams(selectedPlayers.map((player) => ({
             id: player.id,
-            star: player.star,
+            rating: player.rating,
             score: player.premier,
           })));
         }
@@ -201,6 +202,13 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
       enableSorting: false,
       // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
+    },
+    {
+      accessorKey: 'rating',
+      header: 'Avaliação',
+      enableSorting: false,
+      // eslint-disable-next-line react/no-unstable-nested-components
+      cell: ({ row }) => <StarBadge rating={row.original.rating} />,
     },
   ];
 

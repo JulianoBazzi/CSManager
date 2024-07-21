@@ -5,7 +5,7 @@ interface IViewRankingAPI extends IEntityBase {
   name: string;
   username: string;
   premier: number;
-  star: number;
+  rating: number;
   sweepstake_count: number;
   kills: number;
   deaths: number;

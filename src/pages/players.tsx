@@ -99,11 +99,11 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
       cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
     },
     {
-      accessorKey: 'star',
-      header: '',
+      accessorKey: 'rating',
+      header: 'Avaliação',
       enableSorting: false,
       // eslint-disable-next-line react/no-unstable-nested-components
-      cell: ({ row }) => <StarBadge star={row.original.star} />,
+      cell: ({ row }) => <StarBadge rating={row.original.rating} />,
     },
     {
       accessorKey: 'fetch_data',

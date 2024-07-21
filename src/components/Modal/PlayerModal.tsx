@@ -3,7 +3,7 @@ import {
 } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { RiRepeatFill } from 'react-icons/ri';
-import StarRatings from 'react-star-ratings';
+import { Rating } from 'react-simple-star-rating';
 
 import {
   Flex,
@@ -52,7 +52,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
     username: yup.string().min(3).required(),
     steam_id: yup.string(),
     premier: yup.number().min(0).required(),
-    star: yup.number().min(0).max(5).required(),
+    rating: yup.number().min(0).max(5).required(),
     active: yup.boolean().required(),
     fetch_data: yup.boolean().required(),
   });
@@ -99,7 +99,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
     {
       mutationFn: async (player: IPlayer) => {
         const {
-          id, name, username, steam_id, premier, star, active, fetch_data,
+          id, name, username, steam_id, premier, rating, active, fetch_data,
         } = player;
 
         await supabase.from(TABLE_PLAYERS).upsert({
@@ -109,7 +109,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
           username,
           steam_id,
           premier,
-          star,
+          rating,
           active,
           fetch_data,
         });
@@ -204,19 +204,17 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
               )}
             </NumberInput>
           </Stack>
-          <Text mr="auto" cursor="pointer" onClick={() => setValue('star', 0)}>Avaliação</Text>
+          <Text mr="auto" cursor="pointer" onClick={() => setValue('rating', 0)}>Avaliação</Text>
           <Flex mt="-4" justify="center">
-            <StarRatings
-              rating={watch('star')}
-              starRatedColor="#ECC94B"
-              starHoverColor="#D69E2E"
-              numberOfStars={5}
-              changeRating={(value: number) => {
-                setValue('star', value);
-              }}
-              name="ratingAvailable"
-              starDimension="40px"
-              starSpacing="13px"
+            <Rating
+              allowFraction
+              transition
+              initialValue={watch('rating')}
+              onClick={(value) => setValue('rating', value)}
+              size={50}
+              emptyStyle={{ display: 'flex' }}
+              SVGstyle={{ display: 'inline-block', marginBottom: 10 }}
+              style={{ marginBottom: -10 }}
             />
           </Flex>
           <Stack direction="row" spacing="4">
