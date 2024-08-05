@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { QueryObserverOptions, useQuery } from '@tanstack/react-query';
 
 import { VIEW_MAP_RANKING } from '~/config/constants';
 import IViewMapRankingAPI from '~/models/Entity/Ranking/IViewMapRankingAPI';
@@ -14,10 +14,11 @@ export async function getPlayerMapRanking(playerId: string): Promise<IViewMapRan
   return data as unknown as IViewMapRankingAPI[];
 }
 
-export function usePlayerMapRanking(playerId: string) {
+export function usePlayerMapRanking(playerId: string, options?: Omit<QueryObserverOptions<IViewMapRankingAPI[]>, 'queryKey' | 'queryFn'>) {
   return useQuery({
     queryKey: [VIEW_MAP_RANKING, playerId],
     queryFn: () => getPlayerMapRanking(playerId),
     refetchOnWindowFocus: true,
+    ...options,
   });
 }

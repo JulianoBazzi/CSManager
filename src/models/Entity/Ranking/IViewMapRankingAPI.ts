@@ -4,7 +4,7 @@ interface IViewMapRankingAPI extends IEntityBase {
   user_id: string;
   map_id: string;
   player_id: string;
-  quantity: string;
+  quantity: number;
   name: string;
   map_type: string;
   kills: number;

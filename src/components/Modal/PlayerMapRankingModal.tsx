@@ -32,7 +32,6 @@ const PlayerMapRankingModalBase: ForwardRefRenderFunction<PlayerMapRankingModalH
     {
       accessorKey: 'name',
       header: 'Nome',
-      enableSorting: false,
     },
     {
       accessorKey: 'format_map_type',
@@ -44,32 +43,26 @@ const PlayerMapRankingModalBase: ForwardRefRenderFunction<PlayerMapRankingModalH
     {
       accessorKey: 'quantity',
       header: 'N° Vezes',
-      enableSorting: false,
     },
     {
       accessorKey: 'kills',
       header: 'Vítimas',
-      enableSorting: false,
     },
     {
       accessorKey: 'deaths',
       header: 'Mortes',
-      enableSorting: false,
     },
     {
       accessorKey: 'assistances',
       header: 'Assist.',
-      enableSorting: false,
     },
     {
       accessorKey: 'headshot_percentage',
       header: '%TC',
-      enableSorting: false,
     },
     {
       accessorKey: 'damage',
       header: 'Dano',
-      enableSorting: false,
     },
   ];
 

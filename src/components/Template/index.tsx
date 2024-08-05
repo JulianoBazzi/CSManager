@@ -62,6 +62,11 @@ const NAV_ITEMS: Array<INavItem> = [
     href: '/ranking',
     auth: true,
   },
+  {
+    label: 'Comparativo',
+    href: '/comparative',
+    auth: true,
+  },
 ];
 
 const DesktopNav = ({ user }: INav) => {

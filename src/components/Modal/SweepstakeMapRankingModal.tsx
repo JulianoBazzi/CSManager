@@ -44,44 +44,36 @@ const SweepstakeMapRankingModalBase: ForwardRefRenderFunction<SweepstakeMapRanki
     {
       accessorKey: 'format_player_name',
       header: 'Nome',
-      enableSorting: false,
     },
     {
       accessorKey: 'format_player_username',
       header: 'Steam',
-      enableSorting: false,
     },
     {
       accessorKey: 'premier',
       header: 'Premier',
-      enableSorting: false,
       // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <PremierBadge premier={row.original.players?.premier} />,
     },
     {
       accessorKey: 'kills',
       header: 'Vítimas',
-      enableSorting: false,
     },
     {
       accessorKey: 'deaths',
       header: 'Mortes',
-      enableSorting: false,
     },
     {
       accessorKey: 'assistances',
       header: 'Assist.',
-      enableSorting: false,
     },
     {
       accessorKey: 'headshot_percentage',
       header: '%TC',
-      enableSorting: false,
     },
     {
       accessorKey: 'damage',
       header: 'Dano',
-      enableSorting: false,
     },
   ];
 

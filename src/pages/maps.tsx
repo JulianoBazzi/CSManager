@@ -54,7 +54,6 @@ const Maps: NextPage<IMapsProps> = ({ user }) => {
     {
       accessorKey: 'name',
       header: 'Nome',
-      enableSorting: false,
     },
     {
       accessorKey: 'format_map_type',
@@ -71,7 +70,6 @@ const Maps: NextPage<IMapsProps> = ({ user }) => {
     {
       accessorKey: 'active',
       header: 'Status',
-      enableSorting: false,
       // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <ActiveBadge active={row.original.active} />,
     },

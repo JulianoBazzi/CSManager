@@ -42,56 +42,46 @@ const Ranking: NextPage<IRankingProps> = ({ user }) => {
     {
       accessorKey: 'name',
       header: 'Nome',
-      enableSorting: false,
     },
     {
       accessorKey: 'username',
       header: 'Steam',
-      enableSorting: false,
     },
     {
       accessorKey: 'premier',
       header: 'Premier',
-      enableSorting: false,
       // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
     },
     {
       accessorKey: 'rating',
       header: 'Avaliação',
-      enableSorting: false,
       // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <StarBadge rating={row.original.rating} />,
     },
     {
       accessorKey: 'sweepstake_count',
       header: 'Partidas',
-      enableSorting: false,
     },
     {
       accessorKey: 'kills',
       header: 'Vítimas',
-      enableSorting: false,
     },
     {
       accessorKey: 'deaths',
       header: 'Mortes',
-      enableSorting: false,
     },
     {
       accessorKey: 'assistances',
       header: 'Assist.',
-      enableSorting: false,
     },
     {
       accessorKey: 'headshot_percentage',
       header: '%TC',
-      enableSorting: false,
     },
     {
       accessorKey: 'damage',
       header: 'Dano',
-      enableSorting: false,
     },
   ];
 

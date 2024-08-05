@@ -77,12 +77,10 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
     {
       accessorKey: 'name',
       header: 'Nome',
-      enableSorting: false,
     },
     {
       accessorKey: 'username',
       header: 'Username',
-      enableSorting: false,
     },
     {
       accessorKey: 'actions',
@@ -94,28 +92,24 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
     {
       accessorKey: 'premier',
       header: 'Premier',
-      enableSorting: false,
       // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
     },
     {
       accessorKey: 'rating',
       header: 'Avaliação',
-      enableSorting: false,
       // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <StarBadge rating={row.original.rating} />,
     },
     {
       accessorKey: 'fetch_data',
       header: 'Buscar Dados',
-      enableSorting: false,
       // eslint-disable-next-line react/no-unstable-nested-components
-      cell: ({ row }) => <BooleanBadge active={row.original.active} />,
+      cell: ({ row }) => <BooleanBadge active={row.original.fetch_data} />,
     },
     {
       accessorKey: 'active',
       header: 'Status',
-      enableSorting: false,
       // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <ActiveBadge active={row.original.active} />,
     },

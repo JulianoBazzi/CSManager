@@ -14,6 +14,7 @@ import {
   getSortedRowModel,
   getPaginationRowModel,
   PaginationState,
+  SortingState,
 } from '@tanstack/react-table';
 
 import { FirstPageGhostIconButton } from '~/components/IconButton/FirstPageGhostIconButton';
@@ -47,6 +48,8 @@ export function Table<T extends IEntityBase>({
     pageSize: perPage,
   });
 
+  const [sorting, setSorting] = useState<SortingState>([]);
+
   const pagination = useMemo(
     () => ({
       pageIndex,
@@ -71,8 +74,10 @@ export function Table<T extends IEntityBase>({
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: setPagination,
+    onSortingChange: setSorting,
     state: {
       pagination,
+      sorting,
     },
   });
 
