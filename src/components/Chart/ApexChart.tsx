@@ -1,4 +1,4 @@
-import { Skeleton, useBreakpointValue } from '@chakra-ui/react';
+import { Skeleton } from '@chakra-ui/react';
 import { ApexOptions } from 'apexcharts';
 import dynamic from 'next/dynamic';
 
@@ -30,16 +30,11 @@ export default function ApexChart({
   width = '100%',
   height = 'auto',
 }: IApexChartProps) {
-  const isMobile = useBreakpointValue({
-    base: true,
-    md: false,
-  });
-
   const getOptions = () => ({
     chart: {
       type,
       zoom: {
-        enabled: false,
+        enabled: true,
       },
       toolbar: {
         show: false,
@@ -48,7 +43,7 @@ export default function ApexChart({
     dataLabels: {
       enabled: showDataLabels,
       style: {
-        fontSize: isMobile ? '16px' : '20px',
+        fontSize: '16px',
       },
       dropShadow: {
         enabled: true,
@@ -67,13 +62,16 @@ export default function ApexChart({
     },
     grid: {
       row: {
-        colors: ['#f9f9f9', 'transparent'],
+        colors: ['#4A5568', 'transparent'],
         opacity: 0.5,
       },
     },
     legend: {
       show: !hideLegend,
       position: 'bottom',
+      labels: {
+        colors: '#FFF',
+      },
     },
     markers: {
       size: 0,
@@ -82,9 +80,24 @@ export default function ApexChart({
       categories: categories && categories.length > 0 ? categories : [''],
       labels: {
         show: categories && categories.length > 0,
+        style: {
+          colors: '#FFF',
+          fontSize: '14px',
+        },
+      },
+    },
+    yaxis: {
+      labels: {
+        style: {
+          colors: '#FFF',
+          fontSize: '14px',
+        },
       },
     },
     colors: colors || undefined,
+    tooltip: {
+      theme: 'dark',
+    },
   } as ApexOptions);
 
   if (isLoading) {

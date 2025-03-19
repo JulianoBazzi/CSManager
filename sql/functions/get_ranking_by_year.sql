@@ -38,7 +38,8 @@ BEGIN
                p.rating,
                (SELECT count(1)
                   FROM sweepstake_players sp
-                 WHERE sp.player_id = p.id) as sweepstake_count,
+                 WHERE sp.player_id = p.id
+                   AND EXTRACT(YEAR FROM sp.created_at) = p_year) as sweepstake_count,
                SUM(r.kills) as kills,
                SUM(r.deaths) as deaths,
                SUM(r.assistances) as assistances,
