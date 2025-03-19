@@ -34,7 +34,7 @@ const Profile: NextPage<IProfileProps> = ({ user }) => {
     game_type: yup
       .object()
       .shape({
-        id: yup.string().required(),
+        id: yup.lazy((value) => (typeof value === 'number' ? yup.number() : yup.string()).required().nullable()),
         name: yup.string(),
       })
       .nullable()
@@ -42,7 +42,7 @@ const Profile: NextPage<IProfileProps> = ({ user }) => {
     engine: yup
       .object()
       .shape({
-        id: yup.string().required(),
+        id: yup.lazy((value) => (typeof value === 'number' ? yup.number() : yup.string()).required().nullable()),
         name: yup.string(),
       })
       .nullable()

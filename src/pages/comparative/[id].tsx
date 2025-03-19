@@ -60,8 +60,8 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({ user, us
 
   const { data: players, isLoading, isFetching } = usePlayers(userId);
 
-  const { data: playerOneRanking, isLoading: isLoadingRankingOne } = usePlayerMapRanking(playerOne?.id ?? '', { enabled: !!playerOne });
-  const { data: playerTwoRanking, isLoading: isLoadingRankingTwo } = usePlayerMapRanking(playerTwo?.id ?? '', { enabled: !!playerTwo });
+  const { data: playerOneRanking, isLoading: isLoadingRankingOne } = usePlayerMapRanking(String(playerOne?.id) ?? '', { enabled: !!playerOne });
+  const { data: playerTwoRanking, isLoading: isLoadingRankingTwo } = usePlayerMapRanking(String(playerTwo?.id) ?? '', { enabled: !!playerTwo });
 
   useEffect(() => {
     setPlayerOptions(players ? players.map((player) => ({ id: player.id, name: player.name, description: player.username })) : []);
