@@ -44,7 +44,7 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
     map_type: yup
       .object()
       .shape({
-        id: yup.string().required(),
+        id: yup.lazy((value) => (typeof value === 'number' ? yup.number() : yup.string()).required().nullable()),
         name: yup.string(),
       })
       .nullable()
@@ -52,7 +52,7 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
     game_type: yup
       .object()
       .shape({
-        id: yup.string().required(),
+        id: yup.lazy((value) => (typeof value === 'number' ? yup.number() : yup.string()).required().nullable()),
         name: yup.string(),
       })
       .nullable()

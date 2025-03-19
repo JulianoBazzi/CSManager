@@ -13,6 +13,9 @@ export const TABLE_SWEEPSTAKES = 'sweepstakes';
 export const TABLE_SWEEPSTAKE_MAPS = 'sweepstake_maps';
 export const TABLE_SWEEPSTAKE_PLAYERS = 'sweepstake_players';
 
+export const FUNCTION_GET_PLAYER_SCORES_ON_MAPS = 'get_player_scores_on_maps';
+export const FUNCTION_GET_RANKING_BY_YEAR = 'get_ranking_by_year';
+
 export const VIEW_RANKING = 'v_ranking';
 export const VIEW_MAP_RANKING = 'v_map_ranking';
 export const VIEW_SWEEPSTAKE_RANKING = 'v_sweepstake_ranking';

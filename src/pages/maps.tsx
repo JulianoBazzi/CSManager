@@ -93,6 +93,10 @@ const Maps: NextPage<IMapsProps> = ({ user }) => {
               columns={columns}
               isLoading={isLoading}
               onRowClick={({ id }) => handleShowModal(id)}
+              orderBy={{
+                id: 'name',
+                desc: false,
+              }}
             />
           </CardBody>
         </Card>

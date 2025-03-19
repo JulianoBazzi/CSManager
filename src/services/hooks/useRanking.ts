@@ -1,23 +1,29 @@
+import { PostgrestResponse } from '@supabase/supabase-js';
 import { useQuery } from '@tanstack/react-query';
 
-import { VIEW_RANKING } from '~/config/constants';
+import { FUNCTION_GET_RANKING_BY_YEAR } from '~/config/constants';
 import IViewRankingAPI from '~/models/Entity/Ranking/IViewRankingAPI';
 import supabase from '~/services/supabase';
 
-export async function getRanking(userId: string): Promise<IViewRankingAPI[]> {
-  const { data } = await supabase
-    .from(VIEW_RANKING)
-    .select()
-    .order('damage', { ascending: false })
-    .eq('user_id', userId);
+export async function getRanking(userId: string, year: number): Promise<IViewRankingAPI[]> {
+  const { data }: PostgrestResponse<IViewRankingAPI> = await supabase.rpc(FUNCTION_GET_RANKING_BY_YEAR, {
+    p_user_id: userId,
+    p_year: year,
+  });
 
-  return data as unknown as IViewRankingAPI[];
+  // const { data } = await supabase
+  //   .from(FUNCTION_GET_RANKING_BY_YEAR)
+  //   .select()
+  //   .order('damage', { ascending: false })
+  //   .eq('user_id', userId);
+
+  return data || [];
 }
 
-export function useRanking(userId: string) {
+export function useRanking(userId: string, year: number) {
   return useQuery({
-    queryKey: [VIEW_RANKING, userId],
-    queryFn: () => getRanking(userId),
+    queryKey: [FUNCTION_GET_RANKING_BY_YEAR, userId, year],
+    queryFn: () => getRanking(userId, year),
     refetchOnWindowFocus: true,
   });
 }

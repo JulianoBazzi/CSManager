@@ -15,6 +15,7 @@ import {
   getPaginationRowModel,
   PaginationState,
   SortingState,
+  ColumnSort,
 } from '@tanstack/react-table';
 
 import { FirstPageGhostIconButton } from '~/components/IconButton/FirstPageGhostIconButton';
@@ -25,6 +26,7 @@ import IEntityBase from '~/models/Entity/Base/IEntityBase';
 
 export type ITableProps<T extends IEntityBase> = {
   columns: ColumnDef<T>[];
+  orderBy?: ColumnSort;
   data?: T[];
   perPage?: number;
   isLoading?: boolean;
@@ -34,7 +36,12 @@ export type ITableProps<T extends IEntityBase> = {
 const emptyArray: never[] = [];
 
 export function Table<T extends IEntityBase>({
-  columns, data = emptyArray, perPage = 10, isLoading, onRowClick,
+  columns,
+  orderBy = { id: 'id', desc: true },
+  data = emptyArray,
+  perPage = 10,
+  isLoading,
+  onRowClick,
 }: ITableProps<T>) {
   const isMobile = useBreakpointValue({
     base: true,
@@ -48,7 +55,7 @@ export function Table<T extends IEntityBase>({
     pageSize: perPage,
   });
 
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([orderBy]);
 
   const pagination = useMemo(
     () => ({

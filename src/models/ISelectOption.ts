@@ -1,5 +1,5 @@
 interface ISelectOption {
-  id: string;
+  id: string | number;
   name: string;
   shortName?: string;
   description?: string;

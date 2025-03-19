@@ -245,7 +245,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
     game_type: yup
       .object()
       .shape({
-        id: yup.string().required(),
+        id: yup.lazy((value) => (typeof value === 'number' ? yup.number() : yup.string()).required().nullable()),
         name: yup.string(),
       })
       .nullable()
@@ -253,7 +253,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
     engine: yup
       .object()
       .shape({
-        id: yup.string().required(),
+        id: yup.lazy((value) => (typeof value === 'number' ? yup.number() : yup.string()).required().nullable()),
         name: yup.string(),
       })
       .nullable()
