@@ -1,7 +1,7 @@
 import { forwardRef, useState } from 'react';
 import { FieldError } from 'react-hook-form';
+import { RiEyeLine, RiEyeOffLine } from 'react-icons/ri';
 
-import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import {
   Button,
   FormControl,
@@ -12,6 +12,7 @@ import {
   InputProps as ChakraInputProps,
   InputRightElement,
   Skeleton,
+  Icon,
 } from '@chakra-ui/react';
 
 interface IPasswordInputProps extends ChakraInputProps {
@@ -39,11 +40,7 @@ function PasswordInputBase(
           <ChakraInput type={show ? 'text' : 'password'} ref={ref} id={name} name={name} autoComplete="off" {...rest} />
           <InputRightElement mx="1">
             <Button variant="unstyled" onClick={() => setShow(!show)}>
-              {show ? (
-                <ViewOffIcon fontSize="1.3rem" mt="1" color="gray.200" />
-              ) : (
-                <ViewIcon fontSize="1.3rem" mt="1" color="gray.200" />
-              )}
+              <Icon as={show ? RiEyeOffLine : RiEyeLine} fontSize="1.3rem" mt="1" color="gray.200" />
             </Button>
           </InputRightElement>
         </InputGroup>

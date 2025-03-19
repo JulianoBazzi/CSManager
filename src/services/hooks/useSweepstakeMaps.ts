@@ -37,6 +37,6 @@ export function useSweepstakeMaps(sweepstakeId: string) {
     queryKey: [TABLE_SWEEPSTAKE_MAPS, sweepstakeId],
     queryFn: () => getSweepstakeMaps(sweepstakeId),
     refetchOnWindowFocus: true,
-    refetchInterval: 30000,
+    refetchInterval: 60000,
   });
 }

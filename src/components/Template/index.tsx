@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
+import { RiCloseLine, RiMenuFill } from 'react-icons/ri';
 
-import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import {
   Box,
   Flex,
@@ -22,6 +22,7 @@ import {
   MenuList,
   MenuItem,
   MenuDivider,
+  Icon,
 } from '@chakra-ui/react';
 import { User } from '@supabase/supabase-js';
 import Router from 'next/router';
@@ -149,7 +150,7 @@ export default function Template({ user, children }: ITemplateProps) {
         <Flex flex={{ base: 1, md: 'auto' }} ml={{ base: -2 }} display={{ base: 'flex', md: 'none' }}>
           <IconButton
             onClick={onToggle}
-            icon={isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />}
+            icon={<Icon as={isOpen ? RiCloseLine : RiMenuFill} fontSize="2xl" />}
             variant="ghost"
             aria-label="Toggle Navigation"
           />

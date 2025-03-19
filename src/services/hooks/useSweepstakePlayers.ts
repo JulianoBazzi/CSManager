@@ -39,5 +39,6 @@ export function useSweepstakePlayers(sweepstakeId: string) {
     queryKey: [TABLE_SWEEPSTAKE_PLAYERS, sweepstakeId],
     queryFn: () => getSweepstakePlayers(sweepstakeId),
     refetchOnWindowFocus: true,
+    refetchInterval: 60000,
   });
 }
