@@ -34,7 +34,7 @@ export default function ApexChart({
     chart: {
       type,
       zoom: {
-        enabled: true,
+        enabled: false,
       },
       toolbar: {
         show: false,

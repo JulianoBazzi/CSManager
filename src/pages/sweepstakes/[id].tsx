@@ -65,10 +65,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
   const confirmRegisterAlertRef = useRef<ConfirmRegisterAlertHandle>(null);
 
   const { errorFeedbackToast, successFeedbackToast } = useFeedback();
-  const isMobile = useBreakpointValue({
-    base: true,
-    md: false,
-  });
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
   const [sweepstake, setSweepstake] = useState(sweepstakeProp);
 

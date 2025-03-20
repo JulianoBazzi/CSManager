@@ -28,10 +28,7 @@ const SweepstakeMapRankingModalBase: ForwardRefRenderFunction<SweepstakeMapRanki
   const importImageLeaderboardModalRef = useRef<ImportImageLeaderboardModalHandle>(null);
 
   const { warningFeedbackToast } = useFeedback();
-  const isMobile = useBreakpointValue({
-    base: true,
-    md: false,
-  });
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
   const [recordModalProps, setRecordModalProps] = useState<ISweepstakeMapModal | undefined>();
 

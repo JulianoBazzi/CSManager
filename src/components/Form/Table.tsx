@@ -43,10 +43,7 @@ export function Table<T extends IEntityBase>({
   isLoading,
   onRowClick,
 }: ITableProps<T>) {
-  const isMobile = useBreakpointValue({
-    base: true,
-    md: false,
-  });
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
   const totalRecords = data.length || 0;
 

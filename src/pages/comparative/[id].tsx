@@ -4,6 +4,7 @@ import {
 } from 'react-icons/ri';
 
 import {
+  Box,
   Flex,
   Stack,
   Tab,
@@ -11,8 +12,11 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
+  Text,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 import { User } from '@supabase/supabase-js';
+import { sumBy } from 'lodash';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
@@ -56,6 +60,8 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({ user, us
   const [playerOne, setPlayerOne] = useState<ISelectOption | undefined>();
   const [playerTwo, setPlayerTwo] = useState<ISelectOption | undefined>();
   const [rankingMapComparison, setRankingMapComparison] = useState<IRankingMapComparison[]>([]);
+
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
   const { data: players, isLoading, isFetching } = usePlayers(userId);
 
@@ -159,7 +165,73 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({ user, us
 
             {!!playerOne && !!playerTwo && (
               <>
-                <Tabs mt="4" isFitted colorScheme="blue">
+                <Tabs mt="4" isFitted variant="soft-rounded" colorScheme="blue">
+                  <TabList overflowY="hidden" overflowX="auto">
+                    <Tab px="16" _selected={{ bg: 'blue.700', color: 'white' }}>
+                      {isMobile ? playerOne?.name : `${playerOne?.name} (${playerOne?.description})`}
+                    </Tab>
+                    <Tab px="16" _selected={{ bg: 'green.800', color: 'white' }}>
+                      {isMobile ? playerTwo?.name : `${playerTwo?.name} (${playerTwo?.description})`}
+                    </Tab>
+                  </TabList>
+                  <TabPanels>
+                    <TabPanel>
+                      <Text fontSize="x-large" fontWeight="bold">{`Por que o ${playerOne?.name} é melhor que o ${playerTwo.name}?`}</Text>
+                      <Flex direction={['column', 'row']}>
+                        <Box w={['100%', '60%']}>
+                          <ApexChart
+                            id="lineChartId"
+                            type="radar"
+                            categories={['Dano', 'Vítimas', 'Mortes', 'Assistências', '%TC', 'Partidas']}
+                            series={[{
+                              name: playerOne?.name,
+                              type: 'radar',
+                              data: [
+                                sumBy(rankingMapComparison, (map) => map.player_one_damage),
+                                sumBy(rankingMapComparison, (map) => map.player_one_kills),
+                                sumBy(rankingMapComparison, (map) => map.player_one_deaths),
+                                sumBy(rankingMapComparison, (map) => map.player_one_assistances),
+                                sumBy(rankingMapComparison, (map) => map.player_one_headshot_percentage),
+                                sumBy(rankingMapComparison, (map) => map.player_one_quantity),
+                              ],
+                            }, {
+                              name: playerTwo.name,
+                              type: 'radar',
+                              data: [
+                                sumBy(rankingMapComparison, (map) => map.player_two_damage),
+                                sumBy(rankingMapComparison, (map) => map.player_two_kills),
+                                sumBy(rankingMapComparison, (map) => map.player_two_deaths),
+                                sumBy(rankingMapComparison, (map) => map.player_two_assistances),
+                                sumBy(rankingMapComparison, (map) => map.player_two_headshot_percentage),
+                                sumBy(rankingMapComparison, (map) => map.player_two_quantity),
+                              ],
+                            }]}
+                            showDataLabels
+                            height="300px"
+                            width="100%"
+                            colors={['#3182CE', '#2F855A']}
+                          />
+                        </Box>
+                        <Stack>
+                          <Text fontSize="x-large" fontWeight="bold">ASSDDAASD</Text>
+                        </Stack>
+                      </Flex>
+                    </TabPanel>
+                    <TabPanel>
+                      <Text fontSize="x-large" fontWeight="bold">{`Por que o ${playerTwo?.name} é melhor que o ${playerOne.name}?`}</Text>
+                      <Flex direction={['column', 'row']}>
+                        <Box w={['100%', '60%']}>
+                          <Text>Gráfico</Text>
+                        </Box>
+                        <Stack>
+                          <Text fontSize="x-large" fontWeight="bold">asdasdasd</Text>
+                        </Stack>
+                      </Flex>
+                    </TabPanel>
+                  </TabPanels>
+                </Tabs>
+
+                <Tabs mt="4" isFitted variant="solid-rounded">
                   <TabList overflowY="hidden" overflowX="auto">
                     <Tab>Dano</Tab>
                     <Tab>Vítimas</Tab>
@@ -184,7 +256,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({ user, us
                         showDataLabels
                         height="300px"
                         width="100%"
-                        colors={['#2C5282', '#22543D']}
+                        colors={['#3182CE', '#2F855A']}
                         isLoading={isLoadingRankingOne || isLoadingRankingTwo}
                       />
                     </TabPanel>
@@ -203,7 +275,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({ user, us
                         showDataLabels
                         height="300px"
                         width="100%"
-                        colors={['#2C5282', '#22543D']}
+                        colors={['#3182CE', '#2F855A']}
                         isLoading={isLoadingRankingOne || isLoadingRankingTwo}
                       />
                     </TabPanel>
@@ -222,7 +294,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({ user, us
                         showDataLabels
                         height="300px"
                         width="100%"
-                        colors={['#2C5282', '#22543D']}
+                        colors={['#3182CE', '#2F855A']}
                         isLoading={isLoadingRankingOne || isLoadingRankingTwo}
                       />
                     </TabPanel>
@@ -241,7 +313,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({ user, us
                         showDataLabels
                         height="300px"
                         width="100%"
-                        colors={['#2C5282', '#22543D']}
+                        colors={['#3182CE', '#2F855A']}
                         isLoading={isLoadingRankingOne || isLoadingRankingTwo}
                       />
                     </TabPanel>
@@ -260,7 +332,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({ user, us
                         showDataLabels
                         height="300px"
                         width="100%"
-                        colors={['#2C5282', '#22543D']}
+                        colors={['#3182CE', '#2F855A']}
                         isLoading={isLoadingRankingOne || isLoadingRankingTwo}
                       />
                     </TabPanel>
@@ -279,57 +351,12 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({ user, us
                         showDataLabels
                         height="300px"
                         width="100%"
-                        colors={['#2C5282', '#22543D']}
+                        colors={['#3182CE', '#2F855A']}
                         isLoading={isLoadingRankingOne || isLoadingRankingTwo}
                       />
                     </TabPanel>
                   </TabPanels>
                 </Tabs>
-
-                {/* <Tabs mt="6" variant="soft-rounded" colorScheme="blue">
-                  <TabList>
-                    <Tab px="16" _selected={{ bg: 'blue.700', color: 'white' }}>{`${playerOne?.name} (${playerOne?.description})`}</Tab>
-                    <Tab px="16" _selected={{ bg: 'green.800', color: 'white' }}>{`${playerTwo?.name} (${playerTwo?.description})`}</Tab>
-                  </TabList>
-                  <TabPanels>
-                    <TabPanel>
-                      <Flex>
-                        <Box w={['100%', '60%']}>
-                          <ApexChart
-                            id="lineChartId"
-                            type="radar"
-                            categories={['03/2024', '04/2024', '05/2024', '06/2024']}
-                            series={[{
-                              name: 'Unidades Vendidas',
-                              type: 'radar',
-                              data: [77129, 74559, 79023, 88047],
-                            }, {
-                              name: 'Mix de Produtos',
-                              type: 'radar',
-                              data: [23, 21, 25, 27],
-                            }]}
-                            showDataLabels
-                            height="300px"
-                            width="100%"
-                          />
-                        </Box>
-                        <Stack>
-                          <Text fontSize="x-large" fontWeight="bold">{`Por que o ${playerOne?.name} é melhor que o ${playerTwo.name}?`}</Text>
-                        </Stack>
-                      </Flex>
-                    </TabPanel>
-                    <TabPanel>
-                      <Flex>
-                        <Box w={['100%', '60%']}>
-                          <Text>Gráfico</Text>
-                        </Box>
-                        <Stack>
-                          <Text fontSize="x-large" fontWeight="bold">{`Por que o ${playerTwo?.name} é melhor que o ${playerOne.name}?`}</Text>
-                        </Stack>
-                      </Flex>
-                    </TabPanel>
-                  </TabPanels>
-                </Tabs> */}
               </>
             )}
           </CardBody>

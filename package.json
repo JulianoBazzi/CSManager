@@ -24,6 +24,7 @@
     "dayjs": "1.11.13",
     "framer-motion": "12.5.0",
     "imgbb-image-uploader": "1.0.6",
+    "lodash": "4.17.21",
     "next": "15.2.3",
     "nookies": "2.5.2",
     "openai": "4.87.4",
@@ -39,6 +40,7 @@
     "yup-locale-pt": "0.0.9"
   },
   "devDependencies": {
+    "@types/lodash": "4.17.16",
     "@types/node": "22.13.10",
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",
