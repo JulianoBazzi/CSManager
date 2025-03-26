@@ -16,7 +16,6 @@ import {
   useBreakpointValue,
 } from '@chakra-ui/react';
 import { User } from '@supabase/supabase-js';
-import { sumBy } from 'lodash';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { usePathname, useRouter } from 'next/navigation';
@@ -34,12 +33,24 @@ import ISelectOption from '~/models/ISelectOption';
 import { usePlayerMapRanking } from '~/services/hooks/usePlayerMapRanking';
 import { usePlayers } from '~/services/hooks/usePlayers';
 import supabase from '~/services/supabase';
+import formatPercentage from '~/utils/formatPercentage';
+import getDivision from '~/utils/getDivision';
 
 interface IComparativePlayersProps extends GetServerSideProps {
   user: User;
   userId: string;
   playerOneId: string;
   playerTwoId: string;
+}
+
+interface IPlayerSelectOption extends ISelectOption {
+  count: number;
+  quantity: number;
+  kills: number;
+  deaths: number;
+  assistances: number;
+  headshot_percentage: number;
+  damage: number;
 }
 
 interface IRankingMapComparison extends IEntityBase {
@@ -65,9 +76,10 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
   const router = useRouter();
   const pathname = usePathname();
 
+  const [tabIndex, setTabIndex] = useState(0);
   const [playerOptions, setPlayerOptions] = useState<ISelectOption[]>([]);
-  const [playerOne, setPlayerOne] = useState<ISelectOption | undefined>();
-  const [playerTwo, setPlayerTwo] = useState<ISelectOption | undefined>();
+  const [playerOne, setPlayerOne] = useState<IPlayerSelectOption | undefined>();
+  const [playerTwo, setPlayerTwo] = useState<IPlayerSelectOption | undefined>();
   const [rankingMapComparison, setRankingMapComparison] = useState<IRankingMapComparison[]>([]);
 
   const { data: players, isLoading, isFetching } = usePlayers(userId);
@@ -118,6 +130,40 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
         const { two } = playerStatsMap[name];
 
         if (one && two) {
+          setPlayerOne((previousOne) => {
+            if (previousOne) {
+              return ({
+                ...previousOne,
+                count: (previousOne.count ?? 0) + 1,
+                quantity: (previousOne.quantity ?? 0) + (one?.quantity ?? 0),
+                kills: (previousOne.kills ?? 0) + (one?.kills ?? 0),
+                deaths: (previousOne.deaths ?? 0) + (one?.deaths ?? 0),
+                assistances: (previousOne.assistances ?? 0) + (one?.assistances ?? 0),
+                headshot_percentage: (previousOne.headshot_percentage ?? 0) + (one?.headshot_percentage ?? 0),
+                damage: (previousOne.damage ?? 0) + (one?.damage ?? 0),
+              });
+            }
+
+            return undefined;
+          });
+
+          setPlayerTwo((previousTwo) => {
+            if (previousTwo) {
+              return ({
+                ...previousTwo,
+                count: (previousTwo.count ?? 0) + 1,
+                quantity: (previousTwo.quantity ?? 0) + (two?.quantity ?? 0),
+                kills: (previousTwo.kills ?? 0) + (two?.kills ?? 0),
+                deaths: (previousTwo.deaths ?? 0) + (two?.deaths ?? 0),
+                assistances: (previousTwo.assistances ?? 0) + (two?.assistances ?? 0),
+                headshot_percentage: (previousTwo.headshot_percentage ?? 0) + (two?.headshot_percentage ?? 0),
+                damage: (previousTwo.damage ?? 0) + (two?.damage ?? 0),
+              });
+            }
+
+            return undefined;
+          });
+
           result.push({
             id: one.map_id,
             name,
@@ -140,6 +186,197 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
       setRankingMapComparison(result.sort((a, b) => a.name.localeCompare(b.name)));
     }
   }, [playerOneRanking, playerTwoRanking]);
+
+  const handleTabsChange = (index: number) => {
+    setTabIndex(index);
+  };
+
+  const damageCard = () => {
+    const one = tabIndex === 0 ? (playerOne?.damage ?? 0) : (playerTwo?.damage ?? 0);
+    const two = tabIndex === 0 ? (playerTwo?.damage ?? 0) : (playerOne?.damage ?? 0);
+
+    const balance = one - two;
+
+    if (balance > 0) {
+      return (
+        <Card bg="gray.800">
+          <CardBody px="4" py="2">
+            <Flex align="center" gap="4">
+              <Text fontSize="2xl">🔥</Text>
+              <Box>
+                <Text>Dano Causado</Text>
+                <Text fontSize="sm">
+                  <b>{one}</b>
+                  {' '}
+                  vs
+                  {' '}
+                  {two}
+                </Text>
+              </Box>
+            </Flex>
+          </CardBody>
+        </Card>
+      );
+    }
+
+    return <Text display="none" />;
+  };
+
+  const killCard = () => {
+    const one = tabIndex === 0 ? (playerOne?.kills ?? 0) : (playerTwo?.kills ?? 0);
+    const two = tabIndex === 0 ? (playerTwo?.kills ?? 0) : (playerOne?.kills ?? 0);
+
+    const balance = one - two;
+
+    if (balance > 0) {
+      return (
+        <Card bg="gray.800">
+          <CardBody px="4" py="2">
+            <Flex align="center" gap="4">
+              <Text fontSize="2xl">☠️</Text>
+              <Box>
+                <Text>Vítimas</Text>
+                <Text fontSize="sm">
+                  <b>{one}</b>
+                  {' '}
+                  vs
+                  {' '}
+                  {two}
+                </Text>
+              </Box>
+            </Flex>
+          </CardBody>
+        </Card>
+      );
+    }
+
+    return <Text display="none" />;
+  };
+
+  const assistanceCard = () => {
+    const one = tabIndex === 0 ? (playerOne?.assistances ?? 0) : (playerTwo?.assistances ?? 0);
+    const two = tabIndex === 0 ? (playerTwo?.assistances ?? 0) : (playerOne?.assistances ?? 0);
+
+    const balance = one - two;
+
+    if (balance > 0) {
+      return (
+        <Card bg="gray.800">
+          <CardBody px="4" py="2">
+            <Flex align="center" gap="4">
+              <Text fontSize="2xl">🤝</Text>
+              <Box>
+                <Text>Assistências</Text>
+                <Text fontSize="sm">
+                  <b>{one}</b>
+                  {' '}
+                  vs
+                  {' '}
+                  {two}
+                </Text>
+              </Box>
+            </Flex>
+          </CardBody>
+        </Card>
+      );
+    }
+
+    return <Text display="none" />;
+  };
+
+  const deathCard = () => {
+    const one = tabIndex === 0 ? (playerOne?.deaths ?? 0) : (playerTwo?.deaths ?? 0);
+    const two = tabIndex === 0 ? (playerTwo?.deaths ?? 0) : (playerOne?.deaths ?? 0);
+
+    const balance = one - two;
+
+    if (balance < 0) {
+      return (
+        <Card bg="gray.800">
+          <CardBody px="4" py="2">
+            <Flex align="center" gap="4">
+              <Text fontSize="2xl">⚰️</Text>
+              <Box>
+                <Text>Mortes</Text>
+                <Text fontSize="sm">
+                  <b>{one}</b>
+                  {' '}
+                  vs
+                  {' '}
+                  {two}
+                </Text>
+              </Box>
+            </Flex>
+          </CardBody>
+        </Card>
+      );
+    }
+
+    return <Text display="none" />;
+  };
+
+  const headshotCard = () => {
+    const one = tabIndex === 0 ? (playerOne?.headshot_percentage ?? 0) : (playerTwo?.headshot_percentage ?? 0);
+    const two = tabIndex === 0 ? (playerTwo?.headshot_percentage ?? 0) : (playerOne?.headshot_percentage ?? 0);
+    const count = (playerOne?.count ?? 0);
+
+    const balance = one - two;
+
+    if (balance > 0) {
+      return (
+        <Card bg="gray.800">
+          <CardBody px="4" py="2">
+            <Flex align="center" gap="4">
+              <Text fontSize="2xl">🎯</Text>
+              <Box>
+                <Text>%TC</Text>
+                <Text fontSize="sm">
+                  <b>{formatPercentage(getDivision(one ?? 0, count), true)}</b>
+                  {' '}
+                  vs
+                  {' '}
+                  {formatPercentage(getDivision(two ?? 0, count), true)}
+                </Text>
+              </Box>
+            </Flex>
+          </CardBody>
+        </Card>
+      );
+    }
+
+    return <Text display="none" />;
+  };
+
+  const quantityCard = () => {
+    const one = tabIndex === 0 ? (playerOne?.quantity ?? 0) : (playerTwo?.quantity ?? 0);
+    const two = tabIndex === 0 ? (playerTwo?.quantity ?? 0) : (playerOne?.quantity ?? 0);
+
+    const balance = one - two;
+
+    if (balance > 0) {
+      return (
+        <Card bg="gray.800">
+          <CardBody px="4" py="2">
+            <Flex align="center" gap="4">
+              <Text fontSize="2xl">🎮</Text>
+              <Box>
+                <Text>Partidas</Text>
+                <Text fontSize="sm">
+                  <b>{one}</b>
+                  {' '}
+                  vs
+                  {' '}
+                  {two}
+                </Text>
+              </Box>
+            </Flex>
+          </CardBody>
+        </Card>
+      );
+    }
+
+    return <Text display="none" />;
+  };
 
   return (
     <>
@@ -166,7 +403,23 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                   isRequired
                   isSearchable
                   isClearable
-                  onChange={(option) => setPlayerOne(option)}
+                  onChange={(option) => {
+                    if (option) {
+                      setPlayerOne({
+                        ...option,
+                        count: 0,
+                        quantity: 0,
+                        kills: 0,
+                        deaths: 0,
+                        assistances: 0,
+                        headshot_percentage: 0,
+                        damage: 0,
+                      });
+                      return;
+                    }
+
+                    setPlayerOne(undefined);
+                  }}
                 />
               </Flex>
               <Flex w={['100%', '50%']} p="2" borderRadius={8} bg="green.800">
@@ -180,14 +433,37 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                   isRequired
                   isSearchable
                   isClearable
-                  onChange={(option) => setPlayerTwo(option)}
+                  onChange={(option) => {
+                    if (option) {
+                      setPlayerTwo({
+                        ...option,
+                        count: 0,
+                        quantity: 0,
+                        kills: 0,
+                        deaths: 0,
+                        assistances: 0,
+                        headshot_percentage: 0,
+                        damage: 0,
+                      });
+                      return;
+                    }
+
+                    setPlayerTwo(undefined);
+                  }}
                 />
               </Flex>
             </Stack>
 
             {!!playerOne && !!playerTwo && (
               <>
-                <Tabs mt="4" isFitted variant="soft-rounded" colorScheme="blue">
+                <Tabs
+                  mt="4"
+                  isFitted
+                  variant="soft-rounded"
+                  colorScheme="blue"
+                  index={tabIndex}
+                  onChange={handleTabsChange}
+                >
                   <TabList overflowY="hidden" overflowX="auto">
                     <Tab px="16" _selected={{ bg: 'blue.800', color: 'white' }}>
                       {isMobile ? playerOne?.name : `${playerOne?.name} (${playerOne?.description})`}
@@ -199,56 +475,25 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                   <TabPanels>
                     <TabPanel>
                       <Text fontSize="x-large" fontWeight="bold">{`Por que o ${playerOne?.name} é melhor que o ${playerTwo.name}?`}</Text>
-                      <Flex direction={['column', 'row']}>
-                        <Box w={['100%', '60%']}>
-                          <ApexChart
-                            id="lineChartId"
-                            type="radar"
-                            categories={['Dano', 'Vítimas', 'Mortes', 'Assistências', '%TC', 'Partidas']}
-                            series={[{
-                              name: playerOne?.name,
-                              type: 'radar',
-                              data: [
-                                sumBy(rankingMapComparison, (map) => map.player_one_damage),
-                                sumBy(rankingMapComparison, (map) => map.player_one_kills),
-                                sumBy(rankingMapComparison, (map) => map.player_one_deaths),
-                                sumBy(rankingMapComparison, (map) => map.player_one_assistances),
-                                sumBy(rankingMapComparison, (map) => map.player_one_headshot_percentage),
-                                sumBy(rankingMapComparison, (map) => map.player_one_quantity),
-                              ],
-                            }, {
-                              name: playerTwo.name,
-                              type: 'radar',
-                              data: [
-                                sumBy(rankingMapComparison, (map) => map.player_two_damage),
-                                sumBy(rankingMapComparison, (map) => map.player_two_kills),
-                                sumBy(rankingMapComparison, (map) => map.player_two_deaths),
-                                sumBy(rankingMapComparison, (map) => map.player_two_assistances),
-                                sumBy(rankingMapComparison, (map) => map.player_two_headshot_percentage),
-                                sumBy(rankingMapComparison, (map) => map.player_two_quantity),
-                              ],
-                            }]}
-                            showDataLabels
-                            height="300px"
-                            width="100%"
-                            colors={['#3182CE', '#2F855A']}
-                          />
-                        </Box>
-                        <Stack>
-                          <Text fontSize="x-large" fontWeight="bold">ASSDDAASD</Text>
-                        </Stack>
-                      </Flex>
+                      <Stack mt="4">
+                        {damageCard()}
+                        {killCard()}
+                        {assistanceCard()}
+                        {deathCard()}
+                        {headshotCard()}
+                        {quantityCard()}
+                      </Stack>
                     </TabPanel>
                     <TabPanel>
                       <Text fontSize="x-large" fontWeight="bold">{`Por que o ${playerTwo?.name} é melhor que o ${playerOne.name}?`}</Text>
-                      <Flex direction={['column', 'row']}>
-                        <Box w={['100%', '60%']}>
-                          <Text>Gráfico</Text>
-                        </Box>
-                        <Stack>
-                          <Text fontSize="x-large" fontWeight="bold">asdasdasd</Text>
-                        </Stack>
-                      </Flex>
+                      <Stack mt="4">
+                        {damageCard()}
+                        {killCard()}
+                        {assistanceCard()}
+                        {deathCard()}
+                        {headshotCard()}
+                        {quantityCard()}
+                      </Stack>
                     </TabPanel>
                   </TabPanels>
                 </Tabs>
@@ -278,7 +523,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                         showDataLabels
                         height="300px"
                         width="100%"
-                        colors={['#3182CE', '#2F855A']}
+                        colors={['#1A3478', '#124A28']}
                         isLoading={isLoadingRankingOne || isLoadingRankingTwo}
                       />
                     </TabPanel>
@@ -297,7 +542,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                         showDataLabels
                         height="300px"
                         width="100%"
-                        colors={['#3182CE', '#2F855A']}
+                        colors={['#1A3478', '#124A28']}
                         isLoading={isLoadingRankingOne || isLoadingRankingTwo}
                       />
                     </TabPanel>
@@ -316,7 +561,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                         showDataLabels
                         height="300px"
                         width="100%"
-                        colors={['#3182CE', '#2F855A']}
+                        colors={['#1A3478', '#124A28']}
                         isLoading={isLoadingRankingOne || isLoadingRankingTwo}
                       />
                     </TabPanel>
@@ -335,7 +580,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                         showDataLabels
                         height="300px"
                         width="100%"
-                        colors={['#3182CE', '#2F855A']}
+                        colors={['#1A3478', '#124A28']}
                         isLoading={isLoadingRankingOne || isLoadingRankingTwo}
                       />
                     </TabPanel>
@@ -354,7 +599,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                         showDataLabels
                         height="300px"
                         width="100%"
-                        colors={['#3182CE', '#2F855A']}
+                        colors={['#1A3478', '#124A28']}
                         isLoading={isLoadingRankingOne || isLoadingRankingTwo}
                       />
                     </TabPanel>
@@ -373,7 +618,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                         showDataLabels
                         height="300px"
                         width="100%"
-                        colors={['#3182CE', '#2F855A']}
+                        colors={['#1A3478', '#124A28']}
                         isLoading={isLoadingRankingOne || isLoadingRankingTwo}
                       />
                     </TabPanel>
