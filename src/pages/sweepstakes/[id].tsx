@@ -439,7 +439,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
           <CardBody>
             <Stack direction={['column', 'row']}>
               {sweepstakeMaps?.map((sweepstakeMap) => (
-                <Card key={sweepstakeMap.id}>
+                <Card key={sweepstakeMap.id} bg="gray.800">
                   <CardHeader
                     p={isMobile ? '5' : '3'}
                     icon={sweepstakeMap?.maps.map_type === 'bomb' ? GiUnlitBomb : MdEmojiPeople}

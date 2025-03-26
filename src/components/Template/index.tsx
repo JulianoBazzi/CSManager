@@ -25,7 +25,7 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import { User } from '@supabase/supabase-js';
-import Router from 'next/router';
+import { useRouter } from 'next/navigation';
 
 import { useAuth } from '~/contexts/AuthContext';
 import INav from '~/models/INav';
@@ -131,8 +131,9 @@ const MobileNav = ({ user }: INav) => (
 );
 
 export default function Template({ user, children }: ITemplateProps) {
-  const { isOpen, onToggle } = useDisclosure();
   const { logout } = useAuth();
+  const { isOpen, onToggle } = useDisclosure();
+  const router = useRouter();
 
   return (
     <Box>
@@ -177,15 +178,15 @@ export default function Template({ user, children }: ITemplateProps) {
               </MenuButton>
               <Portal>
                 <MenuList>
-                  <MenuItem onClick={() => Router.push('/profile')}>Meu Perfil</MenuItem>
-                  <MenuItem onClick={() => Router.push('/changePassword')}>Alterar Senha</MenuItem>
+                  <MenuItem onClick={() => router.push('/profile')}>Meu Perfil</MenuItem>
+                  <MenuItem onClick={() => router.push('/changePassword')}>Alterar Senha</MenuItem>
                   <MenuDivider />
                   <MenuItem onClick={() => logout()}>Sair</MenuItem>
                 </MenuList>
               </Portal>
             </Menu>
           ) : (
-            <Button onClick={() => Router.push('/login')}>Entrar</Button>
+            <Button onClick={() => router.push('/login')}>Entrar</Button>
           )}
         </Stack>
       </Flex>

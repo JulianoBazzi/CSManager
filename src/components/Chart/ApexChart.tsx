@@ -62,7 +62,7 @@ export default function ApexChart({
     },
     grid: {
       row: {
-        colors: ['#4A5568', 'transparent'],
+        colors: ['#3f3f46', 'transparent'],
         opacity: 0.5,
       },
     },

@@ -4,7 +4,7 @@ import { User } from '@supabase/supabase-js';
 import { ColumnDef } from '@tanstack/react-table';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
-import Router from 'next/router';
+import { useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
 import removeAccents from 'remove-accents';
 
@@ -24,6 +24,8 @@ interface ISweepstakesProps extends GetServerSideProps {
 }
 
 const Sweepstakes: NextPage<ISweepstakesProps> = ({ user }) => {
+  const router = useRouter();
+
   const { data, isLoading, isFetching } = useSweepstakes(user.id);
 
   const [search, setSearch] = useState('');
@@ -39,13 +41,13 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user }) => {
     );
   }, [search, data]);
 
-  async function handleVisualization(id?: string) {
+  function handleVisualization(id?: string) {
     if (id) {
-      await Router.push(`/sweepstakes/${id}`);
+      router.push(`/sweepstakes/${id}`);
       return;
     }
 
-    await Router.push('/sweepstakes/new');
+    router.push('/sweepstakes/new');
   }
 
   const columns: ColumnDef<ISweepstakeAPI>[] = [

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   RiNumbersLine,
 } from 'react-icons/ri';
@@ -9,14 +9,17 @@ import { ColumnDef } from '@tanstack/react-table';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
+import removeAccents from 'remove-accents';
 
 import { years } from '~/assets/years';
 import { PremierBadge } from '~/components/Badge/PremierBadge';
+import { StarBadge } from '~/components/Badge/StarBadge';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
 import { Select } from '~/components/Form/Select';
 import { Table } from '~/components/Form/Table';
+import { SearchBar } from '~/components/SearchBar';
 import Template from '~/components/Template';
 import IViewRankingAPI from '~/models/Entity/Ranking/IViewRankingAPI';
 import ISelectOption from '~/models/ISelectOption';
@@ -30,12 +33,24 @@ interface IRankingProps extends GetServerSideProps {
 
 const RankingPublic: NextPage<IRankingProps> = ({ user, userId }) => {
   const [selectedYear, setSelectedYear] = useState<ISelectOption>(years[0]);
+  const [search, setSearch] = useState('');
 
   const {
-    data: ranking,
-    isLoading: isLoadingRanking,
-    isFetching: isFetchingRanking,
+    data,
+    isLoading,
+    isFetching,
   } = useRanking(userId, Number(selectedYear?.id));
+
+  const [dataFiltered, setDataFiltered] = useState(data);
+
+  useEffect(() => {
+    setDataFiltered(
+      data?.filter(
+        (player) => removeAccents(player.name.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase()))
+          || removeAccents(player.username.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase())),
+      ),
+    );
+  }, [search, data]);
 
   const rankingColumns: ColumnDef<IViewRankingAPI>[] = [
     {
@@ -51,6 +66,12 @@ const RankingPublic: NextPage<IRankingProps> = ({ user, userId }) => {
       header: 'Premier',
       // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
+    },
+    {
+      accessorKey: 'rating',
+      header: 'Avaliação',
+      // eslint-disable-next-line react/no-unstable-nested-components
+      cell: ({ row }) => <StarBadge rating={row.original.rating} />,
     },
     {
       accessorKey: 'sweepstake_count',
@@ -89,28 +110,33 @@ const RankingPublic: NextPage<IRankingProps> = ({ user, userId }) => {
           <CardHeader
             icon={RiNumbersLine}
             title="Ranking"
-            isFetching={isFetchingRanking && !isLoadingRanking}
-          >
-            <Flex w="120px">
-              <Select
-                name="year"
-                options={years}
-                value={selectedYear}
-                isRequired
-                onChange={(option) => setSelectedYear(option)}
-              />
-            </Flex>
-          </CardHeader>
+            isFetching={isFetching && !isLoading}
+          />
           <CardBody>
+            <Flex gap="2">
+              <SearchBar onSearch={(value) => setSearch(value)} isDisabled={isFetching} />
+              <Flex w={['190px', '120px']}>
+                <Select
+                  name="year"
+                  options={years}
+                  value={selectedYear}
+                  isRequired
+                  onChange={(option) => setSelectedYear(option)}
+                />
+              </Flex>
+            </Flex>
             <TableContainer>
               <Table
-                data={ranking}
+                data={dataFiltered}
                 columns={rankingColumns}
-                isLoading={isLoadingRanking}
+                isLoading={isLoading}
                 perPage={50}
                 orderBy={{
                   id: 'damage',
                   desc: true,
+                }}
+                columnVisibility={{
+                  rating: user?.id === userId,
                 }}
               />
             </TableContainer>

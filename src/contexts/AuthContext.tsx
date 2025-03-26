@@ -2,7 +2,7 @@ import {
   createContext, ReactNode, useCallback, useContext, useMemo,
 } from 'react';
 
-import Router from 'next/router';
+import { useRouter } from 'next/navigation';
 import { destroyCookie, setCookie } from 'nookies';
 
 import { useFeedback } from '~/contexts/FeedbackContext';
@@ -26,6 +26,7 @@ const AuthContext = createContext({} as AuthContextData);
 
 export function AuthProvider({ children }: IAuthProviderProps) {
   const { errorFeedbackToast, warningFeedbackToast, successFeedbackToast } = useFeedback();
+  const router = useRouter();
 
   const signIn = useCallback(
     async ({ email, password }: ISignIn) => {
@@ -53,17 +54,17 @@ export function AuthProvider({ children }: IAuthProviderProps) {
       });
 
       successFeedbackToast('Login', 'Login efetuado com sucesso!');
-      await Router.push('/');
+      router.push('/');
     },
-    [errorFeedbackToast, warningFeedbackToast, successFeedbackToast],
+    [router, errorFeedbackToast, warningFeedbackToast, successFeedbackToast],
   );
 
   const logout = useCallback(async () => {
     destroyCookie(undefined, 'csm.token', { path: '/' });
     await supabase.auth.signOut();
 
-    Router.push('/login');
-  }, []);
+    router.push('/login');
+  }, [router]);
 
   const changePassword = useCallback(
     async ({ password }: IChangePassword) => {
@@ -108,9 +109,9 @@ export function AuthProvider({ children }: IAuthProviderProps) {
       }
 
       successFeedbackToast('Meu Perfil', 'Perfil atualizado com sucesso!');
-      await Router.push('/');
+      router.push('/');
     },
-    [errorFeedbackToast, warningFeedbackToast, successFeedbackToast],
+    [router, errorFeedbackToast, warningFeedbackToast, successFeedbackToast],
   );
 
   const authProviderValue = useMemo(

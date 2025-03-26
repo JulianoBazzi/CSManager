@@ -69,6 +69,8 @@ function SelectBase(
           isClearable={isClearable}
           isDisabled={isDisabled}
           isMulti={isMulti}
+          tagColorScheme="blackAlpha"
+          selectedOptionColorScheme="blue"
           getOptionLabel={({ name: nameOption }: ISelectOption) => nameOption}
           getOptionValue={({ id }: ISelectOption) => String(id)}
           isRequired={isRequired}

@@ -16,6 +16,7 @@ import {
   PaginationState,
   SortingState,
   ColumnSort,
+  VisibilityState,
 } from '@tanstack/react-table';
 
 import { FirstPageGhostIconButton } from '~/components/IconButton/FirstPageGhostIconButton';
@@ -30,6 +31,7 @@ export type ITableProps<T extends IEntityBase> = {
   data?: T[];
   perPage?: number;
   isLoading?: boolean;
+  columnVisibility?: VisibilityState;
   onRowClick?: (data: T) => void;
 };
 
@@ -41,6 +43,7 @@ export function Table<T extends IEntityBase>({
   data = emptyArray,
   perPage = 10,
   isLoading,
+  columnVisibility,
   onRowClick,
 }: ITableProps<T>) {
   const isMobile = useBreakpointValue({ base: true, md: false });
@@ -82,11 +85,12 @@ export function Table<T extends IEntityBase>({
     state: {
       pagination,
       sorting,
+      columnVisibility,
     },
   });
 
   const table = () => (
-    <ChakraTable size="sm" variant="striped" colorScheme="blue">
+    <ChakraTable size="sm" variant="striped" colorScheme="blackAlpha">
       <Thead>
         {getHeaderGroups().map((headerGroup) => (
           <Tr key={headerGroup.id}>
@@ -159,7 +163,7 @@ export function Table<T extends IEntityBase>({
 
       {totalRecords > 0 ? (
         <Flex mt="4" align="center" direction={['column', 'row']} gap={['3', '0']}>
-          <Text mr={['inherit', 'auto']} color="gray.500">{`Total de ${totalRecords} registros`}</Text>
+          <Text mr={['inherit', 'auto']} color="gray.200">{`Total de ${totalRecords} registros`}</Text>
           <Flex gap="1" align="center">
             <FirstPageGhostIconButton onClick={() => setPageIndex(0)} isDisabled={!getCanPreviousPage()} />
             <PreviousPageGhostIconButton onClick={() => previousPage()} isDisabled={!getCanPreviousPage()} />

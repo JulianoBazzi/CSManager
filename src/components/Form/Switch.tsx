@@ -31,7 +31,7 @@ const SwitchBase: ForwardRefRenderFunction<HTMLInputElement, ISwitchProps> = (
     {isLoading && <Skeleton height="10" borderRadius={4} />}
     {!isLoading && (
     <InputGroup>
-      <ChakraSwitch ref={ref} id={name} name={name} autoComplete="off" {...rest} />
+      <ChakraSwitch ref={ref} id={name} name={name} autoComplete="off" colorScheme="whiteAlpha" {...rest} />
       {children}
     </InputGroup>
     )}

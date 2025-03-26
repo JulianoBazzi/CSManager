@@ -11,7 +11,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import dayjs from 'dayjs';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
-import Router from 'next/router';
+import { useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
 import { v4 } from 'uuid';
 import * as yup from 'yup';
@@ -56,6 +56,7 @@ interface INewSweepstakeProps extends GetServerSideProps {
 
 const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
   const { errorFeedbackToast, warningFeedbackToast, successFeedbackToast } = useFeedback();
+  const router = useRouter();
 
   const [selectedPlayers, setSelectedPlayers] = useState<IPlayerAPI[]>([]);
   const [selectedMaps, setSelectedMaps] = useState<string[]>([]);
@@ -164,7 +165,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
       async onSuccess(id) {
         successFeedbackToast('Novo Sorteio', 'Sorteio realizado com sucesso!');
         await queryClient.invalidateQueries({ queryKey: [TABLE_SWEEPSTAKES] });
-        await Router.push(`/sweepstakes/${id}`);
+        router.push(`/sweepstakes/${id}`);
       },
       onError(error: Error) {
         errorFeedbackToast('Novo Sorteio', error);

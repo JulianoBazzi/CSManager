@@ -51,7 +51,7 @@ const ModalBase: ForwardRefRenderFunction<ModalHandle, IModalProps> = (
   return (
     <ChakraModal onClose={onCloseModal} isOpen={isOpen} closeOnEsc closeOnOverlayClick={false} {...rest}>
       <ModalOverlay background="blackAlpha.500" />
-      <ModalContent as="form" onSubmit={onSubmit}>
+      <ModalContent as="form" bg="gray.900" onSubmit={onSubmit}>
         <ModalHeader>
           <Text as="h5">{title}</Text>
         </ModalHeader>

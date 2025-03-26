@@ -19,6 +19,7 @@ import { User } from '@supabase/supabase-js';
 import { sumBy } from 'lodash';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
+import { usePathname, useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
 
 import Card from '~/components/Card';
@@ -37,6 +38,8 @@ import supabase from '~/services/supabase';
 interface IComparativePlayersProps extends GetServerSideProps {
   user: User;
   userId: string;
+  playerOneId: string;
+  playerTwoId: string;
 }
 
 interface IRankingMapComparison extends IEntityBase {
@@ -55,13 +58,17 @@ interface IRankingMapComparison extends IEntityBase {
   player_two_damage: number;
 }
 
-const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({ user, userId }) => {
+const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
+  user, userId, playerOneId, playerTwoId,
+}) => {
+  const isMobile = useBreakpointValue({ base: true, md: false });
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [playerOptions, setPlayerOptions] = useState<ISelectOption[]>([]);
   const [playerOne, setPlayerOne] = useState<ISelectOption | undefined>();
   const [playerTwo, setPlayerTwo] = useState<ISelectOption | undefined>();
   const [rankingMapComparison, setRankingMapComparison] = useState<IRankingMapComparison[]>([]);
-
-  const isMobile = useBreakpointValue({ base: true, md: false });
 
   const { data: players, isLoading, isFetching } = usePlayers(userId);
 
@@ -71,6 +78,21 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({ user, us
   useEffect(() => {
     setPlayerOptions(players ? players.map((player) => ({ id: player.id, name: player.name, description: player.username })) : []);
   }, [players]);
+
+  // useEffect(() => {
+  //   if (playerOneId) {
+  //     setPlayerOne(playerOptions.find((player) => player.id === playerOneId));
+  //   }
+  //   if (playerTwoId) {
+  //     setPlayerTwo(playerOptions.find((player) => player.id === playerTwoId));
+  //   }
+  // }, [playerOptions, playerOneId, playerTwoId]);
+
+  // useEffect(() => {
+  //   if (playerOne && playerTwo) {
+  //     router.push(`${pathname}?playerOneId=${playerOne.id}&playerTwoId=${playerTwo.id}`);
+  //   }
+  // }, [router, pathname, playerOne, playerTwo]);
 
   useEffect(() => {
     if (playerOneRanking && playerTwoRanking) {
@@ -133,7 +155,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({ user, us
           />
           <CardBody>
             <Stack direction={['column', 'row']}>
-              <Flex w={['100%', '50%']} p="2" borderRadius={8} bg="blue.700">
+              <Flex w={['100%', '50%']} p="2" borderRadius={8} bg="blue.800">
                 <Select
                   name="player_one"
                   label="Jogador 1"
@@ -167,7 +189,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({ user, us
               <>
                 <Tabs mt="4" isFitted variant="soft-rounded" colorScheme="blue">
                   <TabList overflowY="hidden" overflowX="auto">
-                    <Tab px="16" _selected={{ bg: 'blue.700', color: 'white' }}>
+                    <Tab px="16" _selected={{ bg: 'blue.800', color: 'white' }}>
                       {isMobile ? playerOne?.name : `${playerOne?.name} (${playerOne?.description})`}
                     </Tab>
                     <Tab px="16" _selected={{ bg: 'green.800', color: 'white' }}>
@@ -370,7 +392,7 @@ export default ComparativePlayersPublic;
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   try {
-    const { id } = context.query;
+    const { id, playerOneId = null, playerTwoId = null } = context.query;
 
     if (id) {
       const userId = String(id);
@@ -380,6 +402,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
         return {
           props: {
             userId,
+            playerOneId,
+            playerTwoId,
           },
         };
       }
@@ -392,6 +416,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
         return {
           props: {
             userId,
+            playerOneId,
+            playerTwoId,
           },
         };
       }
@@ -400,6 +426,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
         props: {
           user,
           userId,
+          playerOneId,
+          playerTwoId,
         },
       };
     }
