@@ -462,7 +462,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
         <Card>
           <CardHeader
             icon={RiAwardLine}
-            title="Comparativo entre Jogadores"
+            title={isMobile ? 'Comparativo' : 'Comparativo entre Jogadores'}
           />
           <CardBody>
             <Stack direction={['column', 'row']}>
@@ -554,7 +554,16 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                   </TabList>
                   <TabPanels>
                     <TabPanel>
-                      <Text fontSize="x-large" fontWeight="bold">{`Por que o ${playerOne?.name} é melhor que o ${playerTwo.name}?`}</Text>
+                      <Text fontSize="x-large" fontWeight="bold">
+                        Por que o
+                        {' '}
+                        <Text as="span" fontWeight="bold" color="blue.600">{playerOne?.name}</Text>
+                        {' '}
+                        é melhor que o
+                        {' '}
+                        <Text as="span" fontWeight="bold" color="green.600">{playerTwo.name}</Text>
+                        ?
+                      </Text>
                       <Stack mt="4">
                         {damageCard()}
                         {killCard()}
@@ -566,7 +575,16 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                       </Stack>
                     </TabPanel>
                     <TabPanel>
-                      <Text fontSize="x-large" fontWeight="bold">{`Por que o ${playerTwo?.name} é melhor que o ${playerOne.name}?`}</Text>
+                      <Text fontSize="x-large" fontWeight="bold">
+                        Por que o
+                        {' '}
+                        <Text as="span" fontWeight="bold" color="green.600">{playerTwo.name}</Text>
+                        {' '}
+                        é melhor que o
+                        {' '}
+                        <Text as="span" fontWeight="bold" color="blue.600">{playerOne?.name}</Text>
+                        ?
+                      </Text>
                       <Stack mt="4">
                         {damageCard()}
                         {killCard()}
