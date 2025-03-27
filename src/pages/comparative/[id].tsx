@@ -125,6 +125,40 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
         playerStatsMap[stat.name].two = stat;
       });
 
+      setPlayerOne((previousOne) => {
+        if (previousOne) {
+          return ({
+            ...previousOne,
+            count: 0,
+            quantity: 0,
+            kills: 0,
+            deaths: 0,
+            assistances: 0,
+            headshot_percentage: 0,
+            damage: 0,
+          });
+        }
+
+        return undefined;
+      });
+
+      setPlayerTwo((previousTwo) => {
+        if (previousTwo) {
+          return ({
+            ...previousTwo,
+            count: 0,
+            quantity: 0,
+            kills: 0,
+            deaths: 0,
+            assistances: 0,
+            headshot_percentage: 0,
+            damage: 0,
+          });
+        }
+
+        return undefined;
+      });
+
       Object.keys(playerStatsMap).forEach((name) => {
         const { one } = playerStatsMap[name];
         const { two } = playerStatsMap[name];
@@ -204,7 +238,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
             <Flex align="center" gap="4">
               <Text fontSize="2xl">🔥</Text>
               <Box>
-                <Text>Dano Causado</Text>
+                <Text>Maior Dano Causado</Text>
                 <Text fontSize="sm">
                   <b>{one}</b>
                   {' '}
@@ -235,7 +269,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
             <Flex align="center" gap="4">
               <Text fontSize="2xl">☠️</Text>
               <Box>
-                <Text>Vítimas</Text>
+                <Text>Mais Vítimas Eliminadas</Text>
                 <Text fontSize="sm">
                   <b>{one}</b>
                   {' '}
@@ -266,7 +300,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
             <Flex align="center" gap="4">
               <Text fontSize="2xl">🤝</Text>
               <Box>
-                <Text>Assistências</Text>
+                <Text>Mais Assistências</Text>
                 <Text fontSize="sm">
                   <b>{one}</b>
                   {' '}
@@ -297,7 +331,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
             <Flex align="center" gap="4">
               <Text fontSize="2xl">⚰️</Text>
               <Box>
-                <Text>Mortes</Text>
+                <Text>Menos Mortes Sofridas</Text>
                 <Text fontSize="sm">
                   <b>{one}</b>
                   {' '}
@@ -329,13 +363,13 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
             <Flex align="center" gap="4">
               <Text fontSize="2xl">🎯</Text>
               <Box>
-                <Text>%TC</Text>
+                <Text>Maior Percentual de Tiros na Cabeça</Text>
                 <Text fontSize="sm">
-                  <b>{formatPercentage(getDivision(one ?? 0, count), true)}</b>
+                  <b>{formatPercentage(getDivision(one, count), true)}</b>
                   {' '}
                   vs
                   {' '}
-                  {formatPercentage(getDivision(two ?? 0, count), true)}
+                  {formatPercentage(getDivision(two, count), true)}
                 </Text>
               </Box>
             </Flex>
@@ -360,7 +394,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
             <Flex align="center" gap="4">
               <Text fontSize="2xl">🎮</Text>
               <Box>
-                <Text>Partidas</Text>
+                <Text>Mais Partidas Disputadas</Text>
                 <Text fontSize="sm">
                   <b>{one}</b>
                   {' '}
@@ -368,6 +402,46 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                   {' '}
                   {two}
                 </Text>
+              </Box>
+            </Flex>
+          </CardBody>
+        </Card>
+      );
+    }
+
+    return <Text display="none" />;
+  };
+
+  const noRecordCard = () => {
+    const killOne = tabIndex === 0 ? (playerOne?.kills ?? 0) : (playerTwo?.kills ?? 0);
+    const killTwo = tabIndex === 0 ? (playerTwo?.kills ?? 0) : (playerOne?.kills ?? 0);
+
+    const assistanceOne = tabIndex === 0 ? (playerOne?.assistances ?? 0) : (playerTwo?.assistances ?? 0);
+    const assistanceTwo = tabIndex === 0 ? (playerTwo?.assistances ?? 0) : (playerOne?.assistances ?? 0);
+
+    const deathOne = tabIndex === 0 ? (playerOne?.deaths ?? 0) : (playerTwo?.deaths ?? 0);
+    const deathTwo = tabIndex === 0 ? (playerTwo?.deaths ?? 0) : (playerOne?.deaths ?? 0);
+
+    const headshotOne = tabIndex === 0 ? (playerOne?.headshot_percentage ?? 0) : (playerTwo?.headshot_percentage ?? 0);
+    const headshotTwo = tabIndex === 0 ? (playerTwo?.headshot_percentage ?? 0) : (playerOne?.headshot_percentage ?? 0);
+
+    const quantityOne = tabIndex === 0 ? (playerOne?.quantity ?? 0) : (playerTwo?.quantity ?? 0);
+    const quantitytwo = tabIndex === 0 ? (playerTwo?.quantity ?? 0) : (playerOne?.quantity ?? 0);
+
+    const count = (playerOne?.count ?? 0);
+
+    if ((killOne < killTwo)
+      && (assistanceOne < assistanceTwo)
+      && (deathOne > deathTwo)
+      && (getDivision(headshotOne, count) < getDivision(headshotTwo, count))
+      && (quantityOne < quantitytwo)) {
+      return (
+        <Card bg="gray.800">
+          <CardBody px="4" py="2">
+            <Flex align="center" gap="4">
+              <Text fontSize="2xl">😂</Text>
+              <Box>
+                <Text>Pior em tudo</Text>
               </Box>
             </Flex>
           </CardBody>
@@ -454,6 +528,12 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
               </Flex>
             </Stack>
 
+            {(!playerOne || !playerTwo) && (
+              <Flex p="10" justify="center">
+                <Text />
+              </Flex>
+            )}
+
             {!!playerOne && !!playerTwo && (
               <>
                 <Tabs
@@ -482,6 +562,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                         {deathCard()}
                         {headshotCard()}
                         {quantityCard()}
+                        {noRecordCard()}
                       </Stack>
                     </TabPanel>
                     <TabPanel>
@@ -493,6 +574,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                         {deathCard()}
                         {headshotCard()}
                         {quantityCard()}
+                        {noRecordCard()}
                       </Stack>
                     </TabPanel>
                   </TabPanels>
