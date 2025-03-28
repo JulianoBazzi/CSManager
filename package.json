@@ -1,6 +1,6 @@
 {
   "name": "csmanager",
-  "version": "1.7.3",
+  "version": "1.7.4",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -27,7 +27,7 @@
     "lodash": "4.17.21",
     "next": "15.2.4",
     "nookies": "2.5.2",
-    "openai": "4.89.1",
+    "openai": "4.90.0",
     "react": "18.3.1",
     "react-apexcharts": "1.7.0",
     "react-dom": "18.3.1",
@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@types/lodash": "4.17.16",
-    "@types/node": "22.13.13",
+    "@types/node": "22.13.14",
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",
     "@types/uuid": "10.0.0",

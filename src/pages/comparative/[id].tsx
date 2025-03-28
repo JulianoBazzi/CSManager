@@ -16,6 +16,8 @@ import {
   useBreakpointValue,
 } from '@chakra-ui/react';
 import { User } from '@supabase/supabase-js';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { usePathname, useRouter } from 'next/navigation';
@@ -27,6 +29,7 @@ import CardHeader from '~/components/Card/CardHeader';
 import ApexChart from '~/components/Chart/ApexChart';
 import { Select } from '~/components/Form/Select';
 import Template from '~/components/Template';
+import { useFeedback } from '~/contexts/FeedbackContext';
 import IEntityBase from '~/models/Entity/Base/IEntityBase';
 import IViewMapRankingAPI from '~/models/Entity/Ranking/IViewMapRankingAPI';
 import ISelectOption from '~/models/ISelectOption';
@@ -39,8 +42,8 @@ import getDivision from '~/utils/getDivision';
 interface IComparativePlayersProps extends GetServerSideProps {
   user: User;
   userId: string;
-  playerOneId: string;
-  playerTwoId: string;
+  usernameOne: string;
+  usernameTwo: string;
 }
 
 interface IPlayerSelectOption extends ISelectOption {
@@ -69,10 +72,20 @@ interface IRankingMapComparison extends IEntityBase {
   player_two_damage: number;
 }
 
+interface IComparativeMessageAPI {
+  quantity?: string;
+  kill?: string;
+  death?: string;
+  assistance?: string;
+  headshot?: string;
+  damage?: string;
+}
+
 const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
-  user, userId, playerOneId, playerTwoId,
+  user, userId, usernameOne, usernameTwo,
 }) => {
   const isMobile = useBreakpointValue({ base: true, md: false });
+  const { errorFeedbackToast } = useFeedback();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -81,30 +94,94 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
   const [playerOne, setPlayerOne] = useState<IPlayerSelectOption | undefined>();
   const [playerTwo, setPlayerTwo] = useState<IPlayerSelectOption | undefined>();
   const [rankingMapComparison, setRankingMapComparison] = useState<IRankingMapComparison[]>([]);
+  const [comparativeMessage, setComparativeMessage] = useState<IComparativeMessageAPI | undefined>();
 
   const { data: players, isLoading, isFetching } = usePlayers(userId);
 
   const { data: playerOneRanking, isLoading: isLoadingRankingOne } = usePlayerMapRanking(String(playerOne?.id) ?? '', { enabled: !!playerOne });
   const { data: playerTwoRanking, isLoading: isLoadingRankingTwo } = usePlayerMapRanking(String(playerTwo?.id) ?? '', { enabled: !!playerTwo });
 
+  const { mutateAsync: generateComparativeMessage, isPending: isLoadingComparativeMessage } = useMutation(
+    {
+      mutationFn: async () => {
+        setComparativeMessage(undefined);
+
+        const response = await axios.post<IComparativeMessageAPI>('/api/comparative-messages', {
+          player_one: {
+            name: playerOne?.name,
+            damage: playerOne?.damage,
+            kill: playerOne?.kills,
+            assistance: playerOne?.assistances,
+            death: playerOne?.deaths,
+            headshot: playerOne?.headshot_percentage,
+            quantity: playerOne?.quantity,
+          },
+          player_two: {
+            name: playerTwo?.name,
+            damage: playerTwo?.damage,
+            kill: playerTwo?.kills,
+            assistance: playerTwo?.assistances,
+            death: playerTwo?.deaths,
+            headshot: playerTwo?.headshot_percentage,
+            quantity: playerTwo?.quantity,
+          },
+        });
+
+        return response.data;
+      },
+      async onSuccess(data) {
+        setComparativeMessage(data);
+      },
+      onError(error: Error) {
+        errorFeedbackToast('OpenAI - Mensagens Engraçadas', error);
+      },
+    },
+  );
+
   useEffect(() => {
+    setComparativeMessage(undefined);
     setPlayerOptions(players ? players.map((player) => ({ id: player.id, name: player.name, description: player.username })) : []);
   }, [players]);
 
-  // useEffect(() => {
-  //   if (playerOneId) {
-  //     setPlayerOne(playerOptions.find((player) => player.id === playerOneId));
-  //   }
-  //   if (playerTwoId) {
-  //     setPlayerTwo(playerOptions.find((player) => player.id === playerTwoId));
-  //   }
-  // }, [playerOptions, playerOneId, playerTwoId]);
+  useEffect(() => {
+    if (usernameOne) {
+      const one = playerOptions.find((player) => player.description === usernameOne);
+      if (one) {
+        setPlayerOne({
+          ...one,
+          count: 0,
+          quantity: 0,
+          kills: 0,
+          deaths: 0,
+          assistances: 0,
+          headshot_percentage: 0,
+          damage: 0,
+        });
+      }
+    }
+    if (usernameTwo) {
+      const two = playerOptions.find((player) => player.description === usernameTwo);
+      if (two) {
+        setPlayerTwo({
+          ...two,
+          count: 0,
+          quantity: 0,
+          kills: 0,
+          deaths: 0,
+          assistances: 0,
+          headshot_percentage: 0,
+          damage: 0,
+        });
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [playerOptions]);
 
-  // useEffect(() => {
-  //   if (playerOne && playerTwo) {
-  //     router.push(`${pathname}?playerOneId=${playerOne.id}&playerTwoId=${playerTwo.id}`);
-  //   }
-  // }, [router, pathname, playerOne, playerTwo]);
+  useEffect(() => {
+    if (playerOne && playerTwo) {
+      router.push(`${pathname}?p1=${playerOne.description}&p2=${playerTwo.description}`);
+    }
+  }, [router, pathname, playerOne, playerTwo]);
 
   useEffect(() => {
     if (playerOneRanking && playerTwoRanking) {
@@ -218,7 +295,9 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
       });
 
       setRankingMapComparison(result.sort((a, b) => a.name.localeCompare(b.name)));
+      generateComparativeMessage();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playerOneRanking, playerTwoRanking]);
 
   const handleTabsChange = (index: number) => {
@@ -238,7 +317,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
             <Flex align="center" gap="4">
               <Text fontSize="2xl">🔥</Text>
               <Box>
-                <Text>Maior Dano Causado</Text>
+                <Text>{comparativeMessage?.damage ? comparativeMessage?.damage : 'Maior Dano Causado'}</Text>
                 <Text fontSize="sm">
                   <b>{one}</b>
                   {' '}
@@ -269,7 +348,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
             <Flex align="center" gap="4">
               <Text fontSize="2xl">☠️</Text>
               <Box>
-                <Text>Mais Vítimas Eliminadas</Text>
+                <Text>{comparativeMessage?.kill ? comparativeMessage?.kill : 'Mais Vítimas Eliminadas'}</Text>
                 <Text fontSize="sm">
                   <b>{one}</b>
                   {' '}
@@ -300,7 +379,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
             <Flex align="center" gap="4">
               <Text fontSize="2xl">🤝</Text>
               <Box>
-                <Text>Mais Assistências</Text>
+                <Text>{comparativeMessage?.assistance ? comparativeMessage?.assistance : 'Mais Assistências'}</Text>
                 <Text fontSize="sm">
                   <b>{one}</b>
                   {' '}
@@ -331,7 +410,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
             <Flex align="center" gap="4">
               <Text fontSize="2xl">⚰️</Text>
               <Box>
-                <Text>Menos Mortes Sofridas</Text>
+                <Text>{comparativeMessage?.death ? comparativeMessage?.death : 'Menos Mortes Sofridas'}</Text>
                 <Text fontSize="sm">
                   <b>{one}</b>
                   {' '}
@@ -363,7 +442,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
             <Flex align="center" gap="4">
               <Text fontSize="2xl">🎯</Text>
               <Box>
-                <Text>Maior Percentual de Tiros na Cabeça</Text>
+                <Text>{comparativeMessage?.headshot ? comparativeMessage?.headshot : 'Maior Percentual de Tiros na Cabeça'}</Text>
                 <Text fontSize="sm">
                   <b>{formatPercentage(getDivision(one, count), true)}</b>
                   {' '}
@@ -394,7 +473,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
             <Flex align="center" gap="4">
               <Text fontSize="2xl">🎮</Text>
               <Box>
-                <Text>Mais Partidas Disputadas</Text>
+                <Text>{comparativeMessage?.quantity ? comparativeMessage?.quantity : 'Mais Partidas Disputadas'}</Text>
                 <Text fontSize="sm">
                   <b>{one}</b>
                   {' '}
@@ -455,7 +534,11 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
   return (
     <>
       <Head>
-        <title>Comparativo entre Jogadores - CS Manager</title>
+        {usernameOne && usernameTwo ? (
+          <title>{`${usernameOne} vs ${usernameTwo} - CS Manager`}</title>
+        ) : (
+          <title>Comparativo entre Jogadores - CS Manager</title>
+        )}
         <meta name="description" content="Compare os jogadores para identificar quem é o mais habilidoso." />
       </Head>
       <Template user={user}>
@@ -463,6 +546,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
           <CardHeader
             icon={RiAwardLine}
             title={isMobile ? 'Comparativo' : 'Comparativo entre Jogadores'}
+            isFetching={isLoadingComparativeMessage}
           />
           <CardBody>
             <Stack direction={['column', 'row']}>
@@ -492,6 +576,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                       return;
                     }
 
+                    setComparativeMessage(undefined);
                     setPlayerOne(undefined);
                   }}
                 />
@@ -522,6 +607,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                       return;
                     }
 
+                    setComparativeMessage(undefined);
                     setPlayerTwo(undefined);
                   }}
                 />
@@ -737,7 +823,7 @@ export default ComparativePlayersPublic;
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   try {
-    const { id, playerOneId = null, playerTwoId = null } = context.query;
+    const { id, p1 = null, p2 = null } = context.query;
 
     if (id) {
       const userId = String(id);
@@ -747,8 +833,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
         return {
           props: {
             userId,
-            playerOneId,
-            playerTwoId,
+            usernameOne: p1,
+            usernameTwo: p2,
           },
         };
       }
@@ -761,8 +847,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
         return {
           props: {
             userId,
-            playerOneId,
-            playerTwoId,
+            usernameOne: p1,
+            usernameTwo: p2,
           },
         };
       }
@@ -771,8 +857,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
         props: {
           user,
           userId,
-          playerOneId,
-          playerTwoId,
+          usernameOne: p1,
+          usernameTwo: p2,
         },
       };
     }
