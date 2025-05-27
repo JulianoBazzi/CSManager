@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-  Context, createContext, ReactNode, useContext,
+  type Context, createContext, type ReactNode, useContext,
 } from 'react';
 
-import { AlertStatus, useToast } from '@chakra-ui/react';
-import { AuthError } from '@supabase/supabase-js';
+import { type AlertStatus, useToast } from '@chakra-ui/react';
+import type { AuthError } from '@supabase/supabase-js';
 
 interface IFeedbackProviderProps {
   children: ReactNode;
@@ -62,7 +61,6 @@ export function FeedbackProvider({ children }: IFeedbackProviderProps) {
 
   return (
     <FeedbackContext.Provider
-      // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{
         errorFeedbackToast,
         infoFeedbackToast,

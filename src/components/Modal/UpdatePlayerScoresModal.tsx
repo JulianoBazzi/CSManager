@@ -1,6 +1,5 @@
-/* eslint-disable no-await-in-loop */
 import {
-  forwardRef, ForwardRefRenderFunction, useCallback, useEffect, useImperativeHandle, useRef, useState,
+  forwardRef, type ForwardRefRenderFunction, useCallback, useEffect, useImperativeHandle, useRef, useState,
 } from 'react';
 
 import {
@@ -12,11 +11,11 @@ import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
-import { Modal, ModalHandle } from '~/components/Form/Modal';
+import { Modal, type ModalHandle } from '~/components/Form/Modal';
 import { TABLE_PLAYERS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
-import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
-import IRecordModal from '~/models/Modal/IRecordModal';
+import type IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
+import type IRecordModal from '~/models/Modal/IRecordModal';
 import { getLeetifyProfileScore } from '~/services/hooks/useLeetifyProfile';
 import { getPlayers } from '~/services/hooks/usePlayers';
 import { queryClient } from '~/services/queryClient';
@@ -103,7 +102,6 @@ const UpdatePlayerScoresModalBase: ForwardRefRenderFunction<UpdatePlayerScoresMo
     if (players && players.length > 0) {
       mutateAsync();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [players]);
 
   useImperativeHandle(

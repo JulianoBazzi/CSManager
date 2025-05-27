@@ -1,7 +1,7 @@
-import { forwardRef, ForwardRefRenderFunction } from 'react';
+import { forwardRef, type ForwardRefRenderFunction } from 'react';
 import { RiAddLine } from 'react-icons/ri';
 
-import { IconButtonProps, Icon } from '@chakra-ui/react';
+import { type IconButtonProps, Icon } from '@chakra-ui/react';
 
 import { GhostGrayIconButton } from '~/components/IconButton/Base/GhostGrayIconButton';
 

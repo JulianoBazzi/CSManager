@@ -1,10 +1,10 @@
 import {
-  forwardRef, ForwardRefRenderFunction, ReactNode, useCallback, useImperativeHandle, useState,
+  forwardRef, type ForwardRefRenderFunction, type ReactNode, useCallback, useImperativeHandle, useState,
 } from 'react';
 
 import {
   Modal as ChakraModal,
-  ModalProps as ChakraModalProps,
+  type ModalProps as ChakraModalProps,
   ModalOverlay,
   ModalContent,
   ModalHeader,

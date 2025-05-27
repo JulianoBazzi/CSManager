@@ -1,18 +1,18 @@
 import {
-  forwardRef, ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
+  forwardRef, type ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
 } from 'react';
 
 import {
   ModalBody, ModalFooter,
 } from '@chakra-ui/react';
-import { ColumnDef } from '@tanstack/react-table';
+import type { ColumnDef } from '@tanstack/react-table';
 
 import { MapBadge } from '~/components/Badge/MapBadge';
-import { Modal, ModalHandle } from '~/components/Form/Modal';
+import { Modal, type ModalHandle } from '~/components/Form/Modal';
 import { Table } from '~/components/Form/Table';
 import { useFeedback } from '~/contexts/FeedbackContext';
-import IViewMapRankingAPI from '~/models/Entity/Ranking/IViewMapRankingAPI';
-import IPlayerMapRankingModal from '~/models/Modal/IPlayerMapRankingModal';
+import type IViewMapRankingAPI from '~/models/Entity/Ranking/IViewMapRankingAPI';
+import type IPlayerMapRankingModal from '~/models/Modal/IPlayerMapRankingModal';
 import { usePlayerMapRanking } from '~/services/hooks/usePlayerMapRanking';
 
 export type PlayerMapRankingModalHandle = {
@@ -37,7 +37,6 @@ const PlayerMapRankingModalBase: ForwardRefRenderFunction<PlayerMapRankingModalH
       accessorKey: 'format_map_type',
       header: 'Categoria',
       enableSorting: false,
-      // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <MapBadge type={row.original.map_type} format_type={row.original.map_type} />,
     },
     {

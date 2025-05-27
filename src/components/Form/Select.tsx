@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { forwardRef } from 'react';
 
 import {
   FormControl, FormErrorMessage, FormLabel, Skeleton,
 } from '@chakra-ui/react';
-import { Select as ChakraReactSelect, SelectInstance } from 'chakra-react-select';
+import { Select as ChakraReactSelect, type SelectInstance } from 'chakra-react-select';
 
-import ISelectOption from '~/models/ISelectOption';
+import type ISelectOption from '~/models/ISelectOption';
 
 interface ISelectProps {
   name: string;
@@ -122,7 +121,7 @@ function SelectBase(
           }}
         />
       )}
-      {error && error.message && <FormErrorMessage my="1">{error.message}</FormErrorMessage>}
+      {error?.message && <FormErrorMessage my="1">{error.message}</FormErrorMessage>}
     </FormControl>
   );
 }

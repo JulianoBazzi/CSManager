@@ -1,5 +1,5 @@
 import { Skeleton } from '@chakra-ui/react';
-import { ApexOptions } from 'apexcharts';
+import type { ApexOptions } from 'apexcharts';
 import dynamic from 'next/dynamic';
 
 const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });

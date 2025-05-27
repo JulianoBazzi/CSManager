@@ -1,4 +1,4 @@
-import { ButtonProps } from '@chakra-ui/react';
+import type { ButtonProps } from '@chakra-ui/react';
 
 import { SolidBlueButton } from '~/components/Button/Base/SolidBlueButton';
 

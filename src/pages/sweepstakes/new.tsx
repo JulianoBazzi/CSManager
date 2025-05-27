@@ -1,21 +1,21 @@
 import { useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { type SubmitHandler, useForm } from 'react-hook-form';
 
 import {
   Checkbox, Flex, Stack,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { User } from '@supabase/supabase-js';
+import type { User } from '@supabase/supabase-js';
 import { useMutation } from '@tanstack/react-query';
-import { ColumnDef } from '@tanstack/react-table';
+import type { ColumnDef } from '@tanstack/react-table';
 import dayjs from 'dayjs';
-import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
 import { v4 } from 'uuid';
 import * as yup from 'yup';
-import { InferType } from 'yup';
+import type { InferType } from 'yup';
 
 import { games } from '~/assets/games';
 import { sweepstakeEngines } from '~/assets/sweepstakeEngines';
@@ -33,15 +33,15 @@ import { SweepstakeIconButton } from '~/components/IconButton/SweepstakeIconButt
 import Template from '~/components/Template';
 import { TABLE_SWEEPSTAKE_MAPS, TABLE_SWEEPSTAKE_PLAYERS, TABLE_SWEEPSTAKES } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
-import IMapAPI from '~/models/Entity/Map/IMapAPI';
-import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
-import IPlayerScoreAPI from '~/models/Entity/Player/IPlayerScoreAPI';
-import ISweepstake from '~/models/Entity/Sweepstake/ISweepstake';
+import type IMapAPI from '~/models/Entity/Map/IMapAPI';
+import type IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
+import type IPlayerScoreAPI from '~/models/Entity/Player/IPlayerScoreAPI';
+import type ISweepstake from '~/models/Entity/Sweepstake/ISweepstake';
 import { SeepstakeEngineEnum } from '~/models/Entity/Sweepstake/ISweepstakeAPI';
-import ISweepstakeMap from '~/models/Entity/Sweepstake/ISweepstakeMap';
-import ISweepstakePlayer from '~/models/Entity/Sweepstake/ISweepstakePlayer';
+import type ISweepstakeMap from '~/models/Entity/Sweepstake/ISweepstakeMap';
+import type ISweepstakePlayer from '~/models/Entity/Sweepstake/ISweepstakePlayer';
 import { SweepstakeTeamEnum } from '~/models/Entity/Sweepstake/ISweepstakePlayerAPI';
-import ISelectOption from '~/models/ISelectOption';
+import type ISelectOption from '~/models/ISelectOption';
 import { useMaps } from '~/services/hooks/useMaps';
 import { usePlayers } from '~/services/hooks/usePlayers';
 import { getPlayersScoresOnMaps } from '~/services/hooks/usePlayerScoresOnMaps';
@@ -178,7 +178,6 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
       accessorKey: 'id',
       header: '',
       enableSorting: false,
-      // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => (
         <Checkbox
           isChecked={!!selectedPlayers.find((player) => player.id === row.original.id)}
@@ -201,14 +200,12 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
       accessorKey: 'premier',
       header: 'Premier',
       enableSorting: false,
-      // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
     },
     {
       accessorKey: 'rating',
       header: 'Avaliação',
       enableSorting: false,
-      // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <StarBadge rating={row.original.rating} />,
     },
   ];
@@ -218,7 +215,6 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
       accessorKey: 'id',
       header: '',
       enableSorting: false,
-      // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => (
         <Checkbox
           isChecked={!!selectedMaps.find((id) => id === row.original.id)}
@@ -236,7 +232,6 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
       accessorKey: 'format_map_type',
       header: 'Categoria',
       enableSorting: false,
-      // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <MapBadge type={row.original.map_type} format_type={row.original.format_map_type} />,
     },
   ];

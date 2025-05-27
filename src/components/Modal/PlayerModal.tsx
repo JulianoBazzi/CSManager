@@ -1,7 +1,7 @@
 import {
-  forwardRef, ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
+  forwardRef, type ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
 } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { type SubmitHandler, useForm } from 'react-hook-form';
 import { RiRepeatFill } from 'react-icons/ri';
 import { Rating } from 'react-simple-star-rating';
 
@@ -18,19 +18,19 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@tanstack/react-query';
 import * as yup from 'yup';
-import { InferType } from 'yup';
+import type { InferType } from 'yup';
 
 import { AddSolidButton } from '~/components/Button/AddSolidButton';
 import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
 import { SaveSolidButton } from '~/components/Button/SaveSolidButton';
 import { Input } from '~/components/Form/Input';
-import { Modal, ModalHandle } from '~/components/Form/Modal';
+import { Modal, type ModalHandle } from '~/components/Form/Modal';
 import { NumberInput } from '~/components/Form/NumberInput';
 import { Switch } from '~/components/Form/Switch';
 import { TABLE_PLAYERS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
-import IPlayer from '~/models/Entity/Player/IPlayer';
-import IRecordModal from '~/models/Modal/IRecordModal';
+import type IPlayer from '~/models/Entity/Player/IPlayer';
+import type IRecordModal from '~/models/Modal/IRecordModal';
 import { getLeetifyProfileScore } from '~/services/hooks/useLeetifyProfile';
 import { getPlayer } from '~/services/hooks/usePlayers';
 import { queryClient } from '~/services/queryClient';

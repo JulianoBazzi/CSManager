@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-  forwardRef, ForwardRefRenderFunction, useImperativeHandle, useRef, useState,
+  forwardRef, type ForwardRefRenderFunction, useImperativeHandle, useRef, useState,
 } from 'react';
 
 import { alertOrigins } from '~/assets/alertOrigins';
 import {
-  Alert, AlertHandle, AlertTypeEnum, AlertOriginEnum,
+  Alert, type AlertHandle, AlertTypeEnum, type AlertOriginEnum,
 } from '~/components/Alert';
 import { BackOutlineButton } from '~/components/Button/BackOutlineButton';
 import { ConfirmSolidButton } from '~/components/Button/ConfirmSolidButton';

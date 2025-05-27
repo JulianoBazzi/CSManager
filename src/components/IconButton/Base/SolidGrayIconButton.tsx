@@ -1,6 +1,6 @@
-import { forwardRef, ForwardRefRenderFunction } from 'react';
+import { forwardRef, type ForwardRefRenderFunction } from 'react';
 
-import { IconButton, IconButtonProps } from '@chakra-ui/react';
+import { IconButton, type IconButtonProps } from '@chakra-ui/react';
 
 const SolidGrayIconButtonBase: ForwardRefRenderFunction<HTMLButtonElement, IconButtonProps> = (
   { ...rest }: IconButtonProps,

@@ -1,8 +1,7 @@
-/* eslint-disable max-len */
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { openai } from '~/config/openai';
-import ILeaderboardAPI from '~/models/Entity/Leaderboard/ILeaderboardAPI';
+import type ILeaderboardAPI from '~/models/Entity/Leaderboard/ILeaderboardAPI';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {

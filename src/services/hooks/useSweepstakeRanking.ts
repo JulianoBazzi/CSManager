@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { VIEW_SWEEPSTAKE_RANKING } from '~/config/constants';
-import IViewSeepstakeRankingAPI from '~/models/Entity/Ranking/IViewSeepstakeRankingAPI';
+import type IViewSeepstakeRankingAPI from '~/models/Entity/Ranking/IViewSeepstakeRankingAPI';
 import supabase from '~/services/supabase';
 
 export async function getSweepstakeRanking(sweepstakeId: string): Promise<IViewSeepstakeRankingAPI[]> {

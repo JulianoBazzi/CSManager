@@ -1,5 +1,5 @@
-import { forwardRef, ForwardRefRenderFunction, ReactNode } from 'react';
-import { FieldError } from 'react-hook-form';
+import { forwardRef, type ForwardRefRenderFunction, type ReactNode } from 'react';
+import type { FieldError } from 'react-hook-form';
 
 import {
   FormControl,
@@ -7,7 +7,7 @@ import {
   FormLabel,
   Input as ChakraInput,
   InputGroup,
-  InputProps as ChakraInputProps,
+  type InputProps as ChakraInputProps,
   InputRightElement,
   Skeleton,
   Spinner,

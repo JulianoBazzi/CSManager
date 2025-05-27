@@ -1,4 +1,4 @@
-import IPlayerScoreAPI from '~/models/Entity/Player/IPlayerScoreAPI';
+import type IPlayerScoreAPI from '~/models/Entity/Player/IPlayerScoreAPI';
 
 function balanceTeams(players: IPlayerScoreAPI[]): [IPlayerScoreAPI[], IPlayerScoreAPI[]] {
   function calculateTeamScore(team: IPlayerScoreAPI[]): number {

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useRef } from 'react';
 
 export default function useDebounce(fn: (...params: any[]) => any, delay: number) {

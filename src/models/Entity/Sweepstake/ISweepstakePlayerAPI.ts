@@ -1,4 +1,4 @@
-import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
+import type IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
 
 export enum SweepstakeTeamEnum {
   One = 0,

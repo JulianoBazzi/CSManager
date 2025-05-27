@@ -1,8 +1,8 @@
-import { PostgrestResponse } from '@supabase/supabase-js';
+import type { PostgrestResponse } from '@supabase/supabase-js';
 import { useQuery } from '@tanstack/react-query';
 
 import { FUNCTION_GET_RANKING_BY_YEAR } from '~/config/constants';
-import IViewRankingAPI from '~/models/Entity/Ranking/IViewRankingAPI';
+import type IViewRankingAPI from '~/models/Entity/Ranking/IViewRankingAPI';
 import supabase from '~/services/supabase';
 
 export async function getRanking(userId: string, year: number): Promise<IViewRankingAPI[]> {

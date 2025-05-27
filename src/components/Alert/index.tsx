@@ -1,5 +1,5 @@
 import {
-  forwardRef, ForwardRefRenderFunction, ReactNode, RefObject, useCallback, useImperativeHandle, useState,
+  forwardRef, type ForwardRefRenderFunction, type ReactNode, type RefObject, useCallback, useImperativeHandle, useState,
 } from 'react';
 
 import {

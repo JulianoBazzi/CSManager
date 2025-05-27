@@ -1,10 +1,9 @@
-/* eslint-disable max-len */
 import { RiStarFill, RiStarHalfFill, RiStarLine } from 'react-icons/ri';
 
 import {
   Icon,
   Flex,
-  FlexProps,
+  type FlexProps,
 } from '@chakra-ui/react';
 
 interface IStarBadgeProps extends FlexProps {

@@ -1,6 +1,6 @@
-import { forwardRef, ForwardRefRenderFunction } from 'react';
+import { forwardRef, type ForwardRefRenderFunction } from 'react';
 
-import { Button as ChakraButton, ButtonProps } from '@chakra-ui/react';
+import { Button as ChakraButton, type ButtonProps } from '@chakra-ui/react';
 
 const OutlineRedButtonBase: ForwardRefRenderFunction<HTMLButtonElement, ButtonProps> = (
   { ...rest }: ButtonProps,

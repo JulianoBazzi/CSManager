@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { TABLE_SWEEPSTAKE_PLAYERS } from '~/config/constants';
-import ISweepstakePlayerAPI from '~/models/Entity/Sweepstake/ISweepstakePlayerAPI';
+import type ISweepstakePlayerAPI from '~/models/Entity/Sweepstake/ISweepstakePlayerAPI';
 import { formatPlayer } from '~/services/hooks/usePlayers';
 import supabase from '~/services/supabase';
 

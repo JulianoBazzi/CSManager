@@ -1,4 +1,4 @@
-import ISelectOption from '~/models/ISelectOption';
+import type ISelectOption from '~/models/ISelectOption';
 
 export const years: ISelectOption[] = [
   {

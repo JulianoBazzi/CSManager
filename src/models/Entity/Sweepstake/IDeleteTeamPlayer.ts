@@ -1,4 +1,4 @@
-import { SweepstakeTeamEnum } from '~/models/Entity/Sweepstake/ISweepstakePlayerAPI';
+import type { SweepstakeTeamEnum } from '~/models/Entity/Sweepstake/ISweepstakePlayerAPI';
 
 interface IDeleteTeamPlayer {
   sweepstake_player_id: string;

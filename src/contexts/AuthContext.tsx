@@ -1,14 +1,14 @@
 import {
-  createContext, ReactNode, useCallback, useContext, useMemo,
+  createContext, type ReactNode, useCallback, useContext, useMemo,
 } from 'react';
 
 import { useRouter } from 'next/navigation';
 import { destroyCookie, setCookie } from 'nookies';
 
 import { useFeedback } from '~/contexts/FeedbackContext';
-import IChangePassword from '~/models/IChangePassword';
-import IProfile from '~/models/IProfile';
-import ISignIn from '~/models/ISignIn';
+import type IChangePassword from '~/models/IChangePassword';
+import type IProfile from '~/models/IProfile';
+import type ISignIn from '~/models/ISignIn';
 import supabase from '~/services/supabase';
 
 interface IAuthProviderProps {

@@ -4,9 +4,9 @@ import {
 } from 'react-icons/ri';
 
 import { Flex, TableContainer } from '@chakra-ui/react';
-import { User } from '@supabase/supabase-js';
-import { ColumnDef } from '@tanstack/react-table';
-import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import type { User } from '@supabase/supabase-js';
+import type { ColumnDef } from '@tanstack/react-table';
+import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
 import removeAccents from 'remove-accents';
@@ -21,8 +21,8 @@ import { Select } from '~/components/Form/Select';
 import { Table } from '~/components/Form/Table';
 import { SearchBar } from '~/components/SearchBar';
 import Template from '~/components/Template';
-import IViewRankingAPI from '~/models/Entity/Ranking/IViewRankingAPI';
-import ISelectOption from '~/models/ISelectOption';
+import type IViewRankingAPI from '~/models/Entity/Ranking/IViewRankingAPI';
+import type ISelectOption from '~/models/ISelectOption';
 import { useRanking } from '~/services/hooks/useRanking';
 import supabase from '~/services/supabase';
 
@@ -64,13 +64,11 @@ const RankingPublic: NextPage<IRankingProps> = ({ user, userId }) => {
     {
       accessorKey: 'premier',
       header: 'Premier',
-      // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
     },
     {
       accessorKey: 'rating',
       header: 'Avaliação',
-      // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <StarBadge rating={row.original.rating} />,
     },
     {

@@ -9,21 +9,21 @@ import {
 import {
   useReactTable,
   flexRender,
-  ColumnDef,
+  type ColumnDef,
   getCoreRowModel,
   getSortedRowModel,
   getPaginationRowModel,
-  PaginationState,
-  SortingState,
-  ColumnSort,
-  VisibilityState,
+  type PaginationState,
+  type SortingState,
+  type ColumnSort,
+  type VisibilityState,
 } from '@tanstack/react-table';
 
 import { FirstPageGhostIconButton } from '~/components/IconButton/FirstPageGhostIconButton';
 import { LastPageGhostIconButton } from '~/components/IconButton/LastPageGhostIconButton';
 import { NextPageGhostIconButton } from '~/components/IconButton/NextPageGhostIconButton';
 import { PreviousPageGhostIconButton } from '~/components/IconButton/PreviousPageGhostIconButton';
-import IEntityBase from '~/models/Entity/Base/IEntityBase';
+import type IEntityBase from '~/models/Entity/Base/IEntityBase';
 
 export type ITableProps<T extends IEntityBase> = {
   columns: ColumnDef<T>[];
@@ -123,7 +123,6 @@ export function Table<T extends IEntityBase>({
           <Tr key={index}>
             {columns.map((column, columnIndex) => (
               <Td
-                // eslint-disable-next-line react/no-array-index-key
                 key={`${columnIndex}-${index}`}
               >
                 <Skeleton height="16px" />

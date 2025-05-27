@@ -1,5 +1,4 @@
-/* eslint-disable max-len */
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { openai } from '~/config/openai';
 

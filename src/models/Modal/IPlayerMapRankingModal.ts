@@ -1,5 +1,5 @@
-import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
-import IRecordModal from '~/models/Modal/IRecordModal';
+import type IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
+import type IRecordModal from '~/models/Modal/IRecordModal';
 
 interface IPlayerMapRankingModal extends IRecordModal {
   player: IPlayerAPI;

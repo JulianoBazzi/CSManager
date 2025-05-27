@@ -1,8 +1,8 @@
-import { ElementType, ReactNode } from 'react';
+import type { ElementType, ReactNode } from 'react';
 
 import {
   CardHeader as ChakraCardHeader,
-  CardHeaderProps as ChakraCardHeaderProps,
+  type CardHeaderProps as ChakraCardHeaderProps,
   Divider,
   Flex,
   Heading,

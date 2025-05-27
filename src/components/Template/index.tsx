@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { RiCloseLine, RiMenuFill } from 'react-icons/ri';
 
 import {
@@ -24,12 +24,12 @@ import {
   MenuDivider,
   Icon,
 } from '@chakra-ui/react';
-import { User } from '@supabase/supabase-js';
+import type { User } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 
 import { useAuth } from '~/contexts/AuthContext';
-import INav from '~/models/INav';
-import INavItem from '~/models/INavItem';
+import type INav from '~/models/INav';
+import type INavItem from '~/models/INavItem';
 
 import packageInfo from '../../../package.json';
 

@@ -14,15 +14,15 @@ import {
 import {
   Divider, Flex, Icon, IconButton, Stack, TableContainer, Text, useBreakpointValue,
 } from '@chakra-ui/react';
-import { User } from '@supabase/supabase-js';
+import type { User } from '@supabase/supabase-js';
 import { useMutation } from '@tanstack/react-query';
-import { ColumnDef } from '@tanstack/react-table';
-import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import type { ColumnDef } from '@tanstack/react-table';
+import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
 
 import { AlertOriginEnum, AlertTypeEnum } from '~/components/Alert';
-import { ConfirmRegisterAlert, ConfirmRegisterAlertHandle } from '~/components/Alert/ConfirmRegisterAlert';
+import { ConfirmRegisterAlert, type ConfirmRegisterAlertHandle } from '~/components/Alert/ConfirmRegisterAlert';
 import { PremierBadge } from '~/components/Badge/PremierBadge';
 import { ScoreBadge } from '~/components/Badge/ScoreBadge';
 import { StarBadge } from '~/components/Badge/StarBadge';
@@ -34,17 +34,18 @@ import { AddIconButton } from '~/components/IconButton/AddIconButton';
 import { ChangeTeamIconButton } from '~/components/IconButton/ChangeTeamIconButton';
 import { DeleteSolidIconButton } from '~/components/IconButton/DeleteSolidIconButton';
 import { RankingIconButton } from '~/components/IconButton/RankingIconButton';
-import { NewSweepstakePlayerModal, NewSweepstakePlayerModalHandle } from '~/components/Modal/NewSweepstakePlayerModal';
-import { SweepstakeMapModal, SweepstakeMapModalHandle } from '~/components/Modal/SweepstakeMapModal';
-import { SweepstakeMapRankingModal, SweepstakeMapRankingModalHandle } from '~/components/Modal/SweepstakeMapRankingModal';
+import { NewSweepstakePlayerModal, type NewSweepstakePlayerModalHandle } from '~/components/Modal/NewSweepstakePlayerModal';
+import { SweepstakeMapModal, type SweepstakeMapModalHandle } from '~/components/Modal/SweepstakeMapModal';
+import { SweepstakeMapRankingModal, type SweepstakeMapRankingModalHandle } from '~/components/Modal/SweepstakeMapRankingModal';
 import Template from '~/components/Template';
 import { TABLE_SWEEPSTAKES, TABLE_SWEEPSTAKE_PLAYERS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
-import IViewSeepstakeRankingAPI from '~/models/Entity/Ranking/IViewSeepstakeRankingAPI';
-import IChangeTeamPlayer from '~/models/Entity/Sweepstake/IChangeTeamPlayer';
-import IDeleteTeamPlayer from '~/models/Entity/Sweepstake/IDeleteTeamPlayer';
-import ISweepstakeAPI, { SeepstakeEngineEnum } from '~/models/Entity/Sweepstake/ISweepstakeAPI';
-import ISweepstakeMapAPI from '~/models/Entity/Sweepstake/ISweepstakeMapAPI';
+import type IViewSeepstakeRankingAPI from '~/models/Entity/Ranking/IViewSeepstakeRankingAPI';
+import type IChangeTeamPlayer from '~/models/Entity/Sweepstake/IChangeTeamPlayer';
+import type IDeleteTeamPlayer from '~/models/Entity/Sweepstake/IDeleteTeamPlayer';
+import type ISweepstakeAPI from '~/models/Entity/Sweepstake/ISweepstakeAPI';
+import { SeepstakeEngineEnum } from '~/models/Entity/Sweepstake/ISweepstakeAPI';
+import type ISweepstakeMapAPI from '~/models/Entity/Sweepstake/ISweepstakeMapAPI';
 import { SweepstakeTeamEnum } from '~/models/Entity/Sweepstake/ISweepstakePlayerAPI';
 import { useSweepstakeMaps } from '~/services/hooks/useSweepstakeMaps';
 import { useSweepstakePlayers } from '~/services/hooks/useSweepstakePlayers';
@@ -99,7 +100,6 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
     {
       accessorKey: 'premier',
       header: 'Premier',
-      // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
     },
     {

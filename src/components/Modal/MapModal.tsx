@@ -1,13 +1,13 @@
 import {
-  forwardRef, ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
+  forwardRef, type ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
 } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { type SubmitHandler, useForm } from 'react-hook-form';
 
 import { ModalBody, ModalFooter, Stack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@tanstack/react-query';
 import * as yup from 'yup';
-import { InferType } from 'yup';
+import type { InferType } from 'yup';
 
 import { games } from '~/assets/games';
 import { maps } from '~/assets/maps';
@@ -15,14 +15,14 @@ import { AddSolidButton } from '~/components/Button/AddSolidButton';
 import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
 import { SaveSolidButton } from '~/components/Button/SaveSolidButton';
 import { Input } from '~/components/Form/Input';
-import { Modal, ModalHandle } from '~/components/Form/Modal';
+import { Modal, type ModalHandle } from '~/components/Form/Modal';
 import { Select } from '~/components/Form/Select';
 import { Switch } from '~/components/Form/Switch';
 import { TABLE_MAPS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
-import IMap from '~/models/Entity/Map/IMap';
-import ISelectOption from '~/models/ISelectOption';
-import IRecordModal from '~/models/Modal/IRecordModal';
+import type IMap from '~/models/Entity/Map/IMap';
+import type ISelectOption from '~/models/ISelectOption';
+import type IRecordModal from '~/models/Modal/IRecordModal';
 import { getMap } from '~/services/hooks/useMaps';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';

@@ -1,5 +1,5 @@
 import { forwardRef, useState } from 'react';
-import { FieldError } from 'react-hook-form';
+import type { FieldError } from 'react-hook-form';
 import { RiEyeLine, RiEyeOffLine } from 'react-icons/ri';
 
 import {
@@ -9,7 +9,7 @@ import {
   FormLabel,
   Input as ChakraInput,
   InputGroup,
-  InputProps as ChakraInputProps,
+  type InputProps as ChakraInputProps,
   InputRightElement,
   Skeleton,
   Icon,

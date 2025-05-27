@@ -1,7 +1,7 @@
-import { QueryObserverOptions, useQuery } from '@tanstack/react-query';
+import { type QueryObserverOptions, useQuery } from '@tanstack/react-query';
 
 import { VIEW_MAP_RANKING } from '~/config/constants';
-import IViewMapRankingAPI from '~/models/Entity/Ranking/IViewMapRankingAPI';
+import type IViewMapRankingAPI from '~/models/Entity/Ranking/IViewMapRankingAPI';
 import supabase from '~/services/supabase';
 
 export async function getPlayerMapRanking(playerId: string): Promise<IViewMapRankingAPI[]> {

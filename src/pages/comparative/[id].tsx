@@ -15,10 +15,10 @@ import {
   Text,
   useBreakpointValue,
 } from '@chakra-ui/react';
-import { User } from '@supabase/supabase-js';
+import type { User } from '@supabase/supabase-js';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
-import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { usePathname, useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
@@ -30,9 +30,9 @@ import ApexChart from '~/components/Chart/ApexChart';
 import { Select } from '~/components/Form/Select';
 import Template from '~/components/Template';
 import { useFeedback } from '~/contexts/FeedbackContext';
-import IEntityBase from '~/models/Entity/Base/IEntityBase';
-import IViewMapRankingAPI from '~/models/Entity/Ranking/IViewMapRankingAPI';
-import ISelectOption from '~/models/ISelectOption';
+import type IEntityBase from '~/models/Entity/Base/IEntityBase';
+import type IViewMapRankingAPI from '~/models/Entity/Ranking/IViewMapRankingAPI';
+import type ISelectOption from '~/models/ISelectOption';
 import { usePlayerMapRanking } from '~/services/hooks/usePlayerMapRanking';
 import { usePlayers } from '~/services/hooks/usePlayers';
 import supabase from '~/services/supabase';
@@ -174,7 +174,6 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
         });
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playerOptions]);
 
   useEffect(() => {
@@ -297,7 +296,6 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
       setRankingMapComparison(result.sort((a, b) => a.name.localeCompare(b.name)));
       generateComparativeMessage();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playerOneRanking, playerTwoRanking]);
 
   const handleTabsChange = (index: number) => {

@@ -1,13 +1,13 @@
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { type SubmitHandler, useForm } from 'react-hook-form';
 
 import { Button, CardFooter, Stack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { User } from '@supabase/supabase-js';
-import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import type { User } from '@supabase/supabase-js';
+import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
 import * as yup from 'yup';
-import { InferType } from 'yup';
+import type { InferType } from 'yup';
 
 import { games } from '~/assets/games';
 import { sweepstakeEngines } from '~/assets/sweepstakeEngines';
@@ -18,8 +18,8 @@ import { Input } from '~/components/Form/Input';
 import { Select } from '~/components/Form/Select';
 import Template from '~/components/Template';
 import { useAuth } from '~/contexts/AuthContext';
-import IProfile from '~/models/IProfile';
-import ISelectOption from '~/models/ISelectOption';
+import type IProfile from '~/models/IProfile';
+import type ISelectOption from '~/models/ISelectOption';
 import supabase from '~/services/supabase';
 
 interface IProfileProps extends GetServerSideProps {

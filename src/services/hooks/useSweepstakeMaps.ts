@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { TABLE_SWEEPSTAKE_MAPS } from '~/config/constants';
-import ISweepstakeMapAPI from '~/models/Entity/Sweepstake/ISweepstakeMapAPI';
+import type ISweepstakeMapAPI from '~/models/Entity/Sweepstake/ISweepstakeMapAPI';
 import supabase from '~/services/supabase';
 
 export async function getSweepstakeMaps(sweepstakeId: string): Promise<ISweepstakeMapAPI[]> {

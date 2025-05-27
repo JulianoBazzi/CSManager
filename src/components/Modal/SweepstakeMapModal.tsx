@@ -1,7 +1,7 @@
 import {
-  forwardRef, ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
+  forwardRef, type ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
 } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { type SubmitHandler, useForm } from 'react-hook-form';
 import { GiUnlitBomb } from 'react-icons/gi';
 import { MdEmojiPeople } from 'react-icons/md';
 import { RiUser3Fill, RiUser3Line } from 'react-icons/ri';
@@ -12,19 +12,19 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@tanstack/react-query';
 import * as yup from 'yup';
-import { InferType } from 'yup';
+import type { InferType } from 'yup';
 
 import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
 import { SaveSolidButton } from '~/components/Button/SaveSolidButton';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
-import { Modal, ModalHandle } from '~/components/Form/Modal';
+import { Modal, type ModalHandle } from '~/components/Form/Modal';
 import { NumberInput } from '~/components/Form/NumberInput';
 import { TABLE_SWEEPSTAKE_MAPS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
-import ISweepstakeMap from '~/models/Entity/Sweepstake/ISweepstakeMap';
-import ISweepstakeMapModal from '~/models/Modal/ISweepstakeMapModal';
+import type ISweepstakeMap from '~/models/Entity/Sweepstake/ISweepstakeMap';
+import type ISweepstakeMapModal from '~/models/Modal/ISweepstakeMapModal';
 import { getSweepstakeMap } from '~/services/hooks/useSweepstakeMaps';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';

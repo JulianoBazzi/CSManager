@@ -1,7 +1,7 @@
-import { forwardRef, ForwardRefRenderFunction } from 'react';
+import { forwardRef, type ForwardRefRenderFunction } from 'react';
 import { MdOutlineSafetyDivider } from 'react-icons/md';
 
-import { IconButtonProps, Icon } from '@chakra-ui/react';
+import { type IconButtonProps, Icon } from '@chakra-ui/react';
 
 import { GhostGrayIconButton } from '~/components/IconButton/Base/GhostGrayIconButton';
 

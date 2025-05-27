@@ -1,4 +1,4 @@
-import IPlayerLeaderboardAPI from '~/models/Entity/Leaderboard/IPlayerLeaderboardAPI';
+import type IPlayerLeaderboardAPI from '~/models/Entity/Leaderboard/IPlayerLeaderboardAPI';
 
 interface ILeaderboardAPI {
   game: string;

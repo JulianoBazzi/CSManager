@@ -1,5 +1,5 @@
 import {
-  FlexProps, Flex, Text,
+  type FlexProps, Flex, Text,
 } from '@chakra-ui/react';
 
 interface IPremierBadgeProps extends FlexProps {
@@ -17,10 +17,10 @@ export function PremierBadge({ premier, ...rest }: IPremierBadgeProps) {
     let secondPart: string;
 
     if (premier >= 10000) {
-      firstPart = parseInt(valueStr.slice(0, 2), 10);
+      firstPart = Number.parseInt(valueStr.slice(0, 2), 10);
       secondPart = valueStr.slice(2).padStart(3, '0');
     } else {
-      firstPart = parseInt(valueStr[0], 10);
+      firstPart = Number.parseInt(valueStr[0], 10);
       secondPart = valueStr.slice(1).padStart(3, '0');
     }
 

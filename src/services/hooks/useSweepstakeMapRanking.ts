@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { TABLE_RANKING } from '~/config/constants';
-import IRankingAPI from '~/models/Entity/Ranking/IRankingAPI';
-import IRankingParamsRequest from '~/models/Request/IRankingParamsRequest';
+import type IRankingAPI from '~/models/Entity/Ranking/IRankingAPI';
+import type IRankingParamsRequest from '~/models/Request/IRankingParamsRequest';
 import supabase from '~/services/supabase';
 
 export function formatSweepstakeMapRanking(ranking: IRankingAPI): IRankingAPI {

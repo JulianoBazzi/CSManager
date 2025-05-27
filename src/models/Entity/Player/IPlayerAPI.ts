@@ -1,4 +1,4 @@
-import IEntityBase from '~/models/Entity/Base/IEntityBase';
+import type IEntityBase from '~/models/Entity/Base/IEntityBase';
 
 interface IPlayerAPI extends IEntityBase {
   name: string;

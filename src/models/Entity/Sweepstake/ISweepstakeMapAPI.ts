@@ -1,5 +1,5 @@
-import IMapAPI from '~/models/Entity/Map/IMapAPI';
-import { SweepstakeTeamEnum } from '~/models/Entity/Sweepstake/ISweepstakePlayerAPI';
+import type IMapAPI from '~/models/Entity/Map/IMapAPI';
+import type { SweepstakeTeamEnum } from '~/models/Entity/Sweepstake/ISweepstakePlayerAPI';
 
 interface ISweepstakeMapAPI {
   id: string;

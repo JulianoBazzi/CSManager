@@ -1,4 +1,4 @@
-import { BadgeProps } from '@chakra-ui/react';
+import type { BadgeProps } from '@chakra-ui/react';
 
 import { Badge } from '~/components/Badge';
 

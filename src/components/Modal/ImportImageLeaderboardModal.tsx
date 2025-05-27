@@ -1,9 +1,7 @@
-/* eslint-disable no-await-in-loop */
-/* eslint-disable max-len */
 import {
-  ChangeEvent,
+  type ChangeEvent,
   forwardRef,
-  ForwardRefRenderFunction,
+  type ForwardRefRenderFunction,
   useCallback,
   useImperativeHandle,
   useRef,
@@ -20,7 +18,7 @@ import {
   Flex,
 } from '@chakra-ui/react';
 import { useMutation } from '@tanstack/react-query';
-import { ColumnDef } from '@tanstack/react-table';
+import type { ColumnDef } from '@tanstack/react-table';
 import axios from 'axios';
 import imgbbUpload from 'imgbb-image-uploader';
 import removeAccents from 'remove-accents';
@@ -29,19 +27,19 @@ import { v4 } from 'uuid';
 import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
 import { SaveSolidButton } from '~/components/Button/SaveSolidButton';
 import { Input } from '~/components/Form/Input';
-import { Modal, ModalHandle } from '~/components/Form/Modal';
+import { Modal, type ModalHandle } from '~/components/Form/Modal';
 import { Table } from '~/components/Form/Table';
 import { DeleteSolidIconButton } from '~/components/IconButton/DeleteSolidIconButton';
-import { PlayerLeaderboardModal, PlayerLeaderboardModalHandle } from '~/components/Modal/PlayerLeaderboardModal';
+import { PlayerLeaderboardModal, type PlayerLeaderboardModalHandle } from '~/components/Modal/PlayerLeaderboardModal';
 import {
   NEXT_PUBLIC_IMGBB_API_KEY, TABLE_PLAYERS, TABLE_RANKING, VIEW_MAP_RANKING, VIEW_SWEEPSTAKE_RANKING,
 } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
-import ILeaderboardAPI from '~/models/Entity/Leaderboard/ILeaderboardAPI';
-import IPlayerLeaderboardAPI from '~/models/Entity/Leaderboard/IPlayerLeaderboardAPI';
-import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
-import IRanking from '~/models/Entity/Ranking/IRanking';
-import ISweepstakeMapModal from '~/models/Modal/ISweepstakeMapModal';
+import type ILeaderboardAPI from '~/models/Entity/Leaderboard/ILeaderboardAPI';
+import type IPlayerLeaderboardAPI from '~/models/Entity/Leaderboard/IPlayerLeaderboardAPI';
+import type IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
+import type IRanking from '~/models/Entity/Ranking/IRanking';
+import type ISweepstakeMapModal from '~/models/Modal/ISweepstakeMapModal';
 import { getPlayers } from '~/services/hooks/usePlayers';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';
@@ -179,7 +177,6 @@ const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeade
       accessorKey: 'name',
       header: 'Nome',
       enableSorting: false,
-      // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => (
         <Flex gap="2" align="center">
           <Text>{row.original.name}</Text>
@@ -216,7 +213,6 @@ const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeade
       accessorKey: 'actions',
       header: '',
       enableSorting: false,
-      // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => (
         <DeleteSolidIconButton size="xs" onClick={() => handleDeletePlayerLeaderboard(row.original.id)} isDisabled={isLoading || isLoadingAnalyzeImage || isLoadingRanking} />
       ),

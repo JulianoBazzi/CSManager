@@ -1,5 +1,5 @@
-import IEntityBase from '~/models/Entity/Base/IEntityBase';
-import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
+import type IEntityBase from '~/models/Entity/Base/IEntityBase';
+import type IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
 
 interface IRankingAPI extends IEntityBase {
   user_id: string;

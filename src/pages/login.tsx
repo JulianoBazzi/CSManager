@@ -1,8 +1,8 @@
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { type SubmitHandler, useForm } from 'react-hook-form';
 
 import { Button } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { GetServerSidePropsContext } from 'next';
+import type { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
 import * as yup from 'yup';
@@ -14,7 +14,7 @@ import { Input } from '~/components/Form/Input';
 import { PasswordInput } from '~/components/Form/PasswordInput';
 import Template from '~/components/Template';
 import { useAuth } from '~/contexts/AuthContext';
-import ISignIn from '~/models/ISignIn';
+import type ISignIn from '~/models/ISignIn';
 import supabase from '~/services/supabase';
 
 export default function Login() {

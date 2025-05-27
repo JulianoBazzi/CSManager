@@ -1,5 +1,5 @@
-import IEntityBase from '~/models/Entity/Base/IEntityBase';
-import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
+import type IEntityBase from '~/models/Entity/Base/IEntityBase';
+import type IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
 
 export interface IPlayerLeaderboardAPI extends IEntityBase {
   player?: IPlayerAPI;

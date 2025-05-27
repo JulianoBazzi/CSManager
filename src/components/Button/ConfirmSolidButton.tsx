@@ -1,6 +1,6 @@
-import { forwardRef, ForwardRefRenderFunction } from 'react';
+import { forwardRef, type ForwardRefRenderFunction } from 'react';
 
-import { ButtonProps } from '@chakra-ui/react';
+import type { ButtonProps } from '@chakra-ui/react';
 
 import { SolidBlueButton } from '~/components/Button/Base/SolidBlueButton';
 

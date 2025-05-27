@@ -1,5 +1,5 @@
 import {
-  forwardRef, ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
+  forwardRef, type ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
 } from 'react';
 
 import {
@@ -7,21 +7,21 @@ import {
   ModalBody, ModalFooter,
 } from '@chakra-ui/react';
 import { useMutation } from '@tanstack/react-query';
-import { ColumnDef } from '@tanstack/react-table';
+import type { ColumnDef } from '@tanstack/react-table';
 
 import { PremierBadge } from '~/components/Badge/PremierBadge';
 import { SolidBlueButton } from '~/components/Button/Base/SolidBlueButton';
 import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
-import { Modal, ModalHandle } from '~/components/Form/Modal';
+import { Modal, type ModalHandle } from '~/components/Form/Modal';
 import { Table } from '~/components/Form/Table';
 import { TABLE_SWEEPSTAKE_PLAYERS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
-import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
-import IPlayerScoreAPI from '~/models/Entity/Player/IPlayerScoreAPI';
+import type IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
+import type IPlayerScoreAPI from '~/models/Entity/Player/IPlayerScoreAPI';
 import { SeepstakeEngineEnum } from '~/models/Entity/Sweepstake/ISweepstakeAPI';
-import ISweepstakePlayer from '~/models/Entity/Sweepstake/ISweepstakePlayer';
+import type ISweepstakePlayer from '~/models/Entity/Sweepstake/ISweepstakePlayer';
 import { SweepstakeTeamEnum } from '~/models/Entity/Sweepstake/ISweepstakePlayerAPI';
-import INewSweepstakePlayerModal from '~/models/Modal/INewSweepstakePlayerModal';
+import type INewSweepstakePlayerModal from '~/models/Modal/INewSweepstakePlayerModal';
 import { getPlayers } from '~/services/hooks/usePlayers';
 import { getPlayersScoresOnMaps } from '~/services/hooks/usePlayerScoresOnMaps';
 import { queryClient } from '~/services/queryClient';
@@ -55,7 +55,6 @@ const NewSweepstakePlayerModalBase: ForwardRefRenderFunction<NewSweepstakePlayer
       accessorKey: 'id',
       header: '',
       enableSorting: false,
-      // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => (
         <Checkbox
           isChecked={!!selectedPlayers.find((player) => player.id === row.original.id)}
@@ -78,7 +77,6 @@ const NewSweepstakePlayerModalBase: ForwardRefRenderFunction<NewSweepstakePlayer
       accessorKey: 'premier',
       header: 'Premier',
       enableSorting: false,
-      // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
     },
   ];

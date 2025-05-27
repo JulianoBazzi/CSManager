@@ -1,8 +1,8 @@
 import {
   Box, Divider, Link, ListItem, Text, UnorderedList,
 } from '@chakra-ui/react';
-import { User } from '@supabase/supabase-js';
-import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import type { User } from '@supabase/supabase-js';
+import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
 

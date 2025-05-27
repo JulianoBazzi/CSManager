@@ -1,4 +1,4 @@
-import { ChakraTheme, extendTheme } from '@chakra-ui/react';
+import { type ChakraTheme, extendTheme } from '@chakra-ui/react';
 import { Roboto } from 'next/font/google';
 
 const nextFont = Roboto({

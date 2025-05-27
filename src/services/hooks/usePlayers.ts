@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { TABLE_PLAYERS } from '~/config/constants';
-import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
-import IParamsRequest from '~/models/Request/IParamsRequest';
+import type IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
+import type IParamsRequest from '~/models/Request/IParamsRequest';
 import { getSweepstakePlayers } from '~/services/hooks/useSweepstakePlayers';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';

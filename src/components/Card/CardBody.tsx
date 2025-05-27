@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
-import { CardBody as ChakraCardBody, CardBodyProps as ChakraCardBodyProps, Stack } from '@chakra-ui/react';
+import { CardBody as ChakraCardBody, type CardBodyProps as ChakraCardBodyProps, Stack } from '@chakra-ui/react';
 
 interface ICardBodyProps extends ChakraCardBodyProps {
   children: ReactNode;

@@ -1,7 +1,7 @@
-import { forwardRef, ForwardRefRenderFunction } from 'react';
+import { forwardRef, type ForwardRefRenderFunction } from 'react';
 import { RiDeleteBin2Line } from 'react-icons/ri';
 
-import { IconButtonProps, Icon } from '@chakra-ui/react';
+import { type IconButtonProps, Icon } from '@chakra-ui/react';
 
 import { SolidGrayIconButton } from '~/components/IconButton/Base/SolidGrayIconButton';
 

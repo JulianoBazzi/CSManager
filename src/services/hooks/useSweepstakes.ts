@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { games } from '~/assets/games';
 import { sweepstakeEngines } from '~/assets/sweepstakeEngines';
 import { TABLE_SWEEPSTAKES } from '~/config/constants';
-import ISweepstakeAPI from '~/models/Entity/Sweepstake/ISweepstakeAPI';
+import type ISweepstakeAPI from '~/models/Entity/Sweepstake/ISweepstakeAPI';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';
 import { formatDatetime } from '~/utils/formatDatetime';

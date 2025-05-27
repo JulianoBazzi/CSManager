@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 
-import { User } from '@supabase/supabase-js';
-import { ColumnDef } from '@tanstack/react-table';
-import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import type { User } from '@supabase/supabase-js';
+import type { ColumnDef } from '@tanstack/react-table';
+import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
@@ -15,7 +15,7 @@ import { Table } from '~/components/Form/Table';
 import { AddIconButton } from '~/components/IconButton/AddIconButton';
 import { SearchBar } from '~/components/SearchBar';
 import Template from '~/components/Template';
-import ISweepstakeAPI from '~/models/Entity/Sweepstake/ISweepstakeAPI';
+import type ISweepstakeAPI from '~/models/Entity/Sweepstake/ISweepstakeAPI';
 import { useSweepstakes } from '~/services/hooks/useSweepstakes';
 import supabase from '~/services/supabase';
 

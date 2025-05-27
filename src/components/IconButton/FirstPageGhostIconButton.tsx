@@ -1,6 +1,6 @@
 import { MdFirstPage } from 'react-icons/md';
 
-import { IconButtonProps, Icon } from '@chakra-ui/react';
+import { type IconButtonProps, Icon } from '@chakra-ui/react';
 
 import { GhostGrayIconButton } from '~/components/IconButton/Base/GhostGrayIconButton';
 

@@ -1,5 +1,5 @@
 import {
-  forwardRef, ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
+  forwardRef, type ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
 } from 'react';
 
 import {
@@ -7,16 +7,16 @@ import {
   Stack,
   useBreakpointValue,
 } from '@chakra-ui/react';
-import { ColumnDef } from '@tanstack/react-table';
+import type { ColumnDef } from '@tanstack/react-table';
 
 import { PremierBadge } from '~/components/Badge/PremierBadge';
 import { OutlineGrayButton } from '~/components/Button/Base/OutlineGrayButton';
-import { Modal, ModalHandle } from '~/components/Form/Modal';
+import { Modal, type ModalHandle } from '~/components/Form/Modal';
 import { Table } from '~/components/Form/Table';
-import { ImportImageLeaderboardModal, ImportImageLeaderboardModalHandle } from '~/components/Modal/ImportImageLeaderboardModal';
+import { ImportImageLeaderboardModal, type ImportImageLeaderboardModalHandle } from '~/components/Modal/ImportImageLeaderboardModal';
 import { useFeedback } from '~/contexts/FeedbackContext';
-import IRankingAPI from '~/models/Entity/Ranking/IRankingAPI';
-import ISweepstakeMapModal from '~/models/Modal/ISweepstakeMapModal';
+import type IRankingAPI from '~/models/Entity/Ranking/IRankingAPI';
+import type ISweepstakeMapModal from '~/models/Modal/ISweepstakeMapModal';
 import { useSweepstakeMapRanking } from '~/services/hooks/useSweepstakeMapRanking';
 
 export type SweepstakeMapRankingModalHandle = {
@@ -49,7 +49,6 @@ const SweepstakeMapRankingModalBase: ForwardRefRenderFunction<SweepstakeMapRanki
     {
       accessorKey: 'premier',
       header: 'Premier',
-      // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <PremierBadge premier={row.original.players?.premier} />,
     },
     {

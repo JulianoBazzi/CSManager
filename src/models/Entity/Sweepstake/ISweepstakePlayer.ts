@@ -1,4 +1,4 @@
-import { SweepstakeTeamEnum } from '~/models/Entity/Sweepstake/ISweepstakePlayerAPI';
+import type { SweepstakeTeamEnum } from '~/models/Entity/Sweepstake/ISweepstakePlayerAPI';
 
 interface ISweepstakePlayer {
   user_id: string;

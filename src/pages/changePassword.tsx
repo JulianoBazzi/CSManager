@@ -1,13 +1,13 @@
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { type SubmitHandler, useForm } from 'react-hook-form';
 
 import { Button, CardFooter, Stack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { User } from '@supabase/supabase-js';
-import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import type { User } from '@supabase/supabase-js';
+import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
 import * as yup from 'yup';
-import { InferType } from 'yup';
+import type { InferType } from 'yup';
 
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
@@ -15,7 +15,7 @@ import CardHeader from '~/components/Card/CardHeader';
 import { PasswordInput } from '~/components/Form/PasswordInput';
 import Template from '~/components/Template';
 import { useAuth } from '~/contexts/AuthContext';
-import IChangePassword from '~/models/IChangePassword';
+import type IChangePassword from '~/models/IChangePassword';
 import supabase from '~/services/supabase';
 
 interface IChangePasswordProps extends GetServerSideProps {

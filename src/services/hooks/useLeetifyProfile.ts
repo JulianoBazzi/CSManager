@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import ILeetifyProfileAPI from '~/models/ILeetifyProfileAPI';
+import type ILeetifyProfileAPI from '~/models/ILeetifyProfileAPI';
 
 export async function getLeetifyProfileScore(steamId?: string): Promise<number | undefined> {
   if (!steamId) {
@@ -17,7 +17,6 @@ export async function getLeetifyProfileScore(steamId?: string): Promise<number |
       }
     }
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.log('steamId', error);
   }
 

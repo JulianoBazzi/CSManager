@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { User } from '@supabase/supabase-js';
-import { ColumnDef } from '@tanstack/react-table';
-import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import type { User } from '@supabase/supabase-js';
+import type { ColumnDef } from '@tanstack/react-table';
+import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
 import removeAccents from 'remove-accents';
@@ -14,10 +14,10 @@ import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
 import { Table } from '~/components/Form/Table';
 import { AddIconButton } from '~/components/IconButton/AddIconButton';
-import { MapModal, MapModalHandle } from '~/components/Modal/MapModal';
+import { MapModal, type MapModalHandle } from '~/components/Modal/MapModal';
 import { SearchBar } from '~/components/SearchBar';
 import Template from '~/components/Template';
-import IMapAPI from '~/models/Entity/Map/IMapAPI';
+import type IMapAPI from '~/models/Entity/Map/IMapAPI';
 import { useMaps } from '~/services/hooks/useMaps';
 import supabase from '~/services/supabase';
 
@@ -59,7 +59,6 @@ const Maps: NextPage<IMapsProps> = ({ user }) => {
       accessorKey: 'format_map_type',
       header: 'Categoria',
       enableSorting: false,
-      // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <MapBadge type={row.original.map_type} format_type={row.original.format_map_type} />,
     },
     {
@@ -70,7 +69,6 @@ const Maps: NextPage<IMapsProps> = ({ user }) => {
     {
       accessorKey: 'active',
       header: 'Status',
-      // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <ActiveBadge active={row.original.active} />,
     },
   ];

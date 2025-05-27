@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { Flex } from '@chakra-ui/react';
-import { User } from '@supabase/supabase-js';
-import { ColumnDef } from '@tanstack/react-table';
-import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import type { User } from '@supabase/supabase-js';
+import type { ColumnDef } from '@tanstack/react-table';
+import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
 import removeAccents from 'remove-accents';
@@ -20,12 +20,12 @@ import { Table } from '~/components/Form/Table';
 import { AddIconButton } from '~/components/IconButton/AddIconButton';
 import { RankingIconButton } from '~/components/IconButton/RankingIconButton';
 import { RefreshIconButton } from '~/components/IconButton/RefreshIconButton';
-import { PlayerMapRankingModal, PlayerMapRankingModalHandle } from '~/components/Modal/PlayerMapRankingModal';
-import { PlayerModal, PlayerModalHandle } from '~/components/Modal/PlayerModal';
-import { UpdatePlayerScoresModal, UpdatePlayerScoresModalHandle } from '~/components/Modal/UpdatePlayerScoresModal';
+import { PlayerMapRankingModal, type PlayerMapRankingModalHandle } from '~/components/Modal/PlayerMapRankingModal';
+import { PlayerModal, type PlayerModalHandle } from '~/components/Modal/PlayerModal';
+import { UpdatePlayerScoresModal, type UpdatePlayerScoresModalHandle } from '~/components/Modal/UpdatePlayerScoresModal';
 import { SearchBar } from '~/components/SearchBar';
 import Template from '~/components/Template';
-import IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
+import type IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
 import { usePlayers } from '~/services/hooks/usePlayers';
 import supabase from '~/services/supabase';
 
@@ -86,38 +86,32 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
       accessorKey: 'actions',
       header: 'Steam ID',
       enableSorting: false,
-      // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <LinkBadge value={row.original.steam_id} link={`https://leetify.com/public/profile/${row.original.steam_id}`} />,
     },
     {
       accessorKey: 'premier',
       header: 'Premier',
-      // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
     },
     {
       accessorKey: 'rating',
       header: 'Avaliação',
-      // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <StarBadge rating={row.original.rating} />,
     },
     {
       accessorKey: 'fetch_data',
       header: 'Buscar Dados',
-      // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <BooleanBadge active={row.original.fetch_data} />,
     },
     {
       accessorKey: 'active',
       header: 'Status',
-      // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <ActiveBadge active={row.original.active} />,
     },
     {
       accessorKey: 'actions',
       header: '',
       enableSorting: false,
-      // eslint-disable-next-line react/no-unstable-nested-components
       cell: ({ row }) => <RankingIconButton onClick={() => handleShowRankingModal(row.original)} size="xs" />,
     },
   ];
