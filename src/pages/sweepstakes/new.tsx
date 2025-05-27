@@ -112,8 +112,10 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
           })));
         }
 
-        for (let i = 0; i < divisionTeams.length;) {
-          divisionTeams[i].forEach((player) => {
+        for (let i = 0; i < divisionTeams.length; i++) {
+          const team = divisionTeams[i];
+          for (let j = 0; j < team.length; j++) {
+            const player = team[j];
             playerList.push({
               user_id: user?.id,
               sweepstake_id: sweepstakeId,
@@ -121,9 +123,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
               team: i,
               score: player.score,
             });
-          });
-
-          i += 1;
+          }
         }
 
         const mapList: ISweepstakeMap[] = [];

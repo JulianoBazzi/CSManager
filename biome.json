@@ -32,7 +32,7 @@
       },
       "suspicious": {
         "noArrayIndexKey": "info",
-        "noExplicitAny": "info"
+        "noExplicitAny": "off"
       },
       "correctness": {
         "noUnusedImports": "error"

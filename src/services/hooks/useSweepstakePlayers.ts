@@ -20,9 +20,12 @@ export async function getSweepstakePlayers(sweepstakeId: string): Promise<ISweep
 
   const formattedData: ISweepstakePlayerAPI[] = [];
 
-  data?.forEach((sweepstakePlayer) => {
-    formattedData.push(formatSweepstakePlayer(sweepstakePlayer as unknown as ISweepstakePlayerAPI));
-  });
+  if (data) {
+    for (let i = 0; i < data.length; i++) {
+      const sweepstakePlayer = data[i];
+      formattedData.push(formatSweepstakePlayer(sweepstakePlayer as unknown as ISweepstakePlayerAPI));
+    }
+  }
 
   const sortedData = formattedData.sort((a, b) => {
     if (b.players.rating !== a.players.rating) {

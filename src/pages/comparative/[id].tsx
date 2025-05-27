@@ -1,20 +1,7 @@
 import { useEffect, useState } from 'react';
-import {
-  RiAwardLine,
-} from 'react-icons/ri';
+import { RiAwardLine } from 'react-icons/ri';
 
-import {
-  Box,
-  Flex,
-  Stack,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  Text,
-  useBreakpointValue,
-} from '@chakra-ui/react';
+import { Box, Flex, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useBreakpointValue } from '@chakra-ui/react';
 import type { User } from '@supabase/supabase-js';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
@@ -81,9 +68,7 @@ interface IComparativeMessageAPI {
   damage?: string;
 }
 
-const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
-  user, userId, usernameOne, usernameTwo,
-}) => {
+const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({ user, userId, usernameOne, usernameTwo }) => {
   const isMobile = useBreakpointValue({ base: true, md: false });
   const { errorFeedbackToast } = useFeedback();
   const router = useRouter();
@@ -98,54 +83,59 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
 
   const { data: players, isLoading, isFetching } = usePlayers(userId);
 
-  const { data: playerOneRanking, isLoading: isLoadingRankingOne } = usePlayerMapRanking(String(playerOne?.id) ?? '', { enabled: !!playerOne });
-  const { data: playerTwoRanking, isLoading: isLoadingRankingTwo } = usePlayerMapRanking(String(playerTwo?.id) ?? '', { enabled: !!playerTwo });
+  const { data: playerOneRanking, isLoading: isLoadingRankingOne } = usePlayerMapRanking(String(playerOne?.id) ?? '', {
+    enabled: !!playerOne,
+  });
+  const { data: playerTwoRanking, isLoading: isLoadingRankingTwo } = usePlayerMapRanking(String(playerTwo?.id) ?? '', {
+    enabled: !!playerTwo,
+  });
 
-  const { mutateAsync: generateComparativeMessage, isPending: isLoadingComparativeMessage } = useMutation(
-    {
-      mutationFn: async () => {
-        setComparativeMessage(undefined);
+  const { mutateAsync: generateComparativeMessage, isPending: isLoadingComparativeMessage } = useMutation({
+    mutationFn: async () => {
+      setComparativeMessage(undefined);
 
-        const response = await axios.post<IComparativeMessageAPI>('/api/comparative-messages', {
-          player_one: {
-            name: playerOne?.name,
-            damage: playerOne?.damage,
-            kill: playerOne?.kills,
-            assistance: playerOne?.assistances,
-            death: playerOne?.deaths,
-            headshot: playerOne?.headshot_percentage,
-            quantity: playerOne?.quantity,
-          },
-          player_two: {
-            name: playerTwo?.name,
-            damage: playerTwo?.damage,
-            kill: playerTwo?.kills,
-            assistance: playerTwo?.assistances,
-            death: playerTwo?.deaths,
-            headshot: playerTwo?.headshot_percentage,
-            quantity: playerTwo?.quantity,
-          },
-        });
+      const response = await axios.post<IComparativeMessageAPI>('/api/comparative-messages', {
+        player_one: {
+          name: playerOne?.name,
+          damage: playerOne?.damage,
+          kill: playerOne?.kills,
+          assistance: playerOne?.assistances,
+          death: playerOne?.deaths,
+          headshot: playerOne?.headshot_percentage,
+          quantity: playerOne?.quantity,
+        },
+        player_two: {
+          name: playerTwo?.name,
+          damage: playerTwo?.damage,
+          kill: playerTwo?.kills,
+          assistance: playerTwo?.assistances,
+          death: playerTwo?.deaths,
+          headshot: playerTwo?.headshot_percentage,
+          quantity: playerTwo?.quantity,
+        },
+      });
 
-        return response.data;
-      },
-      async onSuccess(data) {
-        setComparativeMessage(data);
-      },
-      onError(error: Error) {
-        errorFeedbackToast('OpenAI - Mensagens Engraçadas', error);
-      },
+      return response.data;
     },
-  );
+    async onSuccess(data) {
+      setComparativeMessage(data);
+    },
+    onError(error: Error) {
+      errorFeedbackToast('OpenAI - Mensagens Engraçadas', error);
+    },
+  });
 
   useEffect(() => {
     setComparativeMessage(undefined);
-    setPlayerOptions(players ? players.map((player) => ({ id: player.id, name: player.name, description: player.username })) : []);
+    setPlayerOptions(
+      players ? players.map(player => ({ id: player.id, name: player.name, description: player.username })) : []
+    );
   }, [players]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (usernameOne) {
-      const one = playerOptions.find((player) => player.description === usernameOne);
+      const one = playerOptions.find(player => player.description === usernameOne);
       if (one) {
         setPlayerOne({
           ...one,
@@ -160,7 +150,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
       }
     }
     if (usernameTwo) {
-      const two = playerOptions.find((player) => player.description === usernameTwo);
+      const two = playerOptions.find(player => player.description === usernameTwo);
       if (two) {
         setPlayerTwo({
           ...two,
@@ -182,28 +172,31 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
     }
   }, [router, pathname, playerOne, playerTwo]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (playerOneRanking && playerTwoRanking) {
       const result: IRankingMapComparison[] = [];
-      const playerStatsMap: { [key: string]: { one?: IViewMapRankingAPI, two?: IViewMapRankingAPI } } = {};
+      const playerStatsMap: { [key: string]: { one?: IViewMapRankingAPI; two?: IViewMapRankingAPI } } = {};
 
-      playerOneRanking.forEach((stat) => {
+      for (let i = 0; i < playerOneRanking.length; i++) {
+        const stat = playerOneRanking[i];
         if (!playerStatsMap[stat.name]) {
           playerStatsMap[stat.name] = {};
         }
         playerStatsMap[stat.name].one = stat;
-      });
+      }
 
-      playerTwoRanking.forEach((stat) => {
+      for (let i = 0; i < playerTwoRanking.length; i++) {
+        const stat = playerTwoRanking[i];
         if (!playerStatsMap[stat.name]) {
           playerStatsMap[stat.name] = {};
         }
         playerStatsMap[stat.name].two = stat;
-      });
+      }
 
-      setPlayerOne((previousOne) => {
+      setPlayerOne(previousOne => {
         if (previousOne) {
-          return ({
+          return {
             ...previousOne,
             count: 0,
             quantity: 0,
@@ -212,15 +205,14 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
             assistances: 0,
             headshot_percentage: 0,
             damage: 0,
-          });
+          };
         }
-
         return undefined;
       });
 
-      setPlayerTwo((previousTwo) => {
+      setPlayerTwo(previousTwo => {
         if (previousTwo) {
-          return ({
+          return {
             ...previousTwo,
             count: 0,
             quantity: 0,
@@ -229,20 +221,21 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
             assistances: 0,
             headshot_percentage: 0,
             damage: 0,
-          });
+          };
         }
-
         return undefined;
       });
 
-      Object.keys(playerStatsMap).forEach((name) => {
+      const statNames = Object.keys(playerStatsMap);
+      for (let i = 0; i < statNames.length; i++) {
+        const name = statNames[i];
         const { one } = playerStatsMap[name];
         const { two } = playerStatsMap[name];
 
         if (one && two) {
-          setPlayerOne((previousOne) => {
+          setPlayerOne(previousOne => {
             if (previousOne) {
-              return ({
+              return {
                 ...previousOne,
                 count: (previousOne.count ?? 0) + 1,
                 quantity: (previousOne.quantity ?? 0) + (one?.quantity ?? 0),
@@ -251,15 +244,14 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                 assistances: (previousOne.assistances ?? 0) + (one?.assistances ?? 0),
                 headshot_percentage: (previousOne.headshot_percentage ?? 0) + (one?.headshot_percentage ?? 0),
                 damage: (previousOne.damage ?? 0) + (one?.damage ?? 0),
-              });
+              };
             }
-
             return undefined;
           });
 
-          setPlayerTwo((previousTwo) => {
+          setPlayerTwo(previousTwo => {
             if (previousTwo) {
-              return ({
+              return {
                 ...previousTwo,
                 count: (previousTwo.count ?? 0) + 1,
                 quantity: (previousTwo.quantity ?? 0) + (two?.quantity ?? 0),
@@ -268,9 +260,8 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                 assistances: (previousTwo.assistances ?? 0) + (two?.assistances ?? 0),
                 headshot_percentage: (previousTwo.headshot_percentage ?? 0) + (two?.headshot_percentage ?? 0),
                 damage: (previousTwo.damage ?? 0) + (two?.damage ?? 0),
-              });
+              };
             }
-
             return undefined;
           });
 
@@ -291,7 +282,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
             player_two_damage: two?.damage ?? 0,
           });
         }
-      });
+      }
 
       setRankingMapComparison(result.sort((a, b) => a.name.localeCompare(b.name)));
       generateComparativeMessage();
@@ -317,11 +308,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
               <Box>
                 <Text>{comparativeMessage?.damage ? comparativeMessage?.damage : 'Maior Dano Causado'}</Text>
                 <Text fontSize="sm">
-                  <b>{one}</b>
-                  {' '}
-                  vs
-                  {' '}
-                  {two}
+                  <b>{one}</b> vs {two}
                 </Text>
               </Box>
             </Flex>
@@ -348,11 +335,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
               <Box>
                 <Text>{comparativeMessage?.kill ? comparativeMessage?.kill : 'Mais Vítimas Eliminadas'}</Text>
                 <Text fontSize="sm">
-                  <b>{one}</b>
-                  {' '}
-                  vs
-                  {' '}
-                  {two}
+                  <b>{one}</b> vs {two}
                 </Text>
               </Box>
             </Flex>
@@ -379,11 +362,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
               <Box>
                 <Text>{comparativeMessage?.assistance ? comparativeMessage?.assistance : 'Mais Assistências'}</Text>
                 <Text fontSize="sm">
-                  <b>{one}</b>
-                  {' '}
-                  vs
-                  {' '}
-                  {two}
+                  <b>{one}</b> vs {two}
                 </Text>
               </Box>
             </Flex>
@@ -410,11 +389,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
               <Box>
                 <Text>{comparativeMessage?.death ? comparativeMessage?.death : 'Menos Mortes Sofridas'}</Text>
                 <Text fontSize="sm">
-                  <b>{one}</b>
-                  {' '}
-                  vs
-                  {' '}
-                  {two}
+                  <b>{one}</b> vs {two}
                 </Text>
               </Box>
             </Flex>
@@ -429,7 +404,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
   const headshotCard = () => {
     const one = tabIndex === 0 ? (playerOne?.headshot_percentage ?? 0) : (playerTwo?.headshot_percentage ?? 0);
     const two = tabIndex === 0 ? (playerTwo?.headshot_percentage ?? 0) : (playerOne?.headshot_percentage ?? 0);
-    const count = (playerOne?.count ?? 0);
+    const count = playerOne?.count ?? 0;
 
     const balance = one - two;
 
@@ -440,12 +415,11 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
             <Flex align="center" gap="4">
               <Text fontSize="2xl">🎯</Text>
               <Box>
-                <Text>{comparativeMessage?.headshot ? comparativeMessage?.headshot : 'Maior Percentual de Tiros na Cabeça'}</Text>
+                <Text>
+                  {comparativeMessage?.headshot ? comparativeMessage?.headshot : 'Maior Percentual de Tiros na Cabeça'}
+                </Text>
                 <Text fontSize="sm">
-                  <b>{formatPercentage(getDivision(one, count), true)}</b>
-                  {' '}
-                  vs
-                  {' '}
+                  <b>{formatPercentage(getDivision(one, count), true)}</b> vs{' '}
                   {formatPercentage(getDivision(two, count), true)}
                 </Text>
               </Box>
@@ -473,11 +447,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
               <Box>
                 <Text>{comparativeMessage?.quantity ? comparativeMessage?.quantity : 'Mais Partidas Disputadas'}</Text>
                 <Text fontSize="sm">
-                  <b>{one}</b>
-                  {' '}
-                  vs
-                  {' '}
-                  {two}
+                  <b>{one}</b> vs {two}
                 </Text>
               </Box>
             </Flex>
@@ -505,13 +475,15 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
     const quantityOne = tabIndex === 0 ? (playerOne?.quantity ?? 0) : (playerTwo?.quantity ?? 0);
     const quantitytwo = tabIndex === 0 ? (playerTwo?.quantity ?? 0) : (playerOne?.quantity ?? 0);
 
-    const count = (playerOne?.count ?? 0);
+    const count = playerOne?.count ?? 0;
 
-    if ((killOne < killTwo)
-      && (assistanceOne < assistanceTwo)
-      && (deathOne > deathTwo)
-      && (getDivision(headshotOne, count) < getDivision(headshotTwo, count))
-      && (quantityOne < quantitytwo)) {
+    if (
+      killOne < killTwo &&
+      assistanceOne < assistanceTwo &&
+      deathOne > deathTwo &&
+      getDivision(headshotOne, count) < getDivision(headshotTwo, count) &&
+      quantityOne < quantitytwo
+    ) {
       return (
         <Card bg="gray.800">
           <CardBody px="4" py="2">
@@ -552,14 +524,14 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                 <Select
                   name="player_one"
                   label="Jogador 1"
-                  options={playerOptions.filter((player) => player.id !== playerTwo?.id)}
+                  options={playerOptions.filter(player => player.id !== playerTwo?.id)}
                   value={playerOne}
                   isDisabled={isLoading}
                   isLoading={isFetching}
                   isRequired
                   isSearchable
                   isClearable
-                  onChange={(option) => {
+                  onChange={option => {
                     if (option) {
                       setPlayerOne({
                         ...option,
@@ -583,14 +555,14 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                 <Select
                   name="player_two"
                   label="Jogador 2"
-                  options={playerOptions.filter((player) => player.id !== playerOne?.id)}
+                  options={playerOptions.filter(player => player.id !== playerOne?.id)}
                   value={playerTwo}
                   isDisabled={isLoading}
                   isLoading={isFetching}
                   isRequired
                   isSearchable
                   isClearable
-                  onChange={(option) => {
+                  onChange={option => {
                     if (option) {
                       setPlayerTwo({
                         ...option,
@@ -639,13 +611,14 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                   <TabPanels>
                     <TabPanel>
                       <Text fontSize="x-large" fontWeight="bold">
-                        Por que o
-                        {' '}
-                        <Text as="span" fontWeight="bold" color="blue.600">{playerOne?.name}</Text>
-                        {' '}
-                        é melhor que o
-                        {' '}
-                        <Text as="span" fontWeight="bold" color="green.600">{playerTwo.name}</Text>
+                        Por que o{' '}
+                        <Text as="span" fontWeight="bold" color="blue.600">
+                          {playerOne?.name}
+                        </Text>{' '}
+                        é melhor que o{' '}
+                        <Text as="span" fontWeight="bold" color="green.600">
+                          {playerTwo.name}
+                        </Text>
                         ?
                       </Text>
                       <Stack mt="4">
@@ -660,13 +633,14 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                     </TabPanel>
                     <TabPanel>
                       <Text fontSize="x-large" fontWeight="bold">
-                        Por que o
-                        {' '}
-                        <Text as="span" fontWeight="bold" color="green.600">{playerTwo.name}</Text>
-                        {' '}
-                        é melhor que o
-                        {' '}
-                        <Text as="span" fontWeight="bold" color="blue.600">{playerOne?.name}</Text>
+                        Por que o{' '}
+                        <Text as="span" fontWeight="bold" color="green.600">
+                          {playerTwo.name}
+                        </Text>{' '}
+                        é melhor que o{' '}
+                        <Text as="span" fontWeight="bold" color="blue.600">
+                          {playerOne?.name}
+                        </Text>
                         ?
                       </Text>
                       <Stack mt="4">
@@ -696,14 +670,17 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                       <ApexChart
                         id="damageChartId"
                         type="line"
-                        categories={rankingMapComparison.map((map) => map.name)}
-                        series={[{
-                          name: playerOne.name,
-                          data: rankingMapComparison.map((map) => map.player_one_damage),
-                        }, {
-                          name: playerTwo?.name,
-                          data: rankingMapComparison.map((map) => map.player_two_damage),
-                        }]}
+                        categories={rankingMapComparison.map(map => map.name)}
+                        series={[
+                          {
+                            name: playerOne.name,
+                            data: rankingMapComparison.map(map => map.player_one_damage),
+                          },
+                          {
+                            name: playerTwo?.name,
+                            data: rankingMapComparison.map(map => map.player_two_damage),
+                          },
+                        ]}
                         showDataLabels
                         height="300px"
                         width="100%"
@@ -715,14 +692,17 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                       <ApexChart
                         id="damageChartId"
                         type="line"
-                        categories={rankingMapComparison.map((map) => map.name)}
-                        series={[{
-                          name: playerOne.name,
-                          data: rankingMapComparison.map((map) => map.player_one_kills),
-                        }, {
-                          name: playerTwo?.name,
-                          data: rankingMapComparison.map((map) => map.player_two_kills),
-                        }]}
+                        categories={rankingMapComparison.map(map => map.name)}
+                        series={[
+                          {
+                            name: playerOne.name,
+                            data: rankingMapComparison.map(map => map.player_one_kills),
+                          },
+                          {
+                            name: playerTwo?.name,
+                            data: rankingMapComparison.map(map => map.player_two_kills),
+                          },
+                        ]}
                         showDataLabels
                         height="300px"
                         width="100%"
@@ -734,14 +714,17 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                       <ApexChart
                         id="damageChartId"
                         type="line"
-                        categories={rankingMapComparison.map((map) => map.name)}
-                        series={[{
-                          name: playerOne.name,
-                          data: rankingMapComparison.map((map) => map.player_one_deaths),
-                        }, {
-                          name: playerTwo?.name,
-                          data: rankingMapComparison.map((map) => map.player_two_deaths),
-                        }]}
+                        categories={rankingMapComparison.map(map => map.name)}
+                        series={[
+                          {
+                            name: playerOne.name,
+                            data: rankingMapComparison.map(map => map.player_one_deaths),
+                          },
+                          {
+                            name: playerTwo?.name,
+                            data: rankingMapComparison.map(map => map.player_two_deaths),
+                          },
+                        ]}
                         showDataLabels
                         height="300px"
                         width="100%"
@@ -753,14 +736,17 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                       <ApexChart
                         id="damageChartId"
                         type="line"
-                        categories={rankingMapComparison.map((map) => map.name)}
-                        series={[{
-                          name: playerOne.name,
-                          data: rankingMapComparison.map((map) => map.player_one_assistances),
-                        }, {
-                          name: playerTwo?.name,
-                          data: rankingMapComparison.map((map) => map.player_two_assistances),
-                        }]}
+                        categories={rankingMapComparison.map(map => map.name)}
+                        series={[
+                          {
+                            name: playerOne.name,
+                            data: rankingMapComparison.map(map => map.player_one_assistances),
+                          },
+                          {
+                            name: playerTwo?.name,
+                            data: rankingMapComparison.map(map => map.player_two_assistances),
+                          },
+                        ]}
                         showDataLabels
                         height="300px"
                         width="100%"
@@ -772,14 +758,17 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                       <ApexChart
                         id="damageChartId"
                         type="line"
-                        categories={rankingMapComparison.map((map) => map.name)}
-                        series={[{
-                          name: playerOne.name,
-                          data: rankingMapComparison.map((map) => map.player_one_headshot_percentage),
-                        }, {
-                          name: playerTwo?.name,
-                          data: rankingMapComparison.map((map) => map.player_two_headshot_percentage),
-                        }]}
+                        categories={rankingMapComparison.map(map => map.name)}
+                        series={[
+                          {
+                            name: playerOne.name,
+                            data: rankingMapComparison.map(map => map.player_one_headshot_percentage),
+                          },
+                          {
+                            name: playerTwo?.name,
+                            data: rankingMapComparison.map(map => map.player_two_headshot_percentage),
+                          },
+                        ]}
                         showDataLabels
                         height="300px"
                         width="100%"
@@ -791,14 +780,17 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({
                       <ApexChart
                         id="damageChartId"
                         type="line"
-                        categories={rankingMapComparison.map((map) => map.name)}
-                        series={[{
-                          name: playerOne.name,
-                          data: rankingMapComparison.map((map) => map.player_one_quantity),
-                        }, {
-                          name: playerTwo?.name,
-                          data: rankingMapComparison.map((map) => map.player_two_quantity),
-                        }]}
+                        categories={rankingMapComparison.map(map => map.name)}
+                        series={[
+                          {
+                            name: playerOne.name,
+                            data: rankingMapComparison.map(map => map.player_one_quantity),
+                          },
+                          {
+                            name: playerTwo?.name,
+                            data: rankingMapComparison.map(map => map.player_two_quantity),
+                          },
+                        ]}
                         showDataLabels
                         height="300px"
                         width="100%"

@@ -1,10 +1,14 @@
 import {
-  forwardRef, type ForwardRefRenderFunction, useCallback, useEffect, useImperativeHandle, useRef, useState,
+  type ForwardRefRenderFunction,
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
 } from 'react';
 
-import {
-  ModalBody, ModalFooter, Progress, Spinner, Stack, Text,
-} from '@chakra-ui/react';
+import { ModalBody, ModalFooter, Progress, Spinner, Stack, Text } from '@chakra-ui/react';
 import { useMutation } from '@tanstack/react-query';
 
 import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
@@ -44,10 +48,10 @@ const UpdatePlayerScoresModalBase: ForwardRefRenderFunction<UpdatePlayerScoresMo
       getPlayers(recordModal.user.id, {
         active: true,
       })
-        .then((response) => {
-          setPlayers(response.filter((player) => !!player.steam_id && player.fetch_data));
+        .then(response => {
+          setPlayers(response.filter(player => !!player.steam_id && player.fetch_data));
         })
-        .catch((error) => {
+        .catch(error => {
           errorFeedbackToast('Buscar Jogadores', error);
           modalRef.current?.onCloseModal();
         })
@@ -56,39 +60,37 @@ const UpdatePlayerScoresModalBase: ForwardRefRenderFunction<UpdatePlayerScoresMo
         });
       modalRef.current?.onOpenModal();
     },
-    [errorFeedbackToast],
+    [errorFeedbackToast]
   );
 
-  const { mutateAsync } = useMutation(
-    {
-      mutationFn: async () => {
-        for (let i = 0; i < players.length;) {
-          setStep(i);
-          setCurrentPlayer(players[i]);
-          const skillLevel = await getLeetifyProfileScore(players[i].steam_id);
+  const { mutateAsync } = useMutation({
+    mutationFn: async () => {
+      for (let i = 0; i < players.length; ) {
+        setStep(i);
+        setCurrentPlayer(players[i]);
+        const skillLevel = await getLeetifyProfileScore(players[i].steam_id);
 
-          if (skillLevel) {
-            await supabase
-              .from(TABLE_PLAYERS)
-              .update({
-                premier: skillLevel,
-              })
-              .eq('id', players[i].id);
-          }
-
-          i += 1;
+        if (skillLevel) {
+          await supabase
+            .from(TABLE_PLAYERS)
+            .update({
+              premier: skillLevel,
+            })
+            .eq('id', players[i].id);
         }
-      },
-      async onSuccess() {
-        successFeedbackToast('Pontuações', 'Pontuações atualizadas com sucesso!');
-        await queryClient.invalidateQueries({ queryKey: [TABLE_PLAYERS] });
-        modalRef.current?.onCloseModal();
-      },
-      onError(error: Error) {
-        errorFeedbackToast('Pontuações', error);
-      },
+
+        i += 1;
+      }
     },
-  );
+    async onSuccess() {
+      successFeedbackToast('Pontuações', 'Pontuações atualizadas com sucesso!');
+      await queryClient.invalidateQueries({ queryKey: [TABLE_PLAYERS] });
+      modalRef.current?.onCloseModal();
+    },
+    onError(error: Error) {
+      errorFeedbackToast('Pontuações', error);
+    },
+  });
 
   function handleCancel() {
     setPlayers([]);
@@ -102,14 +104,14 @@ const UpdatePlayerScoresModalBase: ForwardRefRenderFunction<UpdatePlayerScoresMo
     if (players && players.length > 0) {
       mutateAsync();
     }
-  }, [players]);
+  }, [players, mutateAsync]);
 
   useImperativeHandle(
     ref,
     () => ({
       onOpenModal,
     }),
-    [onOpenModal],
+    [onOpenModal]
   );
 
   return (
@@ -117,10 +119,7 @@ const UpdatePlayerScoresModalBase: ForwardRefRenderFunction<UpdatePlayerScoresMo
       <ModalBody>
         <Stack>
           <Card>
-            <CardHeader
-              title={isLoading ? 'Buscando jogadores...' : `${players.length} jogadores`}
-              size="sm"
-            />
+            <CardHeader title={isLoading ? 'Buscando jogadores...' : `${players.length} jogadores`} size="sm" />
             <CardBody>
               {isLoading && <Spinner alignSelf="center" size="xl" />}
               {currentPlayer && (

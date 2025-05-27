@@ -38,7 +38,7 @@ const ChangePassword: NextPage<IChangePasswordProps> = ({ user }) => {
     resolver: yupResolver(changePasswordFormSchema),
   });
 
-  const handleChangePassword: SubmitHandler<InferType<typeof changePasswordFormSchema>> = async (data) => {
+  const handleChangePassword: SubmitHandler<InferType<typeof changePasswordFormSchema>> = async data => {
     await changePassword(data as IChangePassword);
   };
 

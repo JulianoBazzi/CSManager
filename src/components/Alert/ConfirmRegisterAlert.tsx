@@ -1,11 +1,7 @@
-import {
-  forwardRef, type ForwardRefRenderFunction, useImperativeHandle, useRef, useState,
-} from 'react';
+import { type ForwardRefRenderFunction, forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
 
 import { alertOrigins } from '~/assets/alertOrigins';
-import {
-  Alert, type AlertHandle, AlertTypeEnum, type AlertOriginEnum,
-} from '~/components/Alert';
+import { Alert, type AlertHandle, type AlertOriginEnum, AlertTypeEnum } from '~/components/Alert';
 import { BackOutlineButton } from '~/components/Button/BackOutlineButton';
 import { ConfirmSolidButton } from '~/components/Button/ConfirmSolidButton';
 
@@ -28,19 +24,15 @@ interface IConfirmRegisterAlertProps {
 }
 
 const ConfirmRegisterAlertBase: ForwardRefRenderFunction<ConfirmRegisterAlertHandle, IConfirmRegisterAlertProps> = (
-  {
-    isSubmitting,
-    onClose,
-    ...rest
-  }: IConfirmRegisterAlertProps,
-  ref,
+  { isSubmitting, onClose, ...rest }: IConfirmRegisterAlertProps,
+  ref
 ) => {
   const cancelRef = useRef<HTMLButtonElement>(null);
   const alertRef = useRef<AlertHandle>(null);
 
   const [alertProps, setAlertProps] = useState<IOpenConfirmRegisterAlertProps<any> | undefined>(undefined);
 
-  const description = () => alertOrigins.find((origin) => origin.id === alertProps?.origin)?.name ?? 'Não Localizado';
+  const description = () => alertOrigins.find(origin => origin.id === alertProps?.origin)?.name ?? 'Não Localizado';
 
   const title = () => {
     if (alertProps?.type === AlertTypeEnum.Update) {
@@ -64,14 +56,14 @@ const ConfirmRegisterAlertBase: ForwardRefRenderFunction<ConfirmRegisterAlertHan
     return `cadastrar esta ${description()}`;
   };
 
-  function onOpenAlert(props: IOpenConfirmRegisterAlertProps<any>) {
+  const onOpenAlert = useCallback((props: IOpenConfirmRegisterAlertProps<any>) => {
     setAlertProps(props);
     alertRef.current?.onOpenAlert();
-  }
+  }, []);
 
-  function onCloseAlert() {
+  const onCloseAlert = useCallback(() => {
     alertRef.current?.onCloseAlert();
-  }
+  }, []);
 
   function onConfirmAlert() {
     if (alertProps?.onConfirm) {
@@ -86,7 +78,7 @@ const ConfirmRegisterAlertBase: ForwardRefRenderFunction<ConfirmRegisterAlertHan
       onOpenAlert,
       onCloseAlert,
     }),
-    [],
+    [onOpenAlert, onCloseAlert]
   );
 
   return (
@@ -95,19 +87,13 @@ const ConfirmRegisterAlertBase: ForwardRefRenderFunction<ConfirmRegisterAlertHan
       cancelRef={cancelRef}
       onClose={onClose}
       title={title()}
-      message={alertProps?.message ? alertProps?.message : `Você tem certeza que gostaria de ${message().toLocaleLowerCase()}?`}
+      message={
+        alertProps?.message ? alertProps?.message : `Você tem certeza que gostaria de ${message().toLocaleLowerCase()}?`
+      }
       {...rest}
     >
-      <ConfirmSolidButton
-        onClick={(() => onConfirmAlert())}
-        isLoading={isSubmitting}
-      />
-      <BackOutlineButton
-        ref={cancelRef}
-        onClick={() => onCloseAlert()}
-        isDisabled={isSubmitting}
-        autoFocus
-      />
+      <ConfirmSolidButton onClick={() => onConfirmAlert()} isLoading={isSubmitting} />
+      <BackOutlineButton ref={cancelRef} onClick={() => onCloseAlert()} isDisabled={isSubmitting} autoFocus />
     </Alert>
   );
 };

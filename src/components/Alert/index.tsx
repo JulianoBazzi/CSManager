@@ -1,5 +1,11 @@
 import {
-  forwardRef, type ForwardRefRenderFunction, type ReactNode, type RefObject, useCallback, useImperativeHandle, useState,
+  type ForwardRefRenderFunction,
+  type ReactNode,
+  type RefObject,
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useState,
 } from 'react';
 
 import {
@@ -35,21 +41,14 @@ interface IAlertProps {
 }
 
 const AlertBase: ForwardRefRenderFunction<AlertHandle, IAlertProps> = (
-  {
-    title,
-    message,
-    children,
-    cancelRef,
-    onClose,
-    ...rest
-  }: IAlertProps,
-  ref,
+  { title, message, children, cancelRef, onClose, ...rest }: IAlertProps,
+  ref
 ) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  function onOpenAlert() {
+  const onOpenAlert = useCallback(() => {
     setIsOpen(true);
-  }
+  }, []);
 
   const onCloseAlert = useCallback(() => {
     if (onClose) {
@@ -64,26 +63,15 @@ const AlertBase: ForwardRefRenderFunction<AlertHandle, IAlertProps> = (
       onOpenAlert,
       onCloseAlert,
     }),
-    [onCloseAlert],
+    [onOpenAlert, onCloseAlert]
   );
 
   return (
-    <AlertDialog
-      isOpen={isOpen}
-      leastDestructiveRef={cancelRef}
-      onClose={onCloseAlert}
-      size="sm"
-      isCentered
-      {...rest}
-    >
+    <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onCloseAlert} size="sm" isCentered {...rest}>
       <AlertDialogOverlay>
         <AlertDialogContent>
-          <AlertDialogHeader as="h6">
-            {title}
-          </AlertDialogHeader>
-          <AlertDialogBody>
-            {message}
-          </AlertDialogBody>
+          <AlertDialogHeader as="h6">{title}</AlertDialogHeader>
+          <AlertDialogBody>{message}</AlertDialogBody>
           <AlertDialogFooter justifyContent="space-between" flexDir={{ base: 'column', md: 'row' }} gap="4">
             {children}
           </AlertDialogFooter>

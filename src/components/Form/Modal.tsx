@@ -1,14 +1,19 @@
 import {
-  forwardRef, type ForwardRefRenderFunction, type ReactNode, useCallback, useImperativeHandle, useState,
+  type ForwardRefRenderFunction,
+  type ReactNode,
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useState,
 } from 'react';
 
 import {
   Modal as ChakraModal,
   type ModalProps as ChakraModalProps,
-  ModalOverlay,
+  ModalCloseButton,
   ModalContent,
   ModalHeader,
-  ModalCloseButton,
+  ModalOverlay,
   Text,
 } from '@chakra-ui/react';
 
@@ -26,16 +31,12 @@ export type ModalHandle = {
 };
 
 const ModalBase: ForwardRefRenderFunction<ModalHandle, IModalProps> = (
-  {
-    title, children, disableCloseButton, onSubmit, ...rest
-  }: IModalProps,
-  ref,
+  { title, children, disableCloseButton, onSubmit, ...rest }: IModalProps,
+  ref
 ) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  function onOpenModal() {
-    setIsOpen(true);
-  }
+  const onOpenModal = useCallback(() => setIsOpen(true), []);
 
   const onCloseModal = useCallback(() => setIsOpen(false), []);
 
@@ -45,7 +46,7 @@ const ModalBase: ForwardRefRenderFunction<ModalHandle, IModalProps> = (
       onOpenModal,
       onCloseModal,
     }),
-    [onCloseModal],
+    [onOpenModal, onCloseModal]
   );
 
   return (

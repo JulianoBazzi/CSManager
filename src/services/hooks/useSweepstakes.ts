@@ -27,9 +27,12 @@ export async function getSweepstakes(userId: string): Promise<ISweepstakeAPI[]> 
 
   const formattedData: ISweepstakeAPI[] = [];
 
-  data?.forEach((sweepstake) => {
-    formattedData.push(formatSweepstakes(sweepstake));
-  });
+  if (data) {
+    for (let i = 0; i < data.length; i++) {
+      const sweepstake = data[i];
+      formattedData.push(formatSweepstakes(sweepstake));
+    }
+  }
 
   return formattedData;
 }

@@ -42,9 +42,12 @@ export async function getPlayers(userId: string, params?: IParamsRequest): Promi
 
   const formattedData: IPlayerAPI[] = [];
 
-  data?.forEach((player) => {
-    formattedData.push(formatPlayer(player));
-  });
+  if (data) {
+    for (let i = 0; i < data.length; i++) {
+      const player = data[i];
+      formattedData.push(formatPlayer(player));
+    }
+  }
 
   if (params?.sweepstakeId) {
     return formattedData.filter((player) => sweepstakePlayers.includes(player.id));

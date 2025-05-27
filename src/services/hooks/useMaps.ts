@@ -34,9 +34,13 @@ export async function getMaps(userId: string, params?: IParamsRequest): Promise<
 
   const formattedData: IMapAPI[] = [];
 
-  data?.forEach((player) => {
-    formattedData.push(formatMap(player));
-  });
+  if (data) {
+    for (let i = 0; i < data.length; i++) {
+      const player = data[i];
+      formattedData.push(formatMap(player));
+    }
+  }
+
 
   return formattedData;
 }

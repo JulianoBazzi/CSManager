@@ -31,9 +31,12 @@ export async function getSweepstakeMapRanking(params: IRankingParamsRequest): Pr
 
   const formattedData: IRankingAPI[] = [];
 
-  data?.forEach((ranking) => {
-    formattedData.push(formatSweepstakeMapRanking(ranking as unknown as IRankingAPI));
-  });
+  if (data) {
+    for (let i = 0; i < data.length; i++) {
+      const ranking = data[i];
+      formattedData.push(formatSweepstakeMapRanking(ranking as unknown as IRankingAPI));
+    }
+  }
 
   return formattedData;
 }
