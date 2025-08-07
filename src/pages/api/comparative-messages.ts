@@ -21,7 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const response = await openai.chat.completions.create({
-      model: 'gpt-4.1-nano',
+      model: 'gpt-5',
       temperature: 1,
       messages: [
         {
@@ -36,11 +36,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         { role: 'user', content: JSON.stringify(player_two) },
         {
           role: 'system',
-          content: 'Compare o atributo de cada jogador e gere uma mensagem engraçada/trocadinho para cada atributo do Counter-Strike;',
+          content:
+            'Compare o atributo de cada jogador e gere uma mensagem engraçada/trocadinho para cada atributo do Counter-Strike;',
         },
         {
           role: 'system',
-          content: 'Gere a mensagem apenas para o player vencedor naquele atributo e não precisa repetir o número/percentual do atributo ou o nome do jogador na mensagem;',
+          content:
+            'Gere a mensagem apenas para o player vencedor naquele atributo e não precisa repetir o número/percentual do atributo ou o nome do jogador na mensagem;',
         },
         {
           role: 'system',
@@ -80,7 +82,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
         {
           role: 'system',
-          content: 'Exemplo 3: "Maior percentual de tiro na cabeça? Dizem que até as balas desviam pra acertar o headshot!".',
+          content:
+            'Exemplo 3: "Maior percentual de tiro na cabeça? Dizem que até as balas desviam pra acertar o headshot!".',
         },
         {
           role: 'system',
@@ -88,7 +91,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
         {
           role: 'system',
-          content: 'Retorne somente o objeto com "damage, death, kill..." com a mensagem de cada atributo em json, nada além disso.',
+          content:
+            'Retorne somente o objeto com "damage, death, kill..." com a mensagem de cada atributo em json, nada além disso.',
         },
         { role: 'user', content: JSON.stringify(req.body) },
       ],

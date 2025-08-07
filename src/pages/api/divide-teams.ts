@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const response = await openai.chat.completions.create({
-      model: 'gpt-4.1',
+      model: 'gpt-5',
       temperature: 0,
       messages: [
         {
@@ -28,7 +28,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
         {
           role: 'system',
-          content: '2º Leve em consideração o campo Star (Sendo 5 o melhor e 1 o pior jogador). Exemplo: Se o time 1 tem um jogador 5 estrelas, o time 2 deve ter um jogador 5 estrelas também (se houver);',
+          content:
+            '2º Leve em consideração o campo Star (Sendo 5 o melhor e 1 o pior jogador). Exemplo: Se o time 1 tem um jogador 5 estrelas, o time 2 deve ter um jogador 5 estrelas também (se houver);',
         },
         {
           role: 'system',
@@ -40,7 +41,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
         {
           role: 'system',
-          content: 'Exemplo: "Pedro (0 pontos)", "Fulano (50 pontos)", "João (60 pontos)", "Gustavo (100 pontos)", "Falen (160 pontos)". O resultado correto seria, Time 1: Falen e Pedro. Time 2: Gustavo, João e Fulano.',
+          content:
+            'Exemplo: "Pedro (0 pontos)", "Fulano (50 pontos)", "João (60 pontos)", "Gustavo (100 pontos)", "Falen (160 pontos)". O resultado correto seria, Time 1: Falen e Pedro. Time 2: Gustavo, João e Fulano.',
         },
         {
           role: 'system',

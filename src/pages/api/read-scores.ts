@@ -17,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const response = await openai.chat.completions.create({
-      model: 'gpt-4.1',
+      model: 'gpt-5',
       temperature: 0,
       messages: [
         {
@@ -47,9 +47,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return;
     }
 
-    const leaderboard: ILeaderboardAPI = JSON.parse(response.choices[0].message.content.replace(/`/g, '').replace('json', ''));
+    const leaderboard: ILeaderboardAPI = JSON.parse(
+      response.choices[0].message.content.replace(/`/g, '').replace('json', '')
+    );
     res.status(200).json(leaderboard);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error });
   }
 }
