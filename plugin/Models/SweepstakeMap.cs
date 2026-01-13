@@ -37,9 +37,4 @@ public class SweepstakeMap
             _ => ""
         };
     }
-
-    public string GetMapIcon()
-    {
-        return MapType == "bomb" ? "💣" : "👥";
-    }
 }
