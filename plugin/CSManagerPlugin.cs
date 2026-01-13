@@ -144,20 +144,37 @@ public class CSManagerPlugin : BasePlugin
     private string BuildChatMessages(Sweepstake data)
     {
         var sb = new StringBuilder();
-        var teamOneColor = data.TeamStartFromTerrorist == "team_one" ? ChatColors.Red : ChatColors.Blue;
-        var teamTwoColor = data.TeamStartFromTerrorist == "team_one" ? ChatColors.Blue : ChatColors.Red;
-
-        // Cabeçalho
         var (trTeam, ctTeam) = data.TeamStartFromTerrorist == "team_one" ? ("Time 1", "Time 2") : ("Time 2", "Time 1");
         sb.AppendLine($" {ChatColors.LightYellow}CS2 MIX {data.DepartureAt} {ChatColors.Default}| {ChatColors.Red}TR: {trTeam} {ChatColors.Default}| {ChatColors.Blue}CT: {ctTeam}");
 
-        // Mapas - cada mapa em uma única linha
         for (int i = 0; i < data.Maps.Count; i++)
         {
             var map = data.Maps[i];
             var mapName = $"{map.GetMapPrefix()}{map.Name.ToLower()}";
+            var totalScore = map.TeamOneScore1 + map.TeamOneScore2 + map.TeamTwoScore1 + map.TeamTwoScore2;
 
-            sb.AppendLine($" {ChatColors.Yellow}{mapName} {ChatColors.Default}| {teamOneColor}Time 1: {map.TeamOneScore1} + {map.TeamOneScore2} {GetTrophyText(map.Status, "team_one")} {ChatColors.Default}| {teamTwoColor}Time 2: {map.TeamTwoScore1} + {map.TeamTwoScore2} {GetTrophyText(map.Status, "team_two")}");
+            if (totalScore > 0) {
+              var team1Color = data.TeamStartFromTerrorist == "team_one" ? ChatColors.Red : ChatColors.Blue;
+              var team2Color = data.TeamStartFromTerrorist == "team_one" ? ChatColors.Blue : ChatColors.Red;
+
+              if (map.Status == "draw")
+              {
+                  team1Color = ChatColors.LightBlue;
+                  team2Color = ChatColors.LightBlue;
+              }
+              else if (map.Status == "team_one")
+              {
+                  team1Color = ChatColors.Green;
+                  team2Color = ChatColors.Grey;
+              }
+              else if (map.Status == "team_two")
+              {
+                  team1Color = ChatColors.Grey;
+                  team2Color = ChatColors.Green;
+              }
+
+              sb.AppendLine($" {ChatColors.Yellow}{mapName}: {ChatColors.Default}{team1Color}Time 1: {map.TeamOneScore1} + {map.TeamOneScore2} {GetTrophyText(map.Status, "team_one")} {ChatColors.Default}| {team2Color}Time 2: {map.TeamTwoScore1} + {map.TeamTwoScore2} {GetTrophyText(map.Status, "team_two")}");
+            }
         }
 
         return sb.ToString();
