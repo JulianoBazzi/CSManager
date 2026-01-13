@@ -1,20 +1,9 @@
-import {
-  forwardRef, type ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
-} from 'react';
+import { type ForwardRefRenderFunction, forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import { type SubmitHandler, useForm } from 'react-hook-form';
 import { RiRepeatFill } from 'react-icons/ri';
 import { Rating } from 'react-simple-star-rating';
 
-import {
-  Flex,
-  Icon,
-  InputRightElement,
-  ModalBody,
-  ModalFooter,
-  Spinner,
-  Stack,
-  Text,
-} from '@chakra-ui/react';
+import { Flex, Icon, InputRightElement, ModalBody, ModalFooter, Spinner, Stack, Text } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@tanstack/react-query';
 import * as yup from 'yup';
@@ -31,7 +20,7 @@ import { TABLE_PLAYERS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import type IPlayer from '~/models/Entity/Player/IPlayer';
 import type IRecordModal from '~/models/Modal/IRecordModal';
-import { getLeetifyProfileScore } from '~/services/hooks/useLeetifyProfile';
+import { getLeetifyProfileScore } from '~/services/hooks/getPremierRating';
 import { getPlayer } from '~/services/hooks/usePlayers';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';
@@ -74,10 +63,10 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
       if (recordModal?.id) {
         setIsLoading(true);
         getPlayer(recordModal?.id, recordModal?.user.id)
-          .then((response) => {
+          .then(response => {
             reset(response);
           })
-          .catch((error) => {
+          .catch(error => {
             errorFeedbackToast('Jogador', error);
             modalRef.current?.onCloseModal();
           })
@@ -92,58 +81,52 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
       }
       modalRef.current?.onOpenModal();
     },
-    [errorFeedbackToast, reset],
+    [errorFeedbackToast, reset]
   );
 
-  const createOrUpdatePlayer = useMutation(
-    {
-      mutationFn: async (player: IPlayer) => {
-        const {
-          id, name, username, steam_id, premier, rating, active, fetch_data,
-        } = player;
+  const createOrUpdatePlayer = useMutation({
+    mutationFn: async (player: IPlayer) => {
+      const { id, name, username, steam_id, premier, rating, active, fetch_data } = player;
 
-        await supabase.from(TABLE_PLAYERS).upsert({
-          id,
-          user_id: recordModalProps?.user.id,
-          name,
-          username,
-          steam_id,
-          premier,
-          rating,
-          active,
-          fetch_data,
-        });
-      },
-      async onSuccess() {
-        successFeedbackToast('Jogador', `${recordModalProps?.id ? 'Atualizado' : 'Cadastrado'} com sucesso!`);
-        await queryClient.invalidateQueries({ queryKey: [TABLE_PLAYERS] });
-        modalRef.current?.onCloseModal();
-      },
-      onError(error: Error) {
-        errorFeedbackToast('Jogador', error);
-      },
+      await supabase.from(TABLE_PLAYERS).upsert({
+        id,
+        user_id: recordModalProps?.user.id,
+        name,
+        username,
+        steam_id,
+        premier,
+        rating,
+        active,
+        fetch_data,
+      });
     },
-  );
-
-  const { mutateAsync: refreshScoreMutateAsync, isPending: isRefreshScore } = useMutation(
-    {
-      mutationFn: async () => {
-        const skillLevel = await getLeetifyProfileScore(watch('steam_id'));
-
-        if (skillLevel) {
-          setValue('premier', skillLevel);
-        }
-      },
-      async onSuccess() {
-        successFeedbackToast('Atualizar Score', 'Score atualizado com sucesso!');
-      },
-      onError(error: Error) {
-        errorFeedbackToast('Atualizar Score', error);
-      },
+    async onSuccess() {
+      successFeedbackToast('Jogador', `${recordModalProps?.id ? 'Atualizado' : 'Cadastrado'} com sucesso!`);
+      await queryClient.invalidateQueries({ queryKey: [TABLE_PLAYERS] });
+      modalRef.current?.onCloseModal();
     },
-  );
+    onError(error: Error) {
+      errorFeedbackToast('Jogador', error);
+    },
+  });
 
-  const handleOk: SubmitHandler<InferType<typeof playerSchema>> = async (data) => {
+  const { mutateAsync: refreshScoreMutateAsync, isPending: isRefreshScore } = useMutation({
+    mutationFn: async () => {
+      const skillLevel = await getLeetifyProfileScore(watch('steam_id'));
+
+      if (skillLevel) {
+        setValue('premier', skillLevel);
+      }
+    },
+    async onSuccess() {
+      successFeedbackToast('Atualizar Score', 'Score atualizado com sucesso!');
+    },
+    onError(error: Error) {
+      errorFeedbackToast('Atualizar Score', error);
+    },
+  });
+
+  const handleOk: SubmitHandler<InferType<typeof playerSchema>> = async data => {
     await createOrUpdatePlayer.mutateAsync(data as IPlayer);
   };
 
@@ -152,7 +135,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
     () => ({
       onOpenModal,
     }),
-    [onOpenModal],
+    [onOpenModal]
   );
 
   return (
@@ -194,23 +177,31 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
               isRequired
             >
               {watch('steam_id') && (
-              <InputRightElement>
-                {isRefreshScore ? (
-                  <Spinner size="sm" />
-                ) : (
-                  <Icon as={RiRepeatFill} title="Atualizar Ranking" fontSize="xl" cursor="pointer" onClick={() => refreshScoreMutateAsync()} />
-                )}
-              </InputRightElement>
+                <InputRightElement>
+                  {isRefreshScore ? (
+                    <Spinner size="sm" />
+                  ) : (
+                    <Icon
+                      as={RiRepeatFill}
+                      title="Atualizar Ranking"
+                      fontSize="xl"
+                      cursor="pointer"
+                      onClick={() => refreshScoreMutateAsync()}
+                    />
+                  )}
+                </InputRightElement>
               )}
             </NumberInput>
           </Stack>
-          <Text mr="auto" cursor="pointer" onClick={() => setValue('rating', 0)}>Avaliação</Text>
+          <Text mr="auto" cursor="pointer" onClick={() => setValue('rating', 0)}>
+            Avaliação
+          </Text>
           <Flex mt="-4" justify="center">
             <Rating
               allowFraction
               transition
               initialValue={watch('rating')}
-              onClick={(value) => setValue('rating', value)}
+              onClick={value => setValue('rating', value)}
               size={50}
               emptyStyle={{ display: 'flex' }}
               SVGstyle={{ display: 'inline-block', marginBottom: 10 }}
@@ -218,8 +209,18 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
             />
           </Flex>
           <Stack direction="row" spacing="4">
-            <Switch label="Ativo" {...register('active')} isChecked={watch('active')} isDisabled={isLoading || isSubmitting} />
-            <Switch label="Buscar Dados" {...register('fetch_data')} isChecked={watch('fetch_data')} isDisabled={isLoading || isSubmitting} />
+            <Switch
+              label="Ativo"
+              {...register('active')}
+              isChecked={watch('active')}
+              isDisabled={isLoading || isSubmitting}
+            />
+            <Switch
+              label="Buscar Dados"
+              {...register('fetch_data')}
+              isChecked={watch('fetch_data')}
+              isDisabled={isLoading || isSubmitting}
+            />
           </Stack>
         </Stack>
       </ModalBody>
@@ -229,7 +230,11 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
         ) : (
           <AddSolidButton w="100%" type="submit" isLoading={isSubmitting} isDisabled={isLoading} />
         )}
-        <CancelOutlineButton w="100%" onClick={() => modalRef.current?.onCloseModal()} isDisabled={isSubmitting || isLoading} />
+        <CancelOutlineButton
+          w="100%"
+          onClick={() => modalRef.current?.onCloseModal()}
+          isDisabled={isSubmitting || isLoading}
+        />
       </ModalFooter>
     </Modal>
   );

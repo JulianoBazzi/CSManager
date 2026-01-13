@@ -22,7 +22,10 @@ import { RankingIconButton } from '~/components/IconButton/RankingIconButton';
 import { RefreshIconButton } from '~/components/IconButton/RefreshIconButton';
 import { PlayerMapRankingModal, type PlayerMapRankingModalHandle } from '~/components/Modal/PlayerMapRankingModal';
 import { PlayerModal, type PlayerModalHandle } from '~/components/Modal/PlayerModal';
-import { UpdatePlayerScoresModal, type UpdatePlayerScoresModalHandle } from '~/components/Modal/UpdatePlayerScoresModal';
+import {
+  UpdatePlayerScoresModal,
+  type UpdatePlayerScoresModalHandle,
+} from '~/components/Modal/UpdatePlayerScoresModal';
 import { SearchBar } from '~/components/SearchBar';
 import Template from '~/components/Template';
 import type IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
@@ -46,9 +49,10 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
   useEffect(() => {
     setDataFiltered(
       data?.filter(
-        (player) => removeAccents(player.name.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase()))
-          || removeAccents(player.username.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase())),
-      ),
+        player =>
+          removeAccents(player.name.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase())) ||
+          removeAccents(player.username.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase()))
+      )
     );
   }, [search, data]);
 
@@ -86,7 +90,12 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
       accessorKey: 'actions',
       header: 'Steam ID',
       enableSorting: false,
-      cell: ({ row }) => <LinkBadge value={row.original.steam_id} link={`https://leetify.com/public/profile/${row.original.steam_id}`} />,
+      cell: ({ row }) => (
+        <LinkBadge
+          value={row.original.steam_id}
+          link={`https://xsteamcommunity.com/profiles/${row.original.steam_id}`}
+        />
+      ),
     },
     {
       accessorKey: 'premier',
@@ -133,7 +142,7 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
             </Flex>
           </CardHeader>
           <CardBody>
-            <SearchBar onSearch={(value) => setSearch(value)} isDisabled={isFetching} />
+            <SearchBar onSearch={value => setSearch(value)} isDisabled={isFetching} />
             <Table
               data={dataFiltered}
               columns={columns}

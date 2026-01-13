@@ -20,7 +20,7 @@ import { TABLE_PLAYERS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import type IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
 import type IRecordModal from '~/models/Modal/IRecordModal';
-import { getLeetifyProfileScore } from '~/services/hooks/useLeetifyProfile';
+import { getPremierRating } from '~/services/hooks/getPremierRating';
 import { getPlayers } from '~/services/hooks/usePlayers';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';
@@ -68,7 +68,7 @@ const UpdatePlayerScoresModalBase: ForwardRefRenderFunction<UpdatePlayerScoresMo
       for (let i = 0; i < players.length; ) {
         setStep(i);
         setCurrentPlayer(players[i]);
-        const skillLevel = await getLeetifyProfileScore(players[i].steam_id);
+        const skillLevel = await getPremierRating(players[i].steam_id);
 
         if (skillLevel) {
           await supabase
