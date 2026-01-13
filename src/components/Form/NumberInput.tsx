@@ -1,17 +1,16 @@
-import { forwardRef, type ForwardRefRenderFunction, type ReactNode } from 'react';
-import type { FieldError } from 'react-hook-form';
-
 import {
+  Input as ChakraInput,
+  type InputProps as ChakraInputProps,
   FormControl,
   FormErrorMessage,
   FormLabel,
-  Input as ChakraInput,
   InputGroup,
-  type InputProps as ChakraInputProps,
   InputRightElement,
   Skeleton,
   Spinner,
 } from '@chakra-ui/react';
+import { type ForwardRefRenderFunction, forwardRef, type ReactNode } from 'react';
+import type { FieldError } from 'react-hook-form';
 
 interface INumberInputProps extends ChakraInputProps {
   name?: string;
@@ -24,40 +23,38 @@ interface INumberInputProps extends ChakraInputProps {
 }
 
 const NumberInputBase: ForwardRefRenderFunction<HTMLInputElement, INumberInputProps> = (
-  {
-    name, label, error, isRequired, isLoading, isSearching, children, maxW, ...rest
-  }: INumberInputProps,
-  ref,
+  { name, label, error, isRequired, isLoading, isSearching, children, maxW, ...rest }: INumberInputProps,
+  ref
 ) => (
   <FormControl isInvalid={!!error} isRequired={isRequired} maxW={maxW}>
     {!!label && <FormLabel htmlFor={name}>{label}</FormLabel>}
     {isLoading && <Skeleton height="10" borderRadius={4} />}
     {!isLoading && (
-    <InputGroup>
-      <ChakraInput
-        ref={ref}
-        id={name}
-        type="number"
-        name={name}
-        autoComplete="off"
-        onKeyPress={(event) => {
-          const reg = /^[0-9]*$/;
-          if (!reg.test(event.key)) {
-            event.preventDefault();
-          }
-        }}
-        onFocus={(event) => {
-          event.target.select();
-        }}
-        {...rest}
-      />
-      {isSearching && (
-        <InputRightElement>
-          <Spinner ml="2" size="sm" />
-        </InputRightElement>
-      )}
-      {children}
-    </InputGroup>
+      <InputGroup>
+        <ChakraInput
+          ref={ref}
+          id={name}
+          type="number"
+          name={name}
+          autoComplete="off"
+          onKeyPress={event => {
+            const reg = /^[0-9]*$/;
+            if (!reg.test(event.key)) {
+              event.preventDefault();
+            }
+          }}
+          onFocus={event => {
+            event.target.select();
+          }}
+          {...rest}
+        />
+        {isSearching && (
+          <InputRightElement>
+            <Spinner ml="2" size="sm" />
+          </InputRightElement>
+        )}
+        {children}
+      </InputGroup>
     )}
     {!!error && <FormErrorMessage my="1">{error.message}</FormErrorMessage>}
   </FormControl>

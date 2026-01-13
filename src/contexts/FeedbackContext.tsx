@@ -1,9 +1,8 @@
-import {
-  type Context, createContext, type ReactNode, useContext,
-} from 'react';
+/** biome-ignore-all lint/suspicious/noExplicitAny: <ignore> */
 
 import { type AlertStatus, useToast } from '@chakra-ui/react';
 import type { AuthError } from '@supabase/supabase-js';
+import { type Context, createContext, type ReactNode, useContext } from 'react';
 
 interface IFeedbackProviderProps {
   children: ReactNode;

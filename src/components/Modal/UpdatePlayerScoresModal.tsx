@@ -1,3 +1,5 @@
+import { ModalBody, ModalFooter, Progress, Spinner, Stack, Text } from '@chakra-ui/react';
+import { useMutation } from '@tanstack/react-query';
 import {
   type ForwardRefRenderFunction,
   forwardRef,
@@ -7,9 +9,6 @@ import {
   useRef,
   useState,
 } from 'react';
-
-import { ModalBody, ModalFooter, Progress, Spinner, Stack, Text } from '@chakra-ui/react';
-import { useMutation } from '@tanstack/react-query';
 
 import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
 import Card from '~/components/Card';
@@ -30,7 +29,7 @@ export type UpdatePlayerScoresModalHandle = {
   onOpenModal: (recordModal: IRecordModal) => void;
 };
 
-const UpdatePlayerScoresModalBase: ForwardRefRenderFunction<UpdatePlayerScoresModalHandle> = (any, ref) => {
+const UpdatePlayerScoresModalBase: ForwardRefRenderFunction<UpdatePlayerScoresModalHandle> = (_, ref) => {
   const modalRef = useRef<ModalHandle>(null);
 
   const { errorFeedbackToast, successFeedbackToast } = useFeedback();

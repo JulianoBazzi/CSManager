@@ -47,6 +47,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     return res.status(200).json({ rating: premierRating });
+    // biome-ignore lint/suspicious/noExplicitAny: <ignore>
   } catch (error: any) {
     console.log('Erro ao buscar rating:', error?.message);
     return res.status(500).json({ error: 'Erro ao buscar rating', message: error?.message });

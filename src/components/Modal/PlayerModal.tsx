@@ -1,13 +1,12 @@
+import { Flex, Icon, InputRightElement, ModalBody, ModalFooter, Spinner, Stack, Text } from '@chakra-ui/react';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useMutation } from '@tanstack/react-query';
 import { type ForwardRefRenderFunction, forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import { type SubmitHandler, useForm } from 'react-hook-form';
 import { RiRepeatFill } from 'react-icons/ri';
 import { Rating } from 'react-simple-star-rating';
-
-import { Flex, Icon, InputRightElement, ModalBody, ModalFooter, Spinner, Stack, Text } from '@chakra-ui/react';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useMutation } from '@tanstack/react-query';
-import * as yup from 'yup';
 import type { InferType } from 'yup';
+import * as yup from 'yup';
 
 import { AddSolidButton } from '~/components/Button/AddSolidButton';
 import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
@@ -20,7 +19,7 @@ import { TABLE_PLAYERS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import type IPlayer from '~/models/Entity/Player/IPlayer';
 import type IRecordModal from '~/models/Modal/IRecordModal';
-import { getLeetifyProfileScore } from '~/services/hooks/getPremierRating';
+import { getPremierRating } from '~/services/hooks/getPremierRating';
 import { getPlayer } from '~/services/hooks/usePlayers';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';
@@ -29,7 +28,7 @@ export type PlayerModalHandle = {
   onOpenModal: (recordModal?: IRecordModal) => void;
 };
 
-const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) => {
+const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (_, ref) => {
   const modalRef = useRef<ModalHandle>(null);
 
   const { errorFeedbackToast, successFeedbackToast } = useFeedback();
@@ -112,7 +111,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (any, ref) 
 
   const { mutateAsync: refreshScoreMutateAsync, isPending: isRefreshScore } = useMutation({
     mutationFn: async () => {
-      const skillLevel = await getLeetifyProfileScore(watch('steam_id'));
+      const skillLevel = await getPremierRating(watch('steam_id'));
 
       if (skillLevel) {
         setValue('premier', skillLevel);

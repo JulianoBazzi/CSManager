@@ -1,6 +1,3 @@
-import { useEffect, useState } from 'react';
-import { RiAwardLine } from 'react-icons/ri';
-
 import { Box, Flex, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useBreakpointValue } from '@chakra-ui/react';
 import type { User } from '@supabase/supabase-js';
 import { useMutation } from '@tanstack/react-query';
@@ -9,6 +6,8 @@ import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'ne
 import Head from 'next/head';
 import { usePathname, useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
+import { useEffect, useState } from 'react';
+import { RiAwardLine } from 'react-icons/ri';
 
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
@@ -132,7 +131,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({ user, us
     );
   }, [players]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <ignore>
   useEffect(() => {
     if (usernameOne) {
       const one = playerOptions.find(player => player.description === usernameOne);
@@ -172,7 +171,7 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({ user, us
     }
   }, [router, pathname, playerOne, playerTwo]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <ignore>
   useEffect(() => {
     if (playerOneRanking && playerTwoRanking) {
       const result: IRankingMapComparison[] = [];

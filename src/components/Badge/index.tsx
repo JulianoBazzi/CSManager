@@ -1,4 +1,4 @@
-import { Badge as ChakraBadge, type BadgeProps } from '@chakra-ui/react';
+import { type BadgeProps, Badge as ChakraBadge } from '@chakra-ui/react';
 
 export function Badge({ ...rest }: BadgeProps) {
   return (

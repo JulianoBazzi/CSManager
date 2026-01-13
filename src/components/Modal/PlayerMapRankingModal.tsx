@@ -1,11 +1,6 @@
-import {
-  forwardRef, type ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
-} from 'react';
-
-import {
-  ModalBody, ModalFooter,
-} from '@chakra-ui/react';
+import { ModalBody, ModalFooter } from '@chakra-ui/react';
 import type { ColumnDef } from '@tanstack/react-table';
+import { type ForwardRefRenderFunction, forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
 
 import { MapBadge } from '~/components/Badge/MapBadge';
 import { Modal, type ModalHandle } from '~/components/Form/Modal';
@@ -19,7 +14,7 @@ export type PlayerMapRankingModalHandle = {
   onOpenModal: (recordModal: IPlayerMapRankingModal) => void;
 };
 
-const PlayerMapRankingModalBase: ForwardRefRenderFunction<PlayerMapRankingModalHandle> = (any, ref) => {
+const PlayerMapRankingModalBase: ForwardRefRenderFunction<PlayerMapRankingModalHandle> = (_, ref) => {
   const modalRef = useRef<ModalHandle>(null);
 
   const { warningFeedbackToast } = useFeedback();
@@ -75,7 +70,7 @@ const PlayerMapRankingModalBase: ForwardRefRenderFunction<PlayerMapRankingModalH
       }
       modalRef.current?.onOpenModal();
     },
-    [warningFeedbackToast],
+    [warningFeedbackToast]
   );
 
   useImperativeHandle(
@@ -83,17 +78,13 @@ const PlayerMapRankingModalBase: ForwardRefRenderFunction<PlayerMapRankingModalH
     () => ({
       onOpenModal,
     }),
-    [onOpenModal],
+    [onOpenModal]
   );
 
   return (
     <Modal ref={modalRef} title={`Ranking: ${recordModalProps?.player?.name}`} size="4xl">
       <ModalBody>
-        <Table
-          data={rankings}
-          columns={rankingColumns}
-          isLoading={isLoading}
-        />
+        <Table data={rankings} columns={rankingColumns} isLoading={isLoading} />
       </ModalBody>
       <ModalFooter />
     </Modal>

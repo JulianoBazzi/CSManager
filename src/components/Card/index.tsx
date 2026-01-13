@@ -1,6 +1,5 @@
-import type { ReactNode } from 'react';
-
 import { Card as ChakraCard, type CardProps as ChakraCardProps } from '@chakra-ui/react';
+import type { ReactNode } from 'react';
 
 interface ICardProps extends ChakraCardProps {
   children: ReactNode;

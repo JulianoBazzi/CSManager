@@ -1,13 +1,10 @@
-import {
-  forwardRef, type ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
-} from 'react';
-import { type SubmitHandler, useForm } from 'react-hook-form';
-
 import { ModalBody, ModalFooter, Stack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@tanstack/react-query';
-import * as yup from 'yup';
+import { type ForwardRefRenderFunction, forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
+import { type SubmitHandler, useForm } from 'react-hook-form';
 import type { InferType } from 'yup';
+import * as yup from 'yup';
 
 import { games } from '~/assets/games';
 import { maps } from '~/assets/maps';
@@ -31,7 +28,7 @@ export type MapModalHandle = {
   onOpenModal: (recordModal?: IRecordModal) => void;
 };
 
-const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
+const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (_, ref) => {
   const modalRef = useRef<ModalHandle>(null);
 
   const { errorFeedbackToast, successFeedbackToast } = useFeedback();
@@ -44,7 +41,7 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
     map_type: yup
       .object()
       .shape({
-        id: yup.lazy((value) => (typeof value === 'number' ? yup.number() : yup.string()).required().nullable()),
+        id: yup.lazy(value => (typeof value === 'number' ? yup.number() : yup.string()).required().nullable()),
         name: yup.string(),
       })
       .nullable()
@@ -52,7 +49,7 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
     game_type: yup
       .object()
       .shape({
-        id: yup.lazy((value) => (typeof value === 'number' ? yup.number() : yup.string()).required().nullable()),
+        id: yup.lazy(value => (typeof value === 'number' ? yup.number() : yup.string()).required().nullable()),
         name: yup.string(),
       })
       .nullable()
@@ -76,14 +73,14 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
       if (recordModal?.id) {
         setIsLoading(true);
         getMap(recordModal?.id, recordModal?.user.id)
-          .then((response) => {
+          .then(response => {
             reset({
               ...response,
-              map_type: maps.find((map) => map.id === response.map_type),
-              game_type: games.find((game) => game.id === response.game_type),
+              map_type: maps.find(map => map.id === response.map_type),
+              game_type: games.find(game => game.id === response.game_type),
             });
           })
-          .catch((error) => {
+          .catch(error => {
             errorFeedbackToast('Mapa', error);
             modalRef.current?.onCloseModal();
           })
@@ -93,42 +90,38 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
       } else {
         reset({
           active: true,
-          game_type: games.find((game) => game.id === recordModal?.user.user_metadata.gameType),
+          game_type: games.find(game => game.id === recordModal?.user.user_metadata.gameType),
         });
       }
       modalRef.current?.onOpenModal();
     },
-    [errorFeedbackToast, reset],
+    [errorFeedbackToast, reset]
   );
 
-  const createOrUpdateMap = useMutation(
-    {
-      mutationFn: async (map: IMap) => {
-        const {
-          id, name, game_type, map_type, active,
-        } = map;
+  const createOrUpdateMap = useMutation({
+    mutationFn: async (map: IMap) => {
+      const { id, name, game_type, map_type, active } = map;
 
-        await supabase.from(TABLE_MAPS).upsert({
-          id,
-          user_id: recordModalProps?.user.id,
-          name,
-          map_type: map_type?.id,
-          game_type: game_type?.id,
-          active,
-        });
-      },
-      async onSuccess() {
-        successFeedbackToast('Mapa', `${recordModalProps?.id ? 'Atualizado' : 'Cadastrada'} com sucesso!`);
-        await queryClient.invalidateQueries({ queryKey: [TABLE_MAPS] });
-        modalRef.current?.onCloseModal();
-      },
-      onError(error: Error) {
-        errorFeedbackToast('Mapa', error);
-      },
+      await supabase.from(TABLE_MAPS).upsert({
+        id,
+        user_id: recordModalProps?.user.id,
+        name,
+        map_type: map_type?.id,
+        game_type: game_type?.id,
+        active,
+      });
     },
-  );
+    async onSuccess() {
+      successFeedbackToast('Mapa', `${recordModalProps?.id ? 'Atualizado' : 'Cadastrada'} com sucesso!`);
+      await queryClient.invalidateQueries({ queryKey: [TABLE_MAPS] });
+      modalRef.current?.onCloseModal();
+    },
+    onError(error: Error) {
+      errorFeedbackToast('Mapa', error);
+    },
+  });
 
-  const handleOk: SubmitHandler<InferType<typeof mapSchema>> = async (data) => {
+  const handleOk: SubmitHandler<InferType<typeof mapSchema>> = async data => {
     await createOrUpdateMap.mutateAsync(data as IMap);
   };
 
@@ -137,7 +130,7 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
     () => ({
       onOpenModal,
     }),
-    [onOpenModal],
+    [onOpenModal]
   );
 
   return (
@@ -162,7 +155,7 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
             isLoading={isLoading}
             isDisabled={isSubmitting}
             isRequired
-            onChange={(option) => {
+            onChange={option => {
               setValue('map_type', option);
             }}
           />
@@ -175,11 +168,16 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
             isLoading={isLoading}
             isDisabled={isSubmitting}
             isRequired
-            onChange={(option) => {
+            onChange={option => {
               setValue('game_type', option);
             }}
           />
-          <Switch label="Ativo" {...register('active')} isChecked={watch('active')} isDisabled={isLoading || isSubmitting} />
+          <Switch
+            label="Ativo"
+            {...register('active')}
+            isChecked={watch('active')}
+            isDisabled={isLoading || isSubmitting}
+          />
         </Stack>
       </ModalBody>
       <ModalFooter flexDir="column" gap="4">
@@ -188,7 +186,11 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (any, ref) => {
         ) : (
           <AddSolidButton w="100%" type="submit" isLoading={isSubmitting} isDisabled={isLoading} />
         )}
-        <CancelOutlineButton w="100%" onClick={() => modalRef.current?.onCloseModal()} isDisabled={isSubmitting || isLoading} />
+        <CancelOutlineButton
+          w="100%"
+          onClick={() => modalRef.current?.onCloseModal()}
+          isDisabled={isSubmitting || isLoading}
+        />
       </ModalFooter>
     </Modal>
   );

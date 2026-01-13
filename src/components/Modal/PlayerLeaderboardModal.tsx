@@ -1,12 +1,9 @@
-import {
-  forwardRef, type ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
-} from 'react';
-import { type SubmitHandler, useForm } from 'react-hook-form';
-
 import { ModalBody, ModalFooter, Stack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import { type ForwardRefRenderFunction, forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
+import { type SubmitHandler, useForm } from 'react-hook-form';
 import type { InferType } from 'yup';
+import * as yup from 'yup';
 
 import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
 import { SaveSolidButton } from '~/components/Button/SaveSolidButton';
@@ -24,7 +21,7 @@ export type PlayerLeaderboardModalHandle = {
   onOpenModal: (recordModal: IPlayerLeaderboardModal) => void;
 };
 
-const PlayerLeaderboardModalBase: ForwardRefRenderFunction<PlayerLeaderboardModalHandle> = (any, ref) => {
+const PlayerLeaderboardModalBase: ForwardRefRenderFunction<PlayerLeaderboardModalHandle> = (_, ref) => {
   const modalRef = useRef<ModalHandle>(null);
 
   const { warningFeedbackToast } = useFeedback();
@@ -62,7 +59,7 @@ const PlayerLeaderboardModalBase: ForwardRefRenderFunction<PlayerLeaderboardModa
   const onOpenModal = useCallback(
     (recordModal: IPlayerLeaderboardModal) => {
       setRecordModalProps(recordModal);
-      setPlayerOptions(recordModal.players.map((player) => ({ id: player.id, name: player.name })));
+      setPlayerOptions(recordModal.players.map(player => ({ id: player.id, name: player.name })));
       if (recordModal?.playerLeaderboard) {
         reset(recordModal?.playerLeaderboard);
         modalRef.current?.onOpenModal();
@@ -71,10 +68,10 @@ const PlayerLeaderboardModalBase: ForwardRefRenderFunction<PlayerLeaderboardModa
         modalRef.current?.onCloseModal();
       }
     },
-    [warningFeedbackToast, reset],
+    [warningFeedbackToast, reset]
   );
 
-  const handleOk: SubmitHandler<InferType<typeof playerLeaderboardSchema>> = async (data) => {
+  const handleOk: SubmitHandler<InferType<typeof playerLeaderboardSchema>> = async data => {
     await recordModalProps?.onSubmit(data as IPlayerLeaderboardAPI);
     modalRef.current?.onCloseModal();
   };
@@ -84,7 +81,7 @@ const PlayerLeaderboardModalBase: ForwardRefRenderFunction<PlayerLeaderboardModa
     () => ({
       onOpenModal,
     }),
-    [onOpenModal],
+    [onOpenModal]
   );
 
   return (
@@ -100,7 +97,7 @@ const PlayerLeaderboardModalBase: ForwardRefRenderFunction<PlayerLeaderboardModa
             isDisabled={isSubmitting}
             isRequired
             isSearchable
-            onChange={(option) => {
+            onChange={option => {
               setValue('player', option);
             }}
           />
@@ -112,13 +109,7 @@ const PlayerLeaderboardModalBase: ForwardRefRenderFunction<PlayerLeaderboardModa
               isDisabled={isSubmitting}
               isRequired
             />
-            <Input
-              label="Mortes"
-              error={errors.deaths}
-              {...register('deaths')}
-              isDisabled={isSubmitting}
-              isRequired
-            />
+            <Input label="Mortes" error={errors.deaths} {...register('deaths')} isDisabled={isSubmitting} isRequired />
             <NumberInput
               label="Assistências"
               error={errors.assistances}

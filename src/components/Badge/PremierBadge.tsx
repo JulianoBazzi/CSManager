@@ -1,6 +1,4 @@
-import {
-  type FlexProps, Flex, Text,
-} from '@chakra-ui/react';
+import { Flex, type FlexProps, Text } from '@chakra-ui/react';
 
 interface IPremierBadgeProps extends FlexProps {
   premier: number;
@@ -84,9 +82,7 @@ export function PremierBadge({ premier, ...rest }: IPremierBadgeProps) {
     >
       <Text ml="3" transform="skewX(-15deg)" textShadow="0 1px black" fontWeight="bold" textColor={textColor()}>
         {splitNumber()[0]}
-        <Text as="small">
-          {`,${splitNumber()[1]}`}
-        </Text>
+        <Text as="small">{`,${splitNumber()[1]}`}</Text>
       </Text>
     </Flex>
   );

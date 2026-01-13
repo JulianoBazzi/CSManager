@@ -1,6 +1,5 @@
-import { RiStarFill, RiStarHalfFill, RiStarLine } from 'react-icons/ri';
-
 import { Flex, type FlexProps, Icon } from '@chakra-ui/react';
+import { RiStarFill, RiStarHalfFill, RiStarLine } from 'react-icons/ri';
 
 interface IStarBadgeProps extends FlexProps {
   rating: number;
@@ -31,7 +30,7 @@ export function StarBadge({ rating, ...rest }: IStarBadgeProps) {
   return (
     <Flex gap="1px" {...rest}>
       {Array.from({ length: 5 }, (_, index) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+        // biome-ignore lint/suspicious/noArrayIndexKey: <ignore>
         <Icon key={index} as={getStarIcon(index)} color={getStarColor(index)} />
       ))}
     </Flex>

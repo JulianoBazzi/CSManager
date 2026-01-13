@@ -1,26 +1,18 @@
+import { Flex, Icon, ModalBody, ModalFooter, Stack, Text } from '@chakra-ui/react';
+import { useMutation } from '@tanstack/react-query';
+import type { ColumnDef } from '@tanstack/react-table';
+import axios from 'axios';
+import imgbbUpload from 'imgbb-image-uploader';
 import {
   type ChangeEvent,
-  forwardRef,
   type ForwardRefRenderFunction,
+  forwardRef,
   useCallback,
   useImperativeHandle,
   useRef,
   useState,
 } from 'react';
 import { RiAlertLine } from 'react-icons/ri';
-
-import {
-  Icon,
-  Text,
-  ModalBody,
-  ModalFooter,
-  Stack,
-  Flex,
-} from '@chakra-ui/react';
-import { useMutation } from '@tanstack/react-query';
-import type { ColumnDef } from '@tanstack/react-table';
-import axios from 'axios';
-import imgbbUpload from 'imgbb-image-uploader';
 import removeAccents from 'remove-accents';
 import { v4 } from 'uuid';
 
@@ -32,7 +24,11 @@ import { Table } from '~/components/Form/Table';
 import { DeleteSolidIconButton } from '~/components/IconButton/DeleteSolidIconButton';
 import { PlayerLeaderboardModal, type PlayerLeaderboardModalHandle } from '~/components/Modal/PlayerLeaderboardModal';
 import {
-  NEXT_PUBLIC_IMGBB_API_KEY, TABLE_PLAYERS, TABLE_RANKING, VIEW_MAP_RANKING, VIEW_SWEEPSTAKE_RANKING,
+  NEXT_PUBLIC_IMGBB_API_KEY,
+  TABLE_PLAYERS,
+  TABLE_RANKING,
+  VIEW_MAP_RANKING,
+  VIEW_SWEEPSTAKE_RANKING,
 } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import type ILeaderboardAPI from '~/models/Entity/Leaderboard/ILeaderboardAPI';
@@ -48,7 +44,7 @@ export type ImportImageLeaderboardModalHandle = {
   onOpenModal: (recordModal: ISweepstakeMapModal) => void;
 };
 
-const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeaderboardModalHandle> = (any, ref) => {
+const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeaderboardModalHandle> = (_, ref) => {
   const modalRef = useRef<ModalHandle>(null);
   const playerLeaderboardModalRef = useRef<PlayerLeaderboardModalHandle>(null);
 
@@ -61,13 +57,15 @@ const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeade
   const [recordModalProps, setRecordModalProps] = useState<ISweepstakeMapModal | undefined>();
 
   function handleDeletePlayerLeaderboard(id: string) {
-    setPlayerLeaderboards((prevPlayerLeaderboards) => prevPlayerLeaderboards.filter((playerLeaderboard) => playerLeaderboard.id !== id));
+    setPlayerLeaderboards(prevPlayerLeaderboards =>
+      prevPlayerLeaderboards.filter(playerLeaderboard => playerLeaderboard.id !== id)
+    );
   }
 
   function handleChangePlayerLeaderboard(updatedPlayerLeaderboard: IPlayerLeaderboardAPI) {
-    setPlayerLeaderboards((prevPlayerLeaderboards) => {
+    setPlayerLeaderboards(prevPlayerLeaderboards => {
       const index = prevPlayerLeaderboards.findIndex(
-        (playerLeaderboard) => playerLeaderboard.id === updatedPlayerLeaderboard.id,
+        playerLeaderboard => playerLeaderboard.id === updatedPlayerLeaderboard.id
       );
 
       if (index === -1) {
@@ -81,96 +79,98 @@ const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeade
     });
   }
 
-  const { mutateAsync: analyzeImageMutateAsync, isPending: isLoadingAnalyzeImage } = useMutation(
-    {
-      mutationFn: async (file: File) => {
-        setLeaderboard(undefined);
-        setPlayerLeaderboards([]);
+  const { mutateAsync: analyzeImageMutateAsync, isPending: isLoadingAnalyzeImage } = useMutation({
+    mutationFn: async (file: File) => {
+      setLeaderboard(undefined);
+      setPlayerLeaderboards([]);
 
-        const data = await imgbbUpload({
-          key: NEXT_PUBLIC_IMGBB_API_KEY,
-          image: file,
-          expiration: 600,
-          name: v4(),
-        });
+      const data = await imgbbUpload({
+        key: NEXT_PUBLIC_IMGBB_API_KEY,
+        image: file,
+        expiration: 600,
+        name: v4(),
+      });
 
-        const response = await axios.post<ILeaderboardAPI>('/api/read-scores', {
-          image_url: data.data.url,
-        });
+      const response = await axios.post<ILeaderboardAPI>('/api/read-scores', {
+        image_url: data.data.url,
+      });
 
-        return response.data;
-      },
-      async onSuccess(data) {
-        setLeaderboard(data);
-        if (data?.players?.length > 0) {
-          setPlayerLeaderboards(data.players.map((playerLeaderboard) => ({
+      return response.data;
+    },
+    async onSuccess(data) {
+      setLeaderboard(data);
+      if (data?.players?.length > 0) {
+        setPlayerLeaderboards(
+          data.players.map(playerLeaderboard => ({
             ...playerLeaderboard,
-            player: players.find((player) => removeAccents(player.username.trim().toLowerCase()) === removeAccents(playerLeaderboard.name.trim().toLowerCase())),
+            player: players.find(
+              player =>
+                removeAccents(player.username.trim().toLowerCase()) ===
+                removeAccents(playerLeaderboard.name.trim().toLowerCase())
+            ),
             id: v4(),
-          })));
-        }
-      },
-      onError(error: Error) {
-        errorFeedbackToast('Analisar Imagem', error);
-      },
+          }))
+        );
+      }
     },
-  );
-
-  const { mutateAsync: createOrUpdateRankingAsync, isPending: isLoadingRanking } = useMutation(
-    {
-      mutationFn: async () => {
-        if (!recordModalProps?.user || !recordModalProps?.sweepstakeMap || !recordModalProps?.sweepstakeMap.maps) {
-          return;
-        }
-
-        for (let i = 0; i < playerLeaderboards.length;) {
-          if (!playerLeaderboards[i].player) {
-            throw new Error(`Jogador não informado para o nick "${playerLeaderboards[i].name}"`);
-          }
-
-          const ranking = {
-            user_id: recordModalProps.user.id,
-            sweepstake_id: recordModalProps.sweepstakeMap.sweepstake_id,
-            map_id: recordModalProps.sweepstakeMap.map_id,
-            player_id: playerLeaderboards[i].player?.id ?? '',
-            kills: playerLeaderboards[i].kills,
-            deaths: playerLeaderboards[i].deaths,
-            assistances: playerLeaderboards[i].assistances,
-            headshot_percentage: playerLeaderboards[i].headshot_percentage,
-            damage: playerLeaderboards[i].damage,
-          } as IRanking;
-
-          const { data } = await supabase
-            .from(TABLE_RANKING)
-            .select()
-            .eq('user_id', ranking.user_id)
-            .eq('sweepstake_id', ranking.sweepstake_id)
-            .eq('map_id', ranking.map_id)
-            .eq('player_id', ranking.player_id)
-            .limit(1)
-            .maybeSingle();
-
-          if (data) {
-            await supabase.from(TABLE_RANKING).update(ranking).eq('id', data.id);
-          } else {
-            await supabase.from(TABLE_RANKING).insert(ranking);
-          }
-
-          i += 1;
-        }
-      },
-      async onSuccess() {
-        successFeedbackToast('Ranking', 'Ranking atualizado com sucesso!');
-        await queryClient.invalidateQueries({ queryKey: [TABLE_RANKING] });
-        await queryClient.invalidateQueries({ queryKey: [VIEW_MAP_RANKING] });
-        await queryClient.invalidateQueries({ queryKey: [VIEW_SWEEPSTAKE_RANKING] });
-        modalRef.current?.onCloseModal();
-      },
-      onError(error: Error) {
-        errorFeedbackToast('Ranking', error);
-      },
+    onError(error: Error) {
+      errorFeedbackToast('Analisar Imagem', error);
     },
-  );
+  });
+
+  const { mutateAsync: createOrUpdateRankingAsync, isPending: isLoadingRanking } = useMutation({
+    mutationFn: async () => {
+      if (!recordModalProps?.user || !recordModalProps?.sweepstakeMap || !recordModalProps?.sweepstakeMap.maps) {
+        return;
+      }
+
+      for (let i = 0; i < playerLeaderboards.length; ) {
+        if (!playerLeaderboards[i].player) {
+          throw new Error(`Jogador não informado para o nick "${playerLeaderboards[i].name}"`);
+        }
+
+        const ranking = {
+          user_id: recordModalProps.user.id,
+          sweepstake_id: recordModalProps.sweepstakeMap.sweepstake_id,
+          map_id: recordModalProps.sweepstakeMap.map_id,
+          player_id: playerLeaderboards[i].player?.id ?? '',
+          kills: playerLeaderboards[i].kills,
+          deaths: playerLeaderboards[i].deaths,
+          assistances: playerLeaderboards[i].assistances,
+          headshot_percentage: playerLeaderboards[i].headshot_percentage,
+          damage: playerLeaderboards[i].damage,
+        } as IRanking;
+
+        const { data } = await supabase
+          .from(TABLE_RANKING)
+          .select()
+          .eq('user_id', ranking.user_id)
+          .eq('sweepstake_id', ranking.sweepstake_id)
+          .eq('map_id', ranking.map_id)
+          .eq('player_id', ranking.player_id)
+          .limit(1)
+          .maybeSingle();
+
+        if (data) {
+          await supabase.from(TABLE_RANKING).update(ranking).eq('id', data.id);
+        } else {
+          await supabase.from(TABLE_RANKING).insert(ranking);
+        }
+
+        i += 1;
+      }
+    },
+    async onSuccess() {
+      successFeedbackToast('Ranking', 'Ranking atualizado com sucesso!');
+      await queryClient.invalidateQueries({ queryKey: [TABLE_RANKING] });
+      await queryClient.invalidateQueries({ queryKey: [VIEW_MAP_RANKING] });
+      await queryClient.invalidateQueries({ queryKey: [VIEW_SWEEPSTAKE_RANKING] });
+      modalRef.current?.onCloseModal();
+    },
+    onError(error: Error) {
+      errorFeedbackToast('Ranking', error);
+    },
+  });
 
   const playerLeaderboardColumns: ColumnDef<IPlayerLeaderboardAPI>[] = [
     {
@@ -180,7 +180,14 @@ const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeade
       cell: ({ row }) => (
         <Flex gap="2" align="center">
           <Text>{row.original.name}</Text>
-          {!row.original.player && <Icon as={RiAlertLine} title="Informe o jogador correspondente a este Nick" color="yellow.500" fontSize="xl" />}
+          {!row.original.player && (
+            <Icon
+              as={RiAlertLine}
+              title="Informe o jogador correspondente a este Nick"
+              color="yellow.500"
+              fontSize="xl"
+            />
+          )}
         </Flex>
       ),
     },
@@ -214,7 +221,11 @@ const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeade
       header: '',
       enableSorting: false,
       cell: ({ row }) => (
-        <DeleteSolidIconButton size="xs" onClick={() => handleDeletePlayerLeaderboard(row.original.id)} isDisabled={isLoading || isLoadingAnalyzeImage || isLoadingRanking} />
+        <DeleteSolidIconButton
+          size="xs"
+          onClick={() => handleDeletePlayerLeaderboard(row.original.id)}
+          isDisabled={isLoading || isLoadingAnalyzeImage || isLoadingRanking}
+        />
       ),
     },
   ];
@@ -230,10 +241,10 @@ const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeade
         active: true,
         sweepstakeId: recordModal.sweepstakeMap.sweepstake_id,
       })
-        .then((response) => {
+        .then(response => {
           setPlayers(response);
         })
-        .catch((error) => {
+        .catch(error => {
           errorFeedbackToast('Buscar Jogadores', error);
           modalRef.current?.onCloseModal();
         })
@@ -242,7 +253,7 @@ const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeade
         });
       modalRef.current?.onOpenModal();
     },
-    [errorFeedbackToast],
+    [errorFeedbackToast]
   );
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -265,7 +276,7 @@ const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeade
       players,
       playerLeaderboard,
       user: recordModalProps?.user,
-      onSubmit: async (data) => {
+      onSubmit: async data => {
         handleChangePlayerLeaderboard(data);
         if (data.player) {
           await supabase.from(TABLE_PLAYERS).update({ username: data.name }).eq('id', data.player.id);
@@ -276,7 +287,7 @@ const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeade
   }
 
   async function handleOk() {
-    const uninformedPlayers = playerLeaderboards.filter((playerLeaderboard) => !playerLeaderboard.player);
+    const uninformedPlayers = playerLeaderboards.filter(playerLeaderboard => !playerLeaderboard.player);
     if (uninformedPlayers.length > 0) {
       warningFeedbackToast('Ranking', `Há ${uninformedPlayers.length} registro(s) sem jogador informado!`);
       return;
@@ -290,7 +301,7 @@ const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeade
     () => ({
       onOpenModal,
     }),
-    [onOpenModal],
+    [onOpenModal]
   );
 
   return (
@@ -310,22 +321,31 @@ const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeade
               name="file"
               accept="image/*"
               capture="environment"
-              onChange={(event) => handleFileChange(event)}
+              onChange={event => handleFileChange(event)}
               isDisabled={isLoading || isLoadingAnalyzeImage || isLoadingRanking}
             />
             {(leaderboard || isLoadingAnalyzeImage) && (
-            <Table
-              data={playerLeaderboards}
-              columns={playerLeaderboardColumns}
-              isLoading={isLoadingAnalyzeImage}
-              onRowClick={(playerLeaderboard) => handlePlayerLeaderboardModal(playerLeaderboard)}
-            />
+              <Table
+                data={playerLeaderboards}
+                columns={playerLeaderboardColumns}
+                isLoading={isLoadingAnalyzeImage}
+                onRowClick={playerLeaderboard => handlePlayerLeaderboardModal(playerLeaderboard)}
+              />
             )}
           </Stack>
         </ModalBody>
         <ModalFooter flexDir="column" gap="4">
-          <SaveSolidButton w="100%" onClick={() => handleOk()} isLoading={isLoadingRanking} isDisabled={playerLeaderboards.length === 0} />
-          <CancelOutlineButton w="100%" onClick={() => modalRef.current?.onCloseModal()} isDisabled={isLoadingRanking} />
+          <SaveSolidButton
+            w="100%"
+            onClick={() => handleOk()}
+            isLoading={isLoadingRanking}
+            isDisabled={playerLeaderboards.length === 0}
+          />
+          <CancelOutlineButton
+            w="100%"
+            onClick={() => modalRef.current?.onCloseModal()}
+            isDisabled={isLoadingRanking}
+          />
         </ModalFooter>
       </Modal>
     </>

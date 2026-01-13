@@ -1,14 +1,4 @@
 import {
-  type ForwardRefRenderFunction,
-  type ReactNode,
-  type RefObject,
-  forwardRef,
-  useCallback,
-  useImperativeHandle,
-  useState,
-} from 'react';
-
-import {
   AlertDialog,
   AlertDialogBody,
   AlertDialogContent,
@@ -16,6 +6,15 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
 } from '@chakra-ui/react';
+import {
+  type ForwardRefRenderFunction,
+  forwardRef,
+  type ReactNode,
+  type RefObject,
+  useCallback,
+  useImperativeHandle,
+  useState,
+} from 'react';
 
 export enum AlertTypeEnum {
   Create = 'create',
@@ -36,7 +35,7 @@ interface IAlertProps {
   title: string;
   message: string;
   children: ReactNode;
-  cancelRef: RefObject<HTMLButtonElement>;
+  cancelRef: RefObject<HTMLButtonElement | null>;
   onClose?: () => void;
 }
 

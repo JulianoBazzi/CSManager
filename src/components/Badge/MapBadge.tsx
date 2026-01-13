@@ -1,4 +1,4 @@
-import { type ImageProps, Image } from '@chakra-ui/react';
+import { Image, type ImageProps } from '@chakra-ui/react';
 
 interface IPatentBadgeProps extends ImageProps {
   type: string;

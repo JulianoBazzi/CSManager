@@ -1,13 +1,4 @@
 import {
-  type ForwardRefRenderFunction,
-  type ReactNode,
-  forwardRef,
-  useCallback,
-  useImperativeHandle,
-  useState,
-} from 'react';
-
-import {
   Modal as ChakraModal,
   type ModalProps as ChakraModalProps,
   ModalCloseButton,
@@ -16,6 +7,14 @@ import {
   ModalOverlay,
   Text,
 } from '@chakra-ui/react';
+import {
+  type ForwardRefRenderFunction,
+  forwardRef,
+  type ReactNode,
+  useCallback,
+  useImperativeHandle,
+  useState,
+} from 'react';
 
 export interface IModalProps extends Omit<ChakraModalProps, 'onClose' | 'isOpen'> {
   title: string;

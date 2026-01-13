@@ -1,18 +1,13 @@
-import {
-  forwardRef, type ForwardRefRenderFunction, useCallback, useImperativeHandle, useRef, useState,
-} from 'react';
+import { Divider, Flex, Icon, ModalBody, ModalFooter, Stack } from '@chakra-ui/react';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useMutation } from '@tanstack/react-query';
+import { type ForwardRefRenderFunction, forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import { type SubmitHandler, useForm } from 'react-hook-form';
 import { GiUnlitBomb } from 'react-icons/gi';
 import { MdEmojiPeople } from 'react-icons/md';
 import { RiUser3Fill, RiUser3Line } from 'react-icons/ri';
-
-import {
-  ModalBody, ModalFooter, Stack, Divider, Flex, Icon,
-} from '@chakra-ui/react';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useMutation } from '@tanstack/react-query';
-import * as yup from 'yup';
 import type { InferType } from 'yup';
+import * as yup from 'yup';
 
 import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
 import { SaveSolidButton } from '~/components/Button/SaveSolidButton';
@@ -33,7 +28,7 @@ export type SweepstakeMapModalHandle = {
   onOpenModal: (recordModal?: ISweepstakeMapModal) => void;
 };
 
-const SweepstakeMapModalBase: ForwardRefRenderFunction<SweepstakeMapModalHandle> = (any, ref) => {
+const SweepstakeMapModalBase: ForwardRefRenderFunction<SweepstakeMapModalHandle> = (_, ref) => {
   const modalRef = useRef<ModalHandle>(null);
 
   const { errorFeedbackToast, successFeedbackToast } = useFeedback();
@@ -63,12 +58,12 @@ const SweepstakeMapModalBase: ForwardRefRenderFunction<SweepstakeMapModalHandle>
       if (recordModal?.id) {
         setIsLoading(true);
         getSweepstakeMap(recordModal?.id)
-          .then((response) => {
+          .then(response => {
             reset({
               ...response,
             });
           })
-          .catch((error) => {
+          .catch(error => {
             errorFeedbackToast('Placar', error);
             modalRef.current?.onCloseModal();
           })
@@ -80,38 +75,34 @@ const SweepstakeMapModalBase: ForwardRefRenderFunction<SweepstakeMapModalHandle>
       }
       modalRef.current?.onOpenModal();
     },
-    [errorFeedbackToast, reset],
+    [errorFeedbackToast, reset]
   );
 
-  const updateSweepstakMap = useMutation(
-    {
-      mutationFn: async (sweepstakMap: ISweepstakeMap) => {
-        const {
-          team_one_score_1, team_one_score_2, team_two_score_1, team_two_score_2,
-        } = sweepstakMap;
+  const updateSweepstakMap = useMutation({
+    mutationFn: async (sweepstakMap: ISweepstakeMap) => {
+      const { team_one_score_1, team_one_score_2, team_two_score_1, team_two_score_2 } = sweepstakMap;
 
-        await supabase
-          .from(TABLE_SWEEPSTAKE_MAPS)
-          .update({
-            team_one_score_1,
-            team_one_score_2,
-            team_two_score_1,
-            team_two_score_2,
-          })
-          .eq('id', recordModalProps?.id);
-      },
-      async onSuccess() {
-        successFeedbackToast('Placar', 'Atualizado com sucesso!');
-        await queryClient.invalidateQueries({ queryKey: [TABLE_SWEEPSTAKE_MAPS] });
-        modalRef.current?.onCloseModal();
-      },
-      onError(error: Error) {
-        errorFeedbackToast('Placar', error);
-      },
+      await supabase
+        .from(TABLE_SWEEPSTAKE_MAPS)
+        .update({
+          team_one_score_1,
+          team_one_score_2,
+          team_two_score_1,
+          team_two_score_2,
+        })
+        .eq('id', recordModalProps?.id);
     },
-  );
+    async onSuccess() {
+      successFeedbackToast('Placar', 'Atualizado com sucesso!');
+      await queryClient.invalidateQueries({ queryKey: [TABLE_SWEEPSTAKE_MAPS] });
+      modalRef.current?.onCloseModal();
+    },
+    onError(error: Error) {
+      errorFeedbackToast('Placar', error);
+    },
+  });
 
-  const handleOk: SubmitHandler<InferType<typeof sweepstakeMapSchema>> = async (data) => {
+  const handleOk: SubmitHandler<InferType<typeof sweepstakeMapSchema>> = async data => {
     await updateSweepstakMap.mutateAsync(data as ISweepstakeMap);
   };
 
@@ -120,7 +111,7 @@ const SweepstakeMapModalBase: ForwardRefRenderFunction<SweepstakeMapModalHandle>
     () => ({
       onOpenModal,
     }),
-    [onOpenModal],
+    [onOpenModal]
   );
 
   return (

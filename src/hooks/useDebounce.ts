@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: <ignore> */
 import { useRef } from 'react';
 
 export default function useDebounce(fn: (...params: any[]) => any, delay: number) {

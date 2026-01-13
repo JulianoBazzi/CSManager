@@ -1,9 +1,7 @@
-import { forwardRef } from 'react';
-
-import {
-  FormControl, FormErrorMessage, FormLabel, Skeleton,
-} from '@chakra-ui/react';
+/** biome-ignore-all lint/suspicious/noExplicitAny: <ignore> */
+import { FormControl, FormErrorMessage, FormLabel, Skeleton } from '@chakra-ui/react';
 import { Select as ChakraReactSelect, type SelectInstance } from 'chakra-react-select';
+import { forwardRef } from 'react';
 
 import type ISelectOption from '~/models/ISelectOption';
 
@@ -39,7 +37,7 @@ function SelectBase(
     value,
     onChange,
   }: ISelectProps,
-  ref: React.ForwardedRef<SelectInstance<ISelectOption>>,
+  ref: React.ForwardedRef<SelectInstance<ISelectOption>>
 ) {
   const cursorType = () => {
     if (isDisabled) {
@@ -73,12 +71,12 @@ function SelectBase(
           getOptionLabel={({ name: nameOption }: ISelectOption) => nameOption}
           getOptionValue={({ id }: ISelectOption) => String(id)}
           isRequired={isRequired}
-          onChange={(option) => onChange(option as ISelectOption)}
+          onChange={option => onChange(option as ISelectOption)}
           placeholder=""
           noOptionsMessage={() => 'Nenhum Registro Encontrado'}
           loadingMessage={() => 'Carregando...'}
           chakraStyles={{
-            control: (provided) => ({
+            control: provided => ({
               ...provided,
               // backgroundColor: isDisabled ? 'gray.50' : 'white',
               // borderColor: error ? 'red.300' : 'gray.100',
@@ -87,7 +85,7 @@ function SelectBase(
               //   borderColor: 'orange.500',
               // },
             }),
-            menu: (provided) => ({
+            menu: provided => ({
               ...provided,
               zIndex: 9999,
             }),
@@ -96,24 +94,24 @@ function SelectBase(
             //   backgroundColor: isDisabled ? 'gray.400' : 'orange.500',
             //   color: 'white',
             // }),
-            multiValueRemove: (provided) => ({
+            multiValueRemove: provided => ({
               ...provided,
               color: 'white',
               opacity: 0.8,
               display: isDisabled ? 'none' : 'inherit',
             }),
-            dropdownIndicator: (provided) => ({
+            dropdownIndicator: provided => ({
               ...provided,
               bg: 'transparent',
               px: 2,
               cursor: 'inherit',
               // color: error ? 'red.300' : 'gray.300',
             }),
-            indicatorSeparator: (provided) => ({
+            indicatorSeparator: provided => ({
               ...provided,
               display: 'none',
             }),
-            loadingIndicator: (provided) => ({
+            loadingIndicator: provided => ({
               ...provided,
               // color: 'orange.200',
               mr: 0,

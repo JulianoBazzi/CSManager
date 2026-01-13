@@ -1,19 +1,18 @@
-import { forwardRef, useState } from 'react';
-import type { FieldError } from 'react-hook-form';
-import { RiEyeLine, RiEyeOffLine } from 'react-icons/ri';
-
 import {
   Button,
+  Input as ChakraInput,
+  type InputProps as ChakraInputProps,
   FormControl,
   FormErrorMessage,
   FormLabel,
-  Input as ChakraInput,
+  Icon,
   InputGroup,
-  type InputProps as ChakraInputProps,
   InputRightElement,
   Skeleton,
-  Icon,
 } from '@chakra-ui/react';
+import { forwardRef, useState } from 'react';
+import type { FieldError } from 'react-hook-form';
+import { RiEyeLine, RiEyeOffLine } from 'react-icons/ri';
 
 interface IPasswordInputProps extends ChakraInputProps {
   name: string;
@@ -24,10 +23,8 @@ interface IPasswordInputProps extends ChakraInputProps {
 }
 
 function PasswordInputBase(
-  {
-    name, label, error, isRequired, isLoading, maxW, ...rest
-  }: IPasswordInputProps,
-  ref: React.ForwardedRef<HTMLInputElement>,
+  { name, label, error, isRequired, isLoading, maxW, ...rest }: IPasswordInputProps,
+  ref: React.ForwardedRef<HTMLInputElement>
 ) {
   const [show, setShow] = useState(false);
 

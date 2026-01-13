@@ -1,4 +1,4 @@
-import { Text, Box } from '@chakra-ui/react';
+import { Box, Text } from '@chakra-ui/react';
 
 interface IScoreBadgeProps {
   score: number;

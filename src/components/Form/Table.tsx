@@ -1,23 +1,31 @@
-import { useMemo, useState } from 'react';
-import { RiArrowDownSFill, RiArrowUpSFill, RiSubtractLine } from 'react-icons/ri';
-
 import {
-  Table as ChakraTable, Thead, Tbody, Tr, Th, Td, Flex, Text, Skeleton, Icon,
-  useBreakpointValue,
+  Table as ChakraTable,
+  Flex,
+  Icon,
+  Skeleton,
   TableContainer,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 import {
-  useReactTable,
-  flexRender,
   type ColumnDef,
+  type ColumnSort,
+  flexRender,
   getCoreRowModel,
-  getSortedRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   type PaginationState,
   type SortingState,
-  type ColumnSort,
+  useReactTable,
   type VisibilityState,
 } from '@tanstack/react-table';
+import { useMemo, useState } from 'react';
+import { RiArrowDownSFill, RiArrowUpSFill, RiSubtractLine } from 'react-icons/ri';
 
 import { FirstPageGhostIconButton } from '~/components/IconButton/FirstPageGhostIconButton';
 import { LastPageGhostIconButton } from '~/components/IconButton/LastPageGhostIconButton';
@@ -62,7 +70,7 @@ export function Table<T extends IEntityBase>({
       pageIndex,
       pageSize,
     }),
-    [pageIndex, pageSize],
+    [pageIndex, pageSize]
   );
 
   const {
@@ -92,9 +100,9 @@ export function Table<T extends IEntityBase>({
   const table = () => (
     <ChakraTable size="sm" variant="striped" colorScheme="blackAlpha">
       <Thead>
-        {getHeaderGroups().map((headerGroup) => (
+        {getHeaderGroups().map(headerGroup => (
           <Tr key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
+            {headerGroup.headers.map(header => (
               <Th key={header.id} colSpan={header.colSpan} textTransform="none">
                 <Flex
                   align="center"
@@ -103,13 +111,13 @@ export function Table<T extends IEntityBase>({
                 >
                   {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                   {
-                  {
-                    asc: <Icon as={RiArrowUpSFill} aria-label="sorted ascending" />,
-                    desc: <Icon as={RiArrowDownSFill} aria-label="sorted descending" />,
-                  }[header.column.getIsSorted() as string]
-                }
+                    {
+                      asc: <Icon as={RiArrowUpSFill} aria-label="sorted ascending" />,
+                      desc: <Icon as={RiArrowDownSFill} aria-label="sorted descending" />,
+                    }[header.column.getIsSorted() as string]
+                  }
                   {!header.column.getIsSorted() && header.column.getCanSort() && (
-                  <Icon as={RiSubtractLine} aria-label="sorted ascending" />
+                    <Icon as={RiSubtractLine} aria-label="sorted ascending" />
                   )}
                 </Flex>
               </Th>
@@ -118,19 +126,17 @@ export function Table<T extends IEntityBase>({
         ))}
       </Thead>
       <Tbody>
-        {isLoading
-        && [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => (
-          <Tr key={index}>
-            {columns.map((column, columnIndex) => (
-              <Td
-                key={`${columnIndex}-${index}`}
-              >
-                <Skeleton height="16px" />
-              </Td>
-            ))}
-          </Tr>
-        ))}
-        {getRowModel().rows.map((row) => (
+        {isLoading &&
+          [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(index => (
+            <Tr key={index}>
+              {columns.map((_, columnIndex) => (
+                <Td key={`${columnIndex}-${index}`}>
+                  <Skeleton height="16px" />
+                </Td>
+              ))}
+            </Tr>
+          ))}
+        {getRowModel().rows.map(row => (
           <Tr
             key={row.id}
             {...(onRowClick && {
@@ -140,12 +146,13 @@ export function Table<T extends IEntityBase>({
               },
             })}
           >
-            {row.getVisibleCells().map((cell) => (
+            {row.getVisibleCells().map(cell => (
               <Td
                 key={cell.id}
-                {...(onRowClick && cell.column.id !== 'actions' && {
-                  onClick: () => onRowClick(row.original),
-                })}
+                {...(onRowClick &&
+                  cell.column.id !== 'actions' && {
+                    onClick: () => onRowClick(row.original),
+                  })}
               >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </Td>

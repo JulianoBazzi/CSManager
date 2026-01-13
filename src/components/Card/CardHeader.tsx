@@ -1,5 +1,3 @@
-import type { ElementType, ReactNode } from 'react';
-
 import {
   CardHeader as ChakraCardHeader,
   type CardHeaderProps as ChakraCardHeaderProps,
@@ -9,6 +7,7 @@ import {
   Icon,
   Spinner,
 } from '@chakra-ui/react';
+import type { ElementType, ReactNode } from 'react';
 
 interface ICardHeaderProps extends ChakraCardHeaderProps {
   icon?: ElementType;
@@ -18,9 +17,7 @@ interface ICardHeaderProps extends ChakraCardHeaderProps {
   children?: ReactNode;
 }
 
-export default function CardHeader({
-  icon, size = 'lg', title, isFetching, children, ...rest
-}: ICardHeaderProps) {
+export default function CardHeader({ icon, size = 'lg', title, isFetching, children, ...rest }: ICardHeaderProps) {
   return (
     <>
       <ChakraCardHeader w="100%" {...rest}>
