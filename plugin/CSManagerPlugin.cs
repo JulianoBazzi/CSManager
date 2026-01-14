@@ -15,7 +15,7 @@ namespace CSManagerPlugin;
 public class CSManagerPlugin : BasePlugin
 {
     public override string ModuleName => "CSManager Plugin";
-    public override string ModuleVersion => "1.0.0";
+    public override string ModuleVersion => "1.0.1";
     public override string ModuleAuthor => "Bazzi Solutions";
     public override string ModuleDescription => "Exibe dados do CSManager no servidor";
 
@@ -69,15 +69,10 @@ public class CSManagerPlugin : BasePlugin
     [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void OnStartMixCommand(CCSPlayerController? player, CommandInfo command)
     {
-        // Executa o arquivo mix.cfg
         Server.ExecuteCommand("exec mix.cfg");
-
-        // Avisos para os jogadores
         Server.PrintToChatAll($" {ChatColors.Green}⚠️ ATENÇÃO: PARTIDA MIX INICIADA ⚠️");
         Server.PrintToChatAll($" {ChatColors.Orange}A partir de agora, a partida está VALENDO!");
         Server.PrintToChatAll($" {ChatColors.LightBlue}Configurações do MIX carregadas.");
-
-        // Log no console
         Console.WriteLine("[CSManager Plugin] Partida do MIX iniciada! Arquivo mix.cfg executado.");
     }
 
@@ -85,15 +80,10 @@ public class CSManagerPlugin : BasePlugin
     [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void OnStartX1Command(CCSPlayerController? player, CommandInfo command)
     {
-        // Executa o arquivo x1.cfg
         Server.ExecuteCommand("exec x1.cfg");
-
-        // Avisos para os jogadores
         Server.PrintToChatAll($" {ChatColors.Green}⚠️ ATENÇÃO: PARTIDA X1 INICIADA ⚠️");
         Server.PrintToChatAll($" {ChatColors.Orange}A partir de agora, a partida está VALENDO!");
         Server.PrintToChatAll($" {ChatColors.LightBlue}Configurações do X1 carregadas.");
-
-        // Log no console
         Console.WriteLine("[CSManager Plugin] Partida X1 iniciada! Arquivo x1.cfg executado.");
     }
 
@@ -108,7 +98,6 @@ public class CSManagerPlugin : BasePlugin
             {
                 var json = await response.Content.ReadAsStringAsync();
                 _currentData = JsonSerializer.Deserialize<Sweepstake>(json);
-
                 Console.WriteLine($"[CSManager Plugin] Dados atualizados para o sweepstake: {sweepstakeId}");
             }
             else
@@ -129,9 +118,8 @@ public class CSManagerPlugin : BasePlugin
         if (_currentData == null) return;
 
         var chatText = BuildChatMessages(_currentData);
-
-        // Separa por linhas e envia cada uma
         var lines = chatText.Split('\n');
+
         foreach (var line in lines)
         {
             if (!string.IsNullOrWhiteSpace(line))
@@ -153,42 +141,37 @@ public class CSManagerPlugin : BasePlugin
             var mapName = $"{map.GetMapPrefix()}{map.Name.ToLower()}";
             var totalScore = map.TeamOneScore1 + map.TeamOneScore2 + map.TeamTwoScore1 + map.TeamTwoScore2;
 
-            if (totalScore > 0) {
-              var team1Color = data.TeamStartFromTerrorist == "team_one" ? ChatColors.Red : ChatColors.Blue;
-              var team2Color = data.TeamStartFromTerrorist == "team_one" ? ChatColors.Blue : ChatColors.Red;
+            if (totalScore > 0)
+            {
+                var team1Total = map.TeamOneScore1 + map.TeamOneScore2;
+                var team2Total = map.TeamTwoScore1 + map.TeamTwoScore2;
 
-              if (map.Status == "draw")
-              {
-                  team1Color = ChatColors.LightBlue;
-                  team2Color = ChatColors.LightBlue;
-              }
-              else if (map.Status == "team_one")
-              {
-                  team1Color = ChatColors.Green;
-                  team2Color = ChatColors.Grey;
-              }
-              else if (map.Status == "team_two")
-              {
-                  team1Color = ChatColors.Grey;
-                  team2Color = ChatColors.Green;
-              }
+                var team1Color = data.TeamStartFromTerrorist == "team_one" ? ChatColors.Red : ChatColors.Blue;
+                var team2Color = data.TeamStartFromTerrorist == "team_one" ? ChatColors.Blue : ChatColors.Red;
+                var scoreColor = ChatColors.Yellow;
 
-              sb.AppendLine($" {ChatColors.Yellow}{mapName}: {ChatColors.Default}{team1Color}Time 1: {map.TeamOneScore1} + {map.TeamOneScore2} {GetTrophyText(map.Status, "team_one")} {ChatColors.Default}| {team2Color}Time 2: {map.TeamTwoScore1} + {map.TeamTwoScore2} {GetTrophyText(map.Status, "team_two")}");
+                if (map.Status == "draw")
+                {
+                    team1Color = ChatColors.LightBlue;
+                    team2Color = ChatColors.LightBlue;
+                    scoreColor = ChatColors.LightBlue;
+                }
+                else if (map.Status == "team_one")
+                {
+                    team1Color = ChatColors.Green;
+                    team2Color = ChatColors.Grey;
+                }
+                else if (map.Status == "team_two")
+                {
+                    team1Color = ChatColors.Grey;
+                    team2Color = ChatColors.Green;
+                }
+
+                sb.AppendLine($" {ChatColors.Yellow}{mapName}: {ChatColors.Default}{team1Color}Time 1 {ChatColors.Yellow}[{ChatColors.Default}{scoreColor}{team1Total} {ChatColors.Yellow}x {ChatColors.Default}{scoreColor}{team2Total}{ChatColors.Yellow}] {ChatColors.Default}{team2Color}Time 2");
             }
         }
 
         return sb.ToString();
-    }
-
-    private string GetTrophyText(string status, string team)
-    {
-        return status switch
-        {
-            "pending" => "",
-            "draw" => "⚠️",
-            _ when status == team => "✅",
-            _ => ""
-        };
     }
 
     public override void Unload(bool hotReload)
