@@ -15,25 +15,48 @@ namespace CSManagerPlugin;
 public class CSManagerPlugin : BasePlugin
 {
     public override string ModuleName => "CSManager Plugin";
-    public override string ModuleVersion => "1.0.1";
+    public override string ModuleVersion => "1.0.4";
     public override string ModuleAuthor => "Bazzi Solutions";
     public override string ModuleDescription => "Exibe dados do CSManager no servidor";
 
     private Sweepstake? _currentData;
     private readonly HttpClient _httpClient = new();
 
+    private readonly HashSet<ulong> _authorizedSteamIds = new()
+    {
+        76561197998631986 // Juliano Bazzi
+    };
+
     public override void Load(bool hotReload)
     {
         Console.WriteLine("[CSManager] Plugin carregado!");
     }
 
-    [ConsoleCommand("csm_plugin_chat", "Busca e exibe os dados do mix no chat")]
+    private bool HasPermission(CCSPlayerController? player)
+    {
+        if (player == null)
+            return true;
+
+        if (!player.IsValid || player.AuthorizedSteamID == null)
+            return false;
+
+        return _authorizedSteamIds.Contains(player.AuthorizedSteamID.SteamId64);
+    }
+
+    [ConsoleCommand("csm_score", "Busca e exibe os dados do mix no chat")]
     [CommandHelper(minArgs: 1, usage: "[sweepstake_id]", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void OnRefreshCommand(CCSPlayerController? player, CommandInfo command)
     {
+        if (!HasPermission(player))
+        {
+            if (player != null)
+                player.PrintToChat($" {ChatColors.Red}[CSManager Plugin]{ChatColors.Default} Você não tem permissão para usar este comando!");
+            return;
+        }
+
         if (command.ArgCount < 2)
         {
-            Server.PrintToChatAll($" {ChatColors.Red}[CSManager Plugin]{ChatColors.Default} Uso: csm_plugin_chat [sweepstake_id]");
+            Server.PrintToChatAll($" {ChatColors.Red}[CSManager Plugin]{ChatColors.Default} Uso: csm_score [sweepstake_id]");
             return;
         }
 
@@ -45,7 +68,7 @@ public class CSManagerPlugin : BasePlugin
             return;
         }
 
-        Server.PrintToChatAll($" {ChatColors.Blue}[CSManager Plugin]{ChatColors.Default} Buscando dados...");
+        Server.PrintToChatAll($" {ChatColors.Blue}[CSManager Plugin]{ChatColors.Default} SBP - Sistema Bazzi de Pontuação informa:");
 
         Task.Run(async () =>
         {
@@ -65,10 +88,17 @@ public class CSManagerPlugin : BasePlugin
         });
     }
 
-    [ConsoleCommand("csm_plugin_start_mix", "Inicia a partida do mix")]
+    [ConsoleCommand("csm_start_mix", "Inicia a partida do mix")]
     [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void OnStartMixCommand(CCSPlayerController? player, CommandInfo command)
     {
+        if (!HasPermission(player))
+        {
+            if (player != null)
+                player.PrintToChat($" {ChatColors.Red}[CSManager Plugin]{ChatColors.Default} Você não tem permissão para usar este comando!");
+            return;
+        }
+
         Server.ExecuteCommand("exec mix.cfg");
         Server.PrintToChatAll($" {ChatColors.Green}⚠️ ATENÇÃO: PARTIDA MIX INICIADA ⚠️");
         Server.PrintToChatAll($" {ChatColors.Orange}A partir de agora, a partida está VALENDO!");
@@ -76,16 +106,73 @@ public class CSManagerPlugin : BasePlugin
         Console.WriteLine("[CSManager Plugin] Partida do MIX iniciada! Arquivo mix.cfg executado.");
     }
 
-    [ConsoleCommand("csm_plugin_start_x1", "Inicia a partida x1")]
+    [ConsoleCommand("csm_start_x1", "Inicia a partida x1")]
     [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void OnStartX1Command(CCSPlayerController? player, CommandInfo command)
     {
+        if (!HasPermission(player))
+        {
+            if (player != null)
+                player.PrintToChat($" {ChatColors.Red}[CSManager Plugin]{ChatColors.Default} Você não tem permissão para usar este comando!");
+            return;
+        }
+
         Server.ExecuteCommand("exec x1.cfg");
         Server.PrintToChatAll($" {ChatColors.Green}⚠️ ATENÇÃO: PARTIDA X1 INICIADA ⚠️");
         Server.PrintToChatAll($" {ChatColors.Orange}A partir de agora, a partida está VALENDO!");
         Server.PrintToChatAll($" {ChatColors.LightBlue}Configurações do X1 carregadas.");
         Console.WriteLine("[CSManager Plugin] Partida X1 iniciada! Arquivo x1.cfg executado.");
     }
+
+    [ConsoleCommand("csm_map", "Troca o mapa do servidor")]
+    [CommandHelper(minArgs: 1, usage: "[map_name]", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    public void OnChangeMapCommand(CCSPlayerController? player, CommandInfo command)
+    {
+        if (!HasPermission(player))
+        {
+            if (player != null)
+                player.PrintToChat($" {ChatColors.Red}[CSManager Plugin]{ChatColors.Default} Você não tem permissão para usar este comando!");
+            return;
+        }
+
+        if (command.ArgCount < 2)
+        {
+            Server.PrintToChatAll($" {ChatColors.Red}[CSManager Plugin]{ChatColors.Default} Uso: csm_map [map_name]");
+            return;
+        }
+
+        var mapName = command.GetArg(1);
+
+        if (string.IsNullOrWhiteSpace(mapName))
+        {
+            Server.PrintToChatAll($" {ChatColors.Red}[CSManager Plugin]{ChatColors.Default} Nome do mapa inválido!");
+            return;
+        }
+
+        var isNumericOnly = mapName.All(char.IsDigit);
+
+        Server.PrintToChatAll($" {ChatColors.Blue}[CSManager Plugin]{ChatColors.Default} O mapa será trocado em {ChatColors.Yellow}10 segundos{ChatColors.Default}...");
+        Server.PrintToChatAll($" {ChatColors.LightBlue}Novo mapa: {ChatColors.Yellow}{mapName}");
+
+        AddTimer(10.0f, () =>
+        {
+            if (isNumericOnly)
+            {
+                Server.ExecuteCommand($"host_workshop_map {mapName}");
+                Server.PrintToChatAll($" {ChatColors.Green}[CSManager Plugin]{ChatColors.Default} Trocando para mapa da Workshop: {ChatColors.Yellow}{mapName}");
+                Console.WriteLine($"[CSManager Plugin] Executando: host_workshop_map {mapName}");
+            }
+            else
+            {
+                Server.ExecuteCommand($"map {mapName}");
+                Server.PrintToChatAll($" {ChatColors.Green}[CSManager Plugin]{ChatColors.Default} Trocando para mapa: {ChatColors.Yellow}{mapName}");
+                Console.WriteLine($"[CSManager Plugin] Executando: map {mapName}");
+            }
+        });
+    }
+
+
+
 
     private async Task FetchSweepstakeData(string sweepstakeId)
     {
@@ -152,8 +239,8 @@ public class CSManagerPlugin : BasePlugin
 
                 if (map.Status == "draw")
                 {
-                    team1Color = ChatColors.LightBlue;
-                    team2Color = ChatColors.LightBlue;
+                    team1Color = ChatColors.Grey;
+                    team2Color = ChatColors.Grey;
                     scoreColor = ChatColors.LightBlue;
                 }
                 else if (map.Status == "team_one")
