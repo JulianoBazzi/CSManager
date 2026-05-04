@@ -15,7 +15,7 @@ namespace CSManagerPlugin;
 public class CSManagerPlugin : BasePlugin
 {
     public override string ModuleName => "CSManager Plugin";
-    public override string ModuleVersion => "1.0.4";
+    public override string ModuleVersion => "1.0.6";
     public override string ModuleAuthor => "Bazzi Solutions";
     public override string ModuleDescription => "Exibe dados do CSManager no servidor";
 
@@ -35,10 +35,14 @@ public class CSManagerPlugin : BasePlugin
     private bool HasPermission(CCSPlayerController? player)
     {
         if (player == null)
+        {
             return true;
+        }
 
         if (!player.IsValid || player.AuthorizedSteamID == null)
+        {
             return false;
+        }
 
         return _authorizedSteamIds.Contains(player.AuthorizedSteamID.SteamId64);
     }
@@ -47,10 +51,15 @@ public class CSManagerPlugin : BasePlugin
     [CommandHelper(minArgs: 1, usage: "[sweepstake_id]", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void OnRefreshCommand(CCSPlayerController? player, CommandInfo command)
     {
+        Console.WriteLine($"[CSManager Plugin] csm_score chamado. Player: {player?.PlayerName ?? "Server"}");
+
         if (!HasPermission(player))
         {
-            if (player != null)
+            Console.WriteLine($"[CSManager Plugin] csm_score: sem permissão. SteamID={player?.AuthorizedSteamID?.SteamId64.ToString() ?? "null"}");
+            if (player != null) 
+            {
                 player.PrintToChat($" {ChatColors.Red}[CSManager Plugin]{ChatColors.Default} Você não tem permissão para usar este comando!");
+            }
             return;
         }
 
@@ -92,10 +101,15 @@ public class CSManagerPlugin : BasePlugin
     [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void OnStartMixCommand(CCSPlayerController? player, CommandInfo command)
     {
+        Console.WriteLine($"[CSManager Plugin] csm_start_mix chamado. Player: {player?.PlayerName ?? "Server"}");
+
         if (!HasPermission(player))
         {
+            Console.WriteLine($"[CSManager Plugin] csm_start_mix: sem permissão. SteamID={player?.AuthorizedSteamID?.SteamId64.ToString() ?? "null"}");
             if (player != null)
+            {
                 player.PrintToChat($" {ChatColors.Red}[CSManager Plugin]{ChatColors.Default} Você não tem permissão para usar este comando!");
+            }
             return;
         }
 
@@ -110,8 +124,11 @@ public class CSManagerPlugin : BasePlugin
     [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void OnStartX1Command(CCSPlayerController? player, CommandInfo command)
     {
+        Console.WriteLine($"[CSManager Plugin] csm_start_x1 chamado. Player: {player?.PlayerName ?? "Server"}");
+
         if (!HasPermission(player))
         {
+            Console.WriteLine($"[CSManager Plugin] csm_start_x1: sem permissão. SteamID={player?.AuthorizedSteamID?.SteamId64.ToString() ?? "null"}");
             if (player != null)
                 player.PrintToChat($" {ChatColors.Red}[CSManager Plugin]{ChatColors.Default} Você não tem permissão para usar este comando!");
             return;
@@ -128,8 +145,11 @@ public class CSManagerPlugin : BasePlugin
     [CommandHelper(minArgs: 1, usage: "[map_name]", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     public void OnChangeMapCommand(CCSPlayerController? player, CommandInfo command)
     {
+        Console.WriteLine($"[CSManager Plugin] csm_map chamado. Player: {player?.PlayerName ?? "Server"}");
+
         if (!HasPermission(player))
         {
+            Console.WriteLine($"[CSManager Plugin] csm_map: sem permissão. SteamID={player?.AuthorizedSteamID?.SteamId64.ToString() ?? "null"}");
             if (player != null)
                 player.PrintToChat($" {ChatColors.Red}[CSManager Plugin]{ChatColors.Default} Você não tem permissão para usar este comando!");
             return;
@@ -137,6 +157,7 @@ public class CSManagerPlugin : BasePlugin
 
         if (command.ArgCount < 2)
         {
+            Console.WriteLine($"[CSManager Plugin] csm_map: ArgCount={command.ArgCount}, esperava >= 2");
             Server.PrintToChatAll($" {ChatColors.Red}[CSManager Plugin]{ChatColors.Default} Uso: csm_map [map_name]");
             return;
         }
@@ -151,24 +172,16 @@ public class CSManagerPlugin : BasePlugin
 
         var isNumericOnly = mapName.All(char.IsDigit);
 
-        Server.PrintToChatAll($" {ChatColors.Blue}[CSManager Plugin]{ChatColors.Default} O mapa será trocado em {ChatColors.Yellow}10 segundos{ChatColors.Default}...");
-        Server.PrintToChatAll($" {ChatColors.LightBlue}Novo mapa: {ChatColors.Yellow}{mapName}");
-
-        AddTimer(10.0f, () =>
+        if (isNumericOnly)
         {
-            if (isNumericOnly)
-            {
-                Server.ExecuteCommand($"host_workshop_map {mapName}");
-                Server.PrintToChatAll($" {ChatColors.Green}[CSManager Plugin]{ChatColors.Default} Trocando para mapa da Workshop: {ChatColors.Yellow}{mapName}");
-                Console.WriteLine($"[CSManager Plugin] Executando: host_workshop_map {mapName}");
-            }
-            else
-            {
-                Server.ExecuteCommand($"map {mapName}");
-                Server.PrintToChatAll($" {ChatColors.Green}[CSManager Plugin]{ChatColors.Default} Trocando para mapa: {ChatColors.Yellow}{mapName}");
-                Console.WriteLine($"[CSManager Plugin] Executando: map {mapName}");
-            }
-        });
+            Console.WriteLine($"[CSManager Plugin] Executando: host_workshop_map {mapName}");
+            Server.ExecuteCommand($"host_workshop_map {mapName}");
+        }
+        else
+        {
+            Console.WriteLine($"[CSManager Plugin] Executando: map {mapName}");
+            Server.ExecuteCommand($"map {mapName}");
+        }
     }
 
 

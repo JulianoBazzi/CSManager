@@ -16,12 +16,15 @@
 <br/>
 
 # Counter-Strike - Manager
+
 Coming soon.
 
 ## Demo
+
 - [Demo on Vercel](https://csmanager.vercel.app/)
 
 ## Technologies
+
 - [Next.js](https://nextjs.org/)
 - [Typescript](https://www.typescriptlang.org/)
 - [Chakra UI](https://chakra-ui.com/)
@@ -33,3 +36,7 @@ Coming soon.
 2. Access the directory: `cd CSManager`
 3. Configure the Supabase in: `.env.example`
 4. Run the Vue: `npm run dev`
+
+## B
+cd Documents/GitHub/Bazzi\ Solutions/CSManager/plugin
+./build.sh

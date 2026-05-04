@@ -1,11 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
-
 import { Flex } from '@chakra-ui/react';
 import type { User } from '@supabase/supabase-js';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
+import { useEffect, useRef, useState } from 'react';
 import removeAccents from 'remove-accents';
 
 import { ActiveBadge } from '~/components/Badge/ActiveBadge';
@@ -19,13 +18,8 @@ import CardHeader from '~/components/Card/CardHeader';
 import { Table } from '~/components/Form/Table';
 import { AddIconButton } from '~/components/IconButton/AddIconButton';
 import { RankingIconButton } from '~/components/IconButton/RankingIconButton';
-import { RefreshIconButton } from '~/components/IconButton/RefreshIconButton';
 import { PlayerMapRankingModal, type PlayerMapRankingModalHandle } from '~/components/Modal/PlayerMapRankingModal';
 import { PlayerModal, type PlayerModalHandle } from '~/components/Modal/PlayerModal';
-import {
-  UpdatePlayerScoresModal,
-  type UpdatePlayerScoresModalHandle,
-} from '~/components/Modal/UpdatePlayerScoresModal';
 import { SearchBar } from '~/components/SearchBar';
 import Template from '~/components/Template';
 import type IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
@@ -38,7 +32,6 @@ interface IPlayersProps extends GetServerSideProps {
 
 const Players: NextPage<IPlayersProps> = ({ user }) => {
   const playerModalRef = useRef<PlayerModalHandle>(null);
-  const updatePlayerScoresModalRef = useRef<UpdatePlayerScoresModalHandle>(null);
   const playerMapRankingModalRef = useRef<PlayerMapRankingModalHandle>(null);
 
   const { data, isLoading, isFetching } = usePlayers(user.id);
@@ -55,12 +48,6 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
       )
     );
   }, [search, data]);
-
-  function handleUpdateScorePlayersShowModal() {
-    updatePlayerScoresModalRef.current?.onOpenModal({
-      user,
-    });
-  }
 
   function handleShowModal(id?: string) {
     playerModalRef.current?.onOpenModal({
@@ -131,13 +118,11 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
         <title>Jogadores - CS Manager</title>
       </Head>
       <PlayerModal ref={playerModalRef} />
-      <UpdatePlayerScoresModal ref={updatePlayerScoresModalRef} />
       <PlayerMapRankingModal ref={playerMapRankingModalRef} />
       <Template user={user}>
         <Card>
           <CardHeader title="Jogadores" isFetching={isFetching && !isLoading}>
             <Flex gap="2">
-              <RefreshIconButton onClick={() => handleUpdateScorePlayersShowModal()} />
               <AddIconButton onClick={() => handleShowModal()} />
             </Flex>
           </CardHeader>

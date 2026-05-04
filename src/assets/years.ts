@@ -2,6 +2,10 @@ import type ISelectOption from '~/models/ISelectOption';
 
 export const years: ISelectOption[] = [
   {
+    id: 2026,
+    name: '2026',
+  },
+  {
     id: 2025,
     name: '2025',
   },

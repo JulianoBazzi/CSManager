@@ -1,14 +1,11 @@
-import { useEffect, useState } from 'react';
-import {
-  RiNumbersLine,
-} from 'react-icons/ri';
-
 import { Flex, TableContainer } from '@chakra-ui/react';
 import type { User } from '@supabase/supabase-js';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
+import { useEffect, useState } from 'react';
+import { RiNumbersLine } from 'react-icons/ri';
 import removeAccents from 'remove-accents';
 
 import { years } from '~/assets/years';
@@ -35,20 +32,17 @@ const RankingPublic: NextPage<IRankingProps> = ({ user, userId }) => {
   const [selectedYear, setSelectedYear] = useState<ISelectOption>(years[0]);
   const [search, setSearch] = useState('');
 
-  const {
-    data,
-    isLoading,
-    isFetching,
-  } = useRanking(userId, Number(selectedYear?.id));
+  const { data, isLoading, isFetching } = useRanking(userId, Number(selectedYear?.id));
 
   const [dataFiltered, setDataFiltered] = useState(data);
 
   useEffect(() => {
     setDataFiltered(
       data?.filter(
-        (player) => removeAccents(player.name.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase()))
-          || removeAccents(player.username.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase())),
-      ),
+        player =>
+          removeAccents(player.name.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase())) ||
+          removeAccents(player.username.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase()))
+      )
     );
   }, [search, data]);
 
@@ -61,11 +55,11 @@ const RankingPublic: NextPage<IRankingProps> = ({ user, userId }) => {
       accessorKey: 'username',
       header: 'Steam',
     },
-    {
-      accessorKey: 'premier',
-      header: 'Premier',
-      cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
-    },
+    // {
+    //   accessorKey: 'premier',
+    //   header: 'Premier',
+    //   cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
+    // },
     {
       accessorKey: 'rating',
       header: 'Avaliação',
@@ -105,21 +99,17 @@ const RankingPublic: NextPage<IRankingProps> = ({ user, userId }) => {
       </Head>
       <Template user={user}>
         <Card>
-          <CardHeader
-            icon={RiNumbersLine}
-            title="Ranking"
-            isFetching={isFetching && !isLoading}
-          />
+          <CardHeader icon={RiNumbersLine} title="Ranking" isFetching={isFetching && !isLoading} />
           <CardBody>
             <Flex gap="2">
-              <SearchBar onSearch={(value) => setSearch(value)} isDisabled={isFetching} />
+              <SearchBar onSearch={value => setSearch(value)} isDisabled={isFetching} />
               <Flex w={['190px', '120px']}>
                 <Select
                   name="year"
                   options={years}
                   value={selectedYear}
                   isRequired
-                  onChange={(option) => setSelectedYear(option)}
+                  onChange={option => setSelectedYear(option)}
                 />
               </Flex>
             </Flex>

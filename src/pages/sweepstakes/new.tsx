@@ -1,9 +1,4 @@
-import { useState } from 'react';
-import { type SubmitHandler, useForm } from 'react-hook-form';
-
-import {
-  Checkbox, Flex, Stack,
-} from '@chakra-ui/react';
+import { Checkbox, Flex, Stack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import type { User } from '@supabase/supabase-js';
 import { useMutation } from '@tanstack/react-query';
@@ -13,9 +8,11 @@ import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'ne
 import Head from 'next/head';
 import { useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
+import { useState } from 'react';
+import { type SubmitHandler, useForm } from 'react-hook-form';
 import { v4 } from 'uuid';
-import * as yup from 'yup';
 import type { InferType } from 'yup';
+import * as yup from 'yup';
 
 import { games } from '~/assets/games';
 import { sweepstakeEngines } from '~/assets/sweepstakeEngines';
@@ -43,8 +40,8 @@ import type ISweepstakePlayer from '~/models/Entity/Sweepstake/ISweepstakePlayer
 import { SweepstakeTeamEnum } from '~/models/Entity/Sweepstake/ISweepstakePlayerAPI';
 import type ISelectOption from '~/models/ISelectOption';
 import { useMaps } from '~/services/hooks/useMaps';
-import { usePlayers } from '~/services/hooks/usePlayers';
 import { getPlayersScoresOnMaps } from '~/services/hooks/usePlayerScoresOnMaps';
+import { usePlayers } from '~/services/hooks/usePlayers';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';
 import balanceTeams from '~/utils/balanceTeams';
@@ -65,113 +62,119 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
   const { data: maps, isLoading: isLoadingMaps } = useMaps(user.id, { active: true });
 
   function handleSelectedPlayers(value: IPlayerAPI) {
-    const find = selectedPlayers.find((player) => player.id === value.id);
+    const find = selectedPlayers.find(player => player.id === value.id);
     if (find) {
-      setSelectedPlayers((previousPlayers) => previousPlayers.filter((player) => player.id !== value.id));
+      setSelectedPlayers(previousPlayers => previousPlayers.filter(player => player.id !== value.id));
     } else {
-      setSelectedPlayers((previousPlayers) => [...previousPlayers, value]);
+      setSelectedPlayers(previousPlayers => [...previousPlayers, value]);
     }
   }
 
   function handleSelectedMaps(id: string) {
-    const find = selectedMaps.find((i) => i === id);
+    const find = selectedMaps.find(i => i === id);
     if (find) {
-      setSelectedMaps((ids) => ids.filter((i) => i !== id));
+      setSelectedMaps(ids => ids.filter(i => i !== id));
     } else {
-      setSelectedMaps((ids) => [...ids, id]);
+      setSelectedMaps(ids => [...ids, id]);
     }
   }
 
-  const { mutateAsync, isPending: isLoadingCreate } = useMutation(
-    {
-      mutationFn: async ({ game_type, departure_at, engine }: ISweepstake) => {
-        const sweepstakeId = v4();
-        const playerList: ISweepstakePlayer[] = [];
+  const { mutateAsync, isPending: isLoadingCreate } = useMutation({
+    mutationFn: async ({ game_type, departure_at, engine }: ISweepstake) => {
+      const sweepstakeId = v4();
+      const playerList: ISweepstakePlayer[] = [];
 
-        let divisionTeams: [IPlayerScoreAPI[], IPlayerScoreAPI[]] = [[], []];
+      let divisionTeams: [IPlayerScoreAPI[], IPlayerScoreAPI[]] = [[], []];
 
-        if (engine?.id === SeepstakeEngineEnum.Ranking) {
-          const playerScoreList = await getPlayersScoresOnMaps(
-            selectedPlayers.map((player) => player.id),
-            selectedMaps,
-            user?.id,
-          );
+      if (engine?.id === SeepstakeEngineEnum.Ranking) {
+        const playerScoreList = await getPlayersScoresOnMaps(
+          selectedPlayers.map(player => player.id),
+          selectedMaps,
+          user?.id
+        );
 
-          if (playerScoreList) {
-            divisionTeams = balanceTeams(playerScoreList.map((item) => ({
+        if (playerScoreList) {
+          divisionTeams = balanceTeams(
+            playerScoreList.map(item => ({
               id: item.id,
               rating: item.rating,
               score: item.score,
-            })));
-          }
-        } else {
-          divisionTeams = balanceTeams(selectedPlayers.map((player) => ({
+            }))
+          );
+        }
+      } else {
+        divisionTeams = balanceTeams(
+          selectedPlayers.map(player => ({
             id: player.id,
             rating: player.rating,
             score: player.premier,
-          })));
-        }
+          }))
+        );
+      }
 
-        for (let i = 0; i < divisionTeams.length; i++) {
-          const team = divisionTeams[i];
-          for (let j = 0; j < team.length; j++) {
-            const player = team[j];
-            playerList.push({
-              user_id: user?.id,
-              sweepstake_id: sweepstakeId,
-              player_id: player.id,
-              team: i,
-              score: player.score,
-            });
-          }
-        }
-
-        const mapList: ISweepstakeMap[] = [];
-        const startFromTerrorist = randomUnique(2, 1)[0] - 1;
-        for (let i = 0; i < selectedMaps.length;) {
-          mapList.push({
+      for (let i = 0; i < divisionTeams.length; i++) {
+        const team = divisionTeams[i];
+        for (let j = 0; j < team.length; j++) {
+          const player = team[j];
+          playerList.push({
             user_id: user?.id,
             sweepstake_id: sweepstakeId,
-            map_id: selectedMaps[i],
-            team_start_from_terrorist: startFromTerrorist,
-            team_one_score_1: 0,
-            team_one_score_2: 0,
-            team_two_score_1: 0,
-            team_two_score_2: 0,
-            order: i,
+            player_id: player.id,
+            team: i,
+            score: player.score,
           });
-
-          i += 1;
         }
+      }
 
-        await supabase.from(TABLE_SWEEPSTAKES).insert({
-          id: sweepstakeId,
-          user_id: user.id,
-          game_type: game_type?.id,
-          engine: engine?.id,
-          departure_at,
-          quantity_players: playerList.length,
-          quantity_maps: mapList.length,
-          score_team_one: playerList.filter((player) => player.team === SweepstakeTeamEnum.One).reduce((sum, player) => sum + player.score, 0),
-          score_team_two: playerList.filter((player) => player.team === SweepstakeTeamEnum.Two).reduce((sum, player) => sum + player.score, 0),
+      const mapList: ISweepstakeMap[] = [];
+      const startFromTerrorist = randomUnique(2, 1)[0] - 1;
+      for (let i = 0; i < selectedMaps.length; ) {
+        mapList.push({
+          user_id: user?.id,
+          sweepstake_id: sweepstakeId,
+          map_id: selectedMaps[i],
+          team_start_from_terrorist: startFromTerrorist,
+          team_one_score_1: 0,
+          team_one_score_2: 0,
+          team_two_score_1: 0,
+          team_two_score_2: 0,
+          order: i,
         });
 
-        await supabase.from(TABLE_SWEEPSTAKE_PLAYERS).insert(playerList);
+        i += 1;
+      }
 
-        await supabase.from(TABLE_SWEEPSTAKE_MAPS).insert(mapList);
+      await supabase.from(TABLE_SWEEPSTAKES).insert({
+        id: sweepstakeId,
+        user_id: user.id,
+        game_type: game_type?.id,
+        engine: engine?.id,
+        departure_at,
+        quantity_players: playerList.length,
+        quantity_maps: mapList.length,
+        score_team_one: playerList
+          .filter(player => player.team === SweepstakeTeamEnum.One)
+          .reduce((sum, player) => sum + player.score, 0),
+        score_team_two: playerList
+          .filter(player => player.team === SweepstakeTeamEnum.Two)
+          .reduce((sum, player) => sum + player.score, 0),
+      });
 
-        return sweepstakeId;
-      },
-      async onSuccess(id) {
-        successFeedbackToast('Novo Sorteio', 'Sorteio realizado com sucesso!');
-        await queryClient.invalidateQueries({ queryKey: [TABLE_SWEEPSTAKES] });
-        router.push(`/sweepstakes/${id}`);
-      },
-      onError(error: Error) {
-        errorFeedbackToast('Novo Sorteio', error);
-      },
+      await supabase.from(TABLE_SWEEPSTAKE_PLAYERS).insert(playerList);
+
+      await supabase.from(TABLE_SWEEPSTAKE_MAPS).insert(mapList);
+
+      return sweepstakeId;
     },
-  );
+    async onSuccess(id) {
+      successFeedbackToast('Novo Sorteio', 'Sorteio realizado com sucesso!');
+      await queryClient.invalidateQueries({ queryKey: [TABLE_SWEEPSTAKES] });
+      router.push(`/sweepstakes/${id}`);
+    },
+    onError(error: Error) {
+      errorFeedbackToast('Novo Sorteio', error);
+    },
+  });
 
   const playerColumns: ColumnDef<IPlayerAPI>[] = [
     {
@@ -180,7 +183,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
       enableSorting: false,
       cell: ({ row }) => (
         <Checkbox
-          isChecked={!!selectedPlayers.find((player) => player.id === row.original.id)}
+          isChecked={!!selectedPlayers.find(player => player.id === row.original.id)}
           onChange={() => handleSelectedPlayers(row.original)}
           isDisabled={isLoadingCreate}
         />
@@ -196,12 +199,12 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
       header: 'Steam',
       enableSorting: false,
     },
-    {
-      accessorKey: 'premier',
-      header: 'Premier',
-      enableSorting: false,
-      cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
-    },
+    // {
+    //   accessorKey: 'premier',
+    //   header: 'Premier',
+    //   enableSorting: false,
+    //   cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
+    // },
     {
       accessorKey: 'rating',
       header: 'Avaliação',
@@ -217,7 +220,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
       enableSorting: false,
       cell: ({ row }) => (
         <Checkbox
-          isChecked={!!selectedMaps.find((id) => id === row.original.id)}
+          isChecked={!!selectedMaps.find(id => id === row.original.id)}
           onChange={() => handleSelectedMaps(row.original.id)}
           isDisabled={isLoadingCreate}
         />
@@ -241,7 +244,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
     game_type: yup
       .object()
       .shape({
-        id: yup.lazy((value) => (typeof value === 'number' ? yup.number() : yup.string()).required().nullable()),
+        id: yup.lazy(value => (typeof value === 'number' ? yup.number() : yup.string()).required().nullable()),
         name: yup.string(),
       })
       .nullable()
@@ -249,7 +252,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
     engine: yup
       .object()
       .shape({
-        id: yup.lazy((value) => (typeof value === 'number' ? yup.number() : yup.string()).required().nullable()),
+        id: yup.lazy(value => (typeof value === 'number' ? yup.number() : yup.string()).required().nullable()),
         name: yup.string(),
       })
       .nullable()
@@ -265,14 +268,13 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
   } = useForm({
     resolver: yupResolver(sweepstakeSchema),
     defaultValues: {
-      game_type: games.find((game) => game.id === user.user_metadata.gameType),
-      engine: sweepstakeEngines.find((engine) => engine.id === user.user_metadata.sweepstakeEngine),
-      departure_at: dayjs().set('hour', 21).set('minute', 0).set('second', 0)
-        .format('YYYY-MM-DD HH:mm'),
+      game_type: games.find(game => game.id === user.user_metadata.gameType),
+      engine: sweepstakeEngines.find(engine => engine.id === user.user_metadata.sweepstakeEngine),
+      departure_at: dayjs().set('hour', 21).set('minute', 0).set('second', 0).format('YYYY-MM-DD HH:mm'),
     },
   });
 
-  const handleOk: SubmitHandler<InferType<typeof sweepstakeSchema>> = async (data) => {
+  const handleOk: SubmitHandler<InferType<typeof sweepstakeSchema>> = async data => {
     if (selectedPlayers.length <= 1) {
       warningFeedbackToast('Novo Sorteio', 'É obrigatório selecionar ao menos dois jogadores.');
       return;
@@ -306,7 +308,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
                 {...register('game_type')}
                 isDisabled={isLoadingCreate}
                 isRequired
-                onChange={(option) => {
+                onChange={option => {
                   setValue('game_type', option);
                 }}
               />
@@ -326,7 +328,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
                 {...register('engine')}
                 isDisabled={isLoadingCreate}
                 isRequired
-                onChange={(option) => {
+                onChange={option => {
                   setValue('engine', option);
                 }}
               />
@@ -357,7 +359,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
                 data={players}
                 columns={playerColumns}
                 isLoading={isLoadingPlayers}
-                onRowClick={(value) => handleSelectedPlayers(value)}
+                onRowClick={value => handleSelectedPlayers(value)}
               />
             </CardBody>
           </Card>

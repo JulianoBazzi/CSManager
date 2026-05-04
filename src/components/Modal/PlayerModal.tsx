@@ -1,9 +1,8 @@
-import { Flex, Icon, InputRightElement, ModalBody, ModalFooter, Spinner, Stack, Text } from '@chakra-ui/react';
+import { Flex, ModalBody, ModalFooter, Stack, Text } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@tanstack/react-query';
 import { type ForwardRefRenderFunction, forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import { type SubmitHandler, useForm } from 'react-hook-form';
-import { RiRepeatFill } from 'react-icons/ri';
 import { Rating } from 'react-simple-star-rating';
 import type { InferType } from 'yup';
 import * as yup from 'yup';
@@ -19,7 +18,6 @@ import { TABLE_PLAYERS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import type IPlayer from '~/models/Entity/Player/IPlayer';
 import type IRecordModal from '~/models/Modal/IRecordModal';
-import { getPremierRating } from '~/services/hooks/getPremierRating';
 import { getPlayer } from '~/services/hooks/usePlayers';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';
@@ -109,22 +107,6 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (_, ref) =>
     },
   });
 
-  const { mutateAsync: refreshScoreMutateAsync, isPending: isRefreshScore } = useMutation({
-    mutationFn: async () => {
-      const skillLevel = await getPremierRating(watch('steam_id'));
-
-      if (skillLevel) {
-        setValue('premier', skillLevel);
-      }
-    },
-    async onSuccess() {
-      successFeedbackToast('Atualizar Score', 'Score atualizado com sucesso!');
-    },
-    onError(error: Error) {
-      errorFeedbackToast('Atualizar Score', error);
-    },
-  });
-
   const handleOk: SubmitHandler<InferType<typeof playerSchema>> = async data => {
     await createOrUpdatePlayer.mutateAsync(data as IPlayer);
   };
@@ -175,7 +157,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (_, ref) =>
               isDisabled={isSubmitting}
               isRequired
             >
-              {watch('steam_id') && (
+              {/* {watch('steam_id') && (
                 <InputRightElement>
                   {isRefreshScore ? (
                     <Spinner size="sm" />
@@ -189,7 +171,7 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (_, ref) =>
                     />
                   )}
                 </InputRightElement>
-              )}
+              )} */}
             </NumberInput>
           </Stack>
           <Text mr="auto" cursor="pointer" onClick={() => setValue('rating', 0)}>
