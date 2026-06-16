@@ -1,27 +1,13 @@
-import {
-  Modal as ChakraModal,
-  type ModalProps as ChakraModalProps,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-} from '@chakra-ui/react';
-import {
-  type ForwardRefRenderFunction,
-  forwardRef,
-  type ReactNode,
-  useCallback,
-  useImperativeHandle,
-  useState,
-} from 'react';
+import { CloseButton, Dialog, type DialogRootProps, Portal, Text } from '@chakra-ui/react';
+import { type ReactNode, type Ref, useCallback, useImperativeHandle, useState } from 'react';
 
-export interface IModalProps extends Omit<ChakraModalProps, 'onClose' | 'isOpen'> {
+export interface IModalProps extends Omit<DialogRootProps, 'open' | 'onOpenChange' | 'children'> {
   title: string;
   subtitle?: string;
   onSubmit?: () => void;
   children: ReactNode;
   disableCloseButton?: boolean;
+  ref?: Ref<ModalHandle>;
 }
 
 export type ModalHandle = {
@@ -29,10 +15,11 @@ export type ModalHandle = {
   onCloseModal: () => void;
 };
 
-const ModalBase: ForwardRefRenderFunction<ModalHandle, IModalProps> = (
-  { title, children, disableCloseButton, onSubmit, ...rest }: IModalProps,
-  ref
-) => {
+// Aliases para manter a API dos modais (ModalBody/ModalFooter) sobre o Dialog do v3.
+export const ModalBody = Dialog.Body;
+export const ModalFooter = Dialog.Footer;
+
+export const Modal = ({ title, children, disableCloseButton, onSubmit, ref, ...rest }: IModalProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const onOpenModal = useCallback(() => setIsOpen(true), []);
@@ -49,17 +36,27 @@ const ModalBase: ForwardRefRenderFunction<ModalHandle, IModalProps> = (
   );
 
   return (
-    <ChakraModal onClose={onCloseModal} isOpen={isOpen} closeOnEsc closeOnOverlayClick={false} {...rest}>
-      <ModalOverlay background="blackAlpha.500" />
-      <ModalContent as="form" bg="gray.900" onSubmit={onSubmit}>
-        <ModalHeader>
-          <Text as="h5">{title}</Text>
-        </ModalHeader>
-        {!disableCloseButton && <ModalCloseButton />}
-        {children}
-      </ModalContent>
-    </ChakraModal>
+    <Dialog.Root
+      open={isOpen}
+      onOpenChange={event => setIsOpen(event.open)}
+      closeOnEscape={!disableCloseButton}
+      closeOnInteractOutside={false}
+      {...rest}
+    >
+      <Portal>
+        <Dialog.Backdrop background="blackAlpha.500" />
+        <Dialog.Positioner>
+          <Dialog.Content as="form" bg="gray.900" onSubmit={onSubmit}>
+            <Dialog.Header>
+              <Text as="h5">{title}</Text>
+            </Dialog.Header>
+            <Dialog.CloseTrigger asChild>
+              <CloseButton size="sm" disabled={disableCloseButton} />
+            </Dialog.CloseTrigger>
+            {children}
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Portal>
+    </Dialog.Root>
   );
 };
-
-export const Modal = forwardRef(ModalBase);

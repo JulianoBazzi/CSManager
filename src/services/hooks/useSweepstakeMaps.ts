@@ -26,8 +26,7 @@ export async function getSweepstakeMaps(sweepstakeId: string): Promise<ISweepsta
 }
 
 export async function getSweepstakeMap(id: string): Promise<ISweepstakeMapAPI> {
-  const { data } = await supabase.from(TABLE_SWEEPSTAKE_MAPS).select().eq('id', id).limit(1)
-    .single();
+  const { data } = await supabase.from(TABLE_SWEEPSTAKE_MAPS).select().eq('id', id).limit(1).single();
 
   return data;
 }

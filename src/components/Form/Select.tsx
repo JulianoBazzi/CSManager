@@ -1,7 +1,7 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: <ignore> */
-import { FormControl, FormErrorMessage, FormLabel, Skeleton } from '@chakra-ui/react';
+import { Field, Skeleton } from '@chakra-ui/react';
 import { Select as ChakraReactSelect, type SelectInstance } from 'chakra-react-select';
-import { forwardRef } from 'react';
+import type { Ref } from 'react';
 
 import type ISelectOption from '~/models/ISelectOption';
 
@@ -13,34 +13,33 @@ interface ISelectProps {
   options: ISelectOption[];
   isSearchable?: boolean;
   isClearable?: boolean;
-  isDisabled?: boolean;
+  disabled?: boolean;
   isMulti?: boolean;
-  isRequired?: boolean;
-  isLoading?: boolean;
+  required?: boolean;
+  loading?: boolean;
   value?: ISelectOption | ISelectOption[];
   onChange: (option: any) => void;
+  ref?: Ref<SelectInstance<ISelectOption>>;
 }
 
-function SelectBase(
-  {
-    name,
-    label,
-    error,
-    maxW,
-    options,
-    isSearchable = false,
-    isClearable,
-    isMulti,
-    isDisabled,
-    isRequired,
-    isLoading,
-    value,
-    onChange,
-  }: ISelectProps,
-  ref: React.ForwardedRef<SelectInstance<ISelectOption>>
-) {
+export const Select = ({
+  name,
+  label,
+  error,
+  maxW,
+  options,
+  isSearchable = false,
+  isClearable,
+  isMulti,
+  disabled,
+  required,
+  loading,
+  value,
+  onChange,
+  ref,
+}: ISelectProps) => {
   const cursorType = () => {
-    if (isDisabled) {
+    if (disabled) {
       return 'not-allowed';
     }
     if (isSearchable) {
@@ -51,26 +50,31 @@ function SelectBase(
   };
 
   return (
-    <FormControl isInvalid={!!error} isRequired={isRequired} maxW={maxW}>
-      {!!label && <FormLabel htmlFor={name}>{label}</FormLabel>}
-      {isLoading && <Skeleton height="10" borderRadius={4} />}
-      {!isLoading && (
+    <Field.Root invalid={!!error} required={required} maxW={maxW}>
+      {!!label && (
+        <Field.Label htmlFor={name}>
+          {label}
+          <Field.RequiredIndicator />
+        </Field.Label>
+      )}
+      {loading && <Skeleton height="10" borderRadius={4} />}
+      {!loading && (
         <ChakraReactSelect
           ref={ref}
           id={name}
           name={name}
           options={options}
           value={value}
-          isInvalid={!!error}
+          invalid={!!error}
           isSearchable={isSearchable}
           isClearable={isClearable}
-          isDisabled={isDisabled}
+          isDisabled={disabled}
           isMulti={isMulti}
-          tagColorScheme="blackAlpha"
-          selectedOptionColorScheme="blue"
+          tagColorPalette="blackAlpha"
+          selectedOptionColorPalette="blue"
           getOptionLabel={({ name: nameOption }: ISelectOption) => nameOption}
           getOptionValue={({ id }: ISelectOption) => String(id)}
-          isRequired={isRequired}
+          required={required}
           onChange={option => onChange(option as ISelectOption)}
           placeholder=""
           noOptionsMessage={() => 'Nenhum Registro Encontrado'}
@@ -78,34 +82,23 @@ function SelectBase(
           chakraStyles={{
             control: provided => ({
               ...provided,
-              // backgroundColor: isDisabled ? 'gray.50' : 'white',
-              // borderColor: error ? 'red.300' : 'gray.100',
               cursor: cursorType(),
-              // _focus: {
-              //   borderColor: 'orange.500',
-              // },
             }),
             menu: provided => ({
               ...provided,
               zIndex: 9999,
             }),
-            // multiValue: (provided) => ({
-            //   ...provided,
-            //   backgroundColor: isDisabled ? 'gray.400' : 'orange.500',
-            //   color: 'white',
-            // }),
             multiValueRemove: provided => ({
               ...provided,
               color: 'white',
               opacity: 0.8,
-              display: isDisabled ? 'none' : 'inherit',
+              display: disabled ? 'none' : 'inherit',
             }),
             dropdownIndicator: provided => ({
               ...provided,
               bg: 'transparent',
               px: 2,
               cursor: 'inherit',
-              // color: error ? 'red.300' : 'gray.300',
             }),
             indicatorSeparator: provided => ({
               ...provided,
@@ -113,15 +106,12 @@ function SelectBase(
             }),
             loadingIndicator: provided => ({
               ...provided,
-              // color: 'orange.200',
               mr: 0,
             }),
           }}
         />
       )}
-      {error?.message && <FormErrorMessage my="1">{error.message}</FormErrorMessage>}
-    </FormControl>
+      {error?.message && <Field.ErrorText>{error.message}</Field.ErrorText>}
+    </Field.Root>
   );
-}
-
-export const Select = forwardRef(SelectBase);
+};

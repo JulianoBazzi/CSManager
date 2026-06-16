@@ -1,12 +1,12 @@
-import { Checkbox, ModalBody, ModalFooter } from '@chakra-ui/react';
+import { Checkbox } from '@chakra-ui/react';
 import { useMutation } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
-import { type ForwardRefRenderFunction, forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
+import { type Ref, useCallback, useImperativeHandle, useRef, useState } from 'react';
 
 import { PremierBadge } from '~/components/Badge/PremierBadge';
 import { SolidBlueButton } from '~/components/Button/Base/SolidBlueButton';
 import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
-import { Modal, type ModalHandle } from '~/components/Form/Modal';
+import { Modal, ModalBody, ModalFooter, type ModalHandle } from '~/components/Form/Modal';
 import { Table } from '~/components/Form/Table';
 import { TABLE_SWEEPSTAKE_PLAYERS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
@@ -25,7 +25,7 @@ export type NewSweepstakePlayerModalHandle = {
   onOpenModal: (recordModal?: INewSweepstakePlayerModal) => void;
 };
 
-const NewSweepstakePlayerModalBase: ForwardRefRenderFunction<NewSweepstakePlayerModalHandle> = (_, ref) => {
+export const NewSweepstakePlayerModal = ({ ref }: { ref?: Ref<NewSweepstakePlayerModalHandle> }) => {
   const modalRef = useRef<ModalHandle>(null);
 
   const { errorFeedbackToast, successFeedbackToast } = useFeedback();
@@ -50,11 +50,14 @@ const NewSweepstakePlayerModalBase: ForwardRefRenderFunction<NewSweepstakePlayer
       header: '',
       enableSorting: false,
       cell: ({ row }) => (
-        <Checkbox
-          isChecked={!!selectedPlayers.find(player => player.id === row.original.id)}
-          onChange={() => handleSelectedPlayers(row.original)}
-          isDisabled={isLoading}
-        />
+        <Checkbox.Root
+          checked={!!selectedPlayers.find(player => player.id === row.original.id)}
+          onCheckedChange={() => handleSelectedPlayers(row.original)}
+          disabled={isLoading}
+        >
+          <Checkbox.HiddenInput />
+          <Checkbox.Control />
+        </Checkbox.Root>
       ),
     },
     {
@@ -171,28 +174,28 @@ const NewSweepstakePlayerModalBase: ForwardRefRenderFunction<NewSweepstakePlayer
       ref={modalRef}
       title={`Adicionar Jogadores ao Time ${recordModalProps?.team === SweepstakeTeamEnum.One ? '1' : '2'}`}
       size="xl"
+      disableCloseButton={isLoadingCreate}
     >
       <ModalBody>
         <Table
           data={players}
           columns={playerColumns}
-          isLoading={isLoading}
+          loading={isLoading}
           onRowClick={value => handleSelectedPlayers(value)}
+          isRowSelected={player => !!selectedPlayers.find(item => item.id === player.id)}
         />
       </ModalBody>
       <ModalFooter flexDir="column" gap="4">
         <SolidBlueButton
           w="100%"
           onClick={() => createMutateAsync()}
-          isLoading={isLoadingCreate}
-          isDisabled={selectedPlayers.length === 0}
+          loading={isLoadingCreate}
+          disabled={selectedPlayers.length === 0}
         >
           {`Adicionar ${selectedPlayers.length > 0 ? ` ${selectedPlayers.length} jogadores` : ''}`}
         </SolidBlueButton>
-        <CancelOutlineButton w="100%" onClick={() => modalRef.current?.onCloseModal()} isDisabled={isLoadingCreate} />
+        <CancelOutlineButton w="100%" onClick={() => modalRef.current?.onCloseModal()} disabled={isLoadingCreate} />
       </ModalFooter>
     </Modal>
   );
 };
-
-export const NewSweepstakePlayerModal = forwardRef(NewSweepstakePlayerModalBase);

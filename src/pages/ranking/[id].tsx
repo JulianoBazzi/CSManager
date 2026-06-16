@@ -1,4 +1,4 @@
-import { Flex, TableContainer } from '@chakra-ui/react';
+import { Box, Flex, Text } from '@chakra-ui/react';
 import type { User } from '@supabase/supabase-js';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
@@ -9,13 +9,14 @@ import { RiNumbersLine } from 'react-icons/ri';
 import removeAccents from 'remove-accents';
 
 import { years } from '~/assets/years';
-import { PremierBadge } from '~/components/Badge/PremierBadge';
+import { RankBadge } from '~/components/Badge/RankBadge';
 import { StarBadge } from '~/components/Badge/StarBadge';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
 import { Select } from '~/components/Form/Select';
 import { Table } from '~/components/Form/Table';
+import { PlayerName } from '~/components/PlayerName';
 import { SearchBar } from '~/components/SearchBar';
 import Template from '~/components/Template';
 import type IViewRankingAPI from '~/models/Entity/Ranking/IViewRankingAPI';
@@ -48,18 +49,18 @@ const RankingPublic: NextPage<IRankingProps> = ({ user, userId }) => {
 
   const rankingColumns: ColumnDef<IViewRankingAPI>[] = [
     {
-      accessorKey: 'name',
-      header: 'Nome',
+      id: 'position',
+      header: '#',
+      enableSorting: false,
+      cell: ({ row, table }) => (
+        <RankBadge position={table.getSortedRowModel().rows.findIndex(r => r.id === row.id) + 1} />
+      ),
     },
     {
-      accessorKey: 'username',
-      header: 'Steam',
+      accessorKey: 'name',
+      header: 'Jogador',
+      cell: ({ row }) => <PlayerName name={row.original.name} username={row.original.username} />,
     },
-    // {
-    //   accessorKey: 'premier',
-    //   header: 'Premier',
-    //   cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
-    // },
     {
       accessorKey: 'rating',
       header: 'Avaliação',
@@ -72,10 +73,16 @@ const RankingPublic: NextPage<IRankingProps> = ({ user, userId }) => {
     {
       accessorKey: 'kills',
       header: 'Vítimas',
+      cell: ({ row }) => (
+        <Text color="green.300" fontWeight="medium">
+          {row.original.kills}
+        </Text>
+      ),
     },
     {
       accessorKey: 'deaths',
       header: 'Mortes',
+      cell: ({ row }) => <Text color="red.300">{row.original.deaths}</Text>,
     },
     {
       accessorKey: 'assistances',
@@ -84,10 +91,16 @@ const RankingPublic: NextPage<IRankingProps> = ({ user, userId }) => {
     {
       accessorKey: 'headshot_percentage',
       header: '%TC',
+      cell: ({ row }) => <Text fontWeight="medium">{row.original.headshot_percentage}</Text>,
     },
     {
       accessorKey: 'damage',
       header: 'Dano',
+      cell: ({ row }) => (
+        <Text color="orange.300" fontWeight="semibold">
+          {row.original.damage}
+        </Text>
+      ),
     },
   ];
 
@@ -101,23 +114,30 @@ const RankingPublic: NextPage<IRankingProps> = ({ user, userId }) => {
         <Card>
           <CardHeader icon={RiNumbersLine} title="Ranking" isFetching={isFetching && !isLoading} />
           <CardBody>
-            <Flex gap="2">
-              <SearchBar onSearch={value => setSearch(value)} isDisabled={isFetching} />
-              <Flex w={['190px', '120px']}>
+            <Flex
+              gap="3"
+              bg="gray.800"
+              p="3"
+              borderRadius="lg"
+              direction={['column', 'row']}
+              align={['stretch', 'center']}
+            >
+              <SearchBar onSearch={value => setSearch(value)} disabled={isFetching} />
+              <Flex w={['100%', '120px']} ml={['0', 'auto']}>
                 <Select
                   name="year"
                   options={years}
                   value={selectedYear}
-                  isRequired
+                  required
                   onChange={option => setSelectedYear(option)}
                 />
               </Flex>
             </Flex>
-            <TableContainer>
+            <Box overflowX="auto">
               <Table
                 data={dataFiltered}
                 columns={rankingColumns}
-                isLoading={isLoading}
+                loading={isLoading}
                 perPage={50}
                 orderBy={{
                   id: 'damage',
@@ -126,8 +146,10 @@ const RankingPublic: NextPage<IRankingProps> = ({ user, userId }) => {
                 columnVisibility={{
                   rating: user?.id === userId,
                 }}
+                disableTotalRecords
+                disablePagination
               />
-            </TableContainer>
+            </Box>
           </CardBody>
         </Card>
       </Template>

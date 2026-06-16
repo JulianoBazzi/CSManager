@@ -1,36 +1,47 @@
 import {
   Input as ChakraInput,
   type InputProps as ChakraInputProps,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
+  Field,
   InputGroup,
-  InputRightElement,
   Skeleton,
   Spinner,
 } from '@chakra-ui/react';
-import { type ForwardRefRenderFunction, forwardRef, type ReactNode } from 'react';
+import type { ReactNode, Ref } from 'react';
 import type { FieldError } from 'react-hook-form';
 
 interface INumberInputProps extends ChakraInputProps {
   name?: string;
   label?: string;
   error?: FieldError;
-  isRequired?: boolean;
-  isLoading?: boolean;
+  required?: boolean;
+  loading?: boolean;
   isSearching?: boolean;
   children?: ReactNode;
+  ref?: Ref<HTMLInputElement>;
 }
 
-const NumberInputBase: ForwardRefRenderFunction<HTMLInputElement, INumberInputProps> = (
-  { name, label, error, isRequired, isLoading, isSearching, children, maxW, ...rest }: INumberInputProps,
-  ref
-) => (
-  <FormControl isInvalid={!!error} isRequired={isRequired} maxW={maxW}>
-    {!!label && <FormLabel htmlFor={name}>{label}</FormLabel>}
-    {isLoading && <Skeleton height="10" borderRadius={4} />}
-    {!isLoading && (
-      <InputGroup>
+export const NumberInput = ({
+  name,
+  label,
+  error,
+  required,
+  loading,
+  isSearching,
+  children,
+  maxW,
+  ref,
+  ...rest
+}: INumberInputProps) => (
+  <Field.Root invalid={!!error} required={required} maxW={maxW}>
+    {!!label && (
+      <Field.Label htmlFor={name}>
+        {label}
+        <Field.RequiredIndicator />
+      </Field.Label>
+    )}
+    {loading && <Skeleton height="10" borderRadius={4} />}
+    {!loading && (
+      <InputGroup endElement={isSearching ? <Spinner size="sm" /> : children}>
         <ChakraInput
           ref={ref}
           id={name}
@@ -48,16 +59,8 @@ const NumberInputBase: ForwardRefRenderFunction<HTMLInputElement, INumberInputPr
           }}
           {...rest}
         />
-        {isSearching && (
-          <InputRightElement>
-            <Spinner ml="2" size="sm" />
-          </InputRightElement>
-        )}
-        {children}
       </InputGroup>
     )}
-    {!!error && <FormErrorMessage my="1">{error.message}</FormErrorMessage>}
-  </FormControl>
+    {!!error && <Field.ErrorText>{error.message}</Field.ErrorText>}
+  </Field.Root>
 );
-
-export const NumberInput = forwardRef(NumberInputBase);

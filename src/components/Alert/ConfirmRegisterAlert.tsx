@@ -1,5 +1,5 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: <ignore> */
-import { type ForwardRefRenderFunction, forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
+import { type Ref, useCallback, useImperativeHandle, useRef, useState } from 'react';
 
 import { alertOrigins } from '~/assets/alertOrigins';
 import { Alert, type AlertHandle, type AlertOriginEnum, AlertTypeEnum } from '~/components/Alert';
@@ -22,12 +22,10 @@ export type ConfirmRegisterAlertHandle = {
 interface IConfirmRegisterAlertProps {
   isSubmitting?: boolean;
   onClose?: () => void;
+  ref?: Ref<ConfirmRegisterAlertHandle>;
 }
 
-const ConfirmRegisterAlertBase: ForwardRefRenderFunction<ConfirmRegisterAlertHandle, IConfirmRegisterAlertProps> = (
-  { isSubmitting, onClose, ...rest }: IConfirmRegisterAlertProps,
-  ref
-) => {
+export const ConfirmRegisterAlert = ({ isSubmitting, onClose, ref, ...rest }: IConfirmRegisterAlertProps) => {
   const cancelRef = useRef<HTMLButtonElement>(null);
   const alertRef = useRef<AlertHandle>(null);
 
@@ -93,10 +91,8 @@ const ConfirmRegisterAlertBase: ForwardRefRenderFunction<ConfirmRegisterAlertHan
       }
       {...rest}
     >
-      <ConfirmSolidButton onClick={() => onConfirmAlert()} isLoading={isSubmitting} />
-      <BackOutlineButton ref={cancelRef} onClick={() => onCloseAlert()} isDisabled={isSubmitting} autoFocus />
+      <ConfirmSolidButton onClick={() => onConfirmAlert()} loading={isSubmitting} />
+      <BackOutlineButton ref={cancelRef} onClick={() => onCloseAlert()} disabled={isSubmitting} autoFocus />
     </Alert>
   );
 };
-
-export const ConfirmRegisterAlert = forwardRef(ConfirmRegisterAlertBase);

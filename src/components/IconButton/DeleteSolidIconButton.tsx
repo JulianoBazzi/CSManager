@@ -1,23 +1,15 @@
-import { forwardRef, type ForwardRefRenderFunction } from 'react';
+import { Icon, type IconButtonProps } from '@chakra-ui/react';
+import type { Ref } from 'react';
 import { RiDeleteBin2Line } from 'react-icons/ri';
-
-import { type IconButtonProps, Icon } from '@chakra-ui/react';
 
 import { SolidGrayIconButton } from '~/components/IconButton/Base/SolidGrayIconButton';
 
-type DeleteSolidIconButtonProps = Omit<IconButtonProps, 'aria-label'>;
+type DeleteSolidIconButtonProps = Omit<IconButtonProps, 'aria-label'> & { ref?: Ref<HTMLButtonElement> };
 
-const DeleteSolidIconButtonBase: ForwardRefRenderFunction<HTMLButtonElement, DeleteSolidIconButtonProps> = (
-  { ...rest }: DeleteSolidIconButtonProps,
-  ref,
-) => (
-  <SolidGrayIconButton
-    ref={ref}
-    icon={<Icon as={RiDeleteBin2Line} fontSize="xl" />}
-    aria-label="Remover"
-    title="Excluir"
-    {...rest}
-  />
+export const DeleteSolidIconButton = ({ ref, ...rest }: DeleteSolidIconButtonProps) => (
+  <SolidGrayIconButton ref={ref} aria-label="Remover" title="Excluir" {...rest}>
+    <Icon fontSize="xl">
+      <RiDeleteBin2Line />
+    </Icon>
+  </SolidGrayIconButton>
 );
-
-export const DeleteSolidIconButton = forwardRef(DeleteSolidIconButtonBase);

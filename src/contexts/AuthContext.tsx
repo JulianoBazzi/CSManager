@@ -1,9 +1,6 @@
-import {
-  createContext, type ReactNode, useCallback, useContext, useMemo,
-} from 'react';
-
 import { useRouter } from 'next/navigation';
 import { destroyCookie, setCookie } from 'nookies';
+import { createContext, type ReactNode, useCallback, useContext, useMemo } from 'react';
 
 import { useFeedback } from '~/contexts/FeedbackContext';
 import type IChangePassword from '~/models/IChangePassword';
@@ -56,7 +53,7 @@ export function AuthProvider({ children }: IAuthProviderProps) {
       successFeedbackToast('Login', 'Login efetuado com sucesso!');
       router.push('/');
     },
-    [router, errorFeedbackToast, warningFeedbackToast, successFeedbackToast],
+    [router, errorFeedbackToast, warningFeedbackToast, successFeedbackToast]
   );
 
   const logout = useCallback(async () => {
@@ -85,7 +82,7 @@ export function AuthProvider({ children }: IAuthProviderProps) {
       successFeedbackToast('Alterar Senha', 'Senha alterada com sucesso!');
       await logout();
     },
-    [errorFeedbackToast, warningFeedbackToast, successFeedbackToast, logout],
+    [errorFeedbackToast, warningFeedbackToast, successFeedbackToast, logout]
   );
 
   const updateProfile = useCallback(
@@ -111,7 +108,7 @@ export function AuthProvider({ children }: IAuthProviderProps) {
       successFeedbackToast('Meu Perfil', 'Perfil atualizado com sucesso!');
       router.push('/');
     },
-    [router, errorFeedbackToast, warningFeedbackToast, successFeedbackToast],
+    [router, errorFeedbackToast, warningFeedbackToast, successFeedbackToast]
   );
 
   const authProviderValue = useMemo(
@@ -121,7 +118,7 @@ export function AuthProvider({ children }: IAuthProviderProps) {
       updateProfile,
       logout,
     }),
-    [signIn, changePassword, updateProfile, logout],
+    [signIn, changePassword, updateProfile, logout]
   );
 
   return <AuthContext.Provider value={authProviderValue}>{children}</AuthContext.Provider>;

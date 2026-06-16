@@ -1,8 +1,11 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: <ignore> */
 
-import { type AlertStatus, useToast } from '@chakra-ui/react';
 import type { AuthError } from '@supabase/supabase-js';
 import { type Context, createContext, type ReactNode, useContext } from 'react';
+
+import { toaster } from '~/components/Toaster';
+
+type ToastType = 'info' | 'warning' | 'success' | 'error';
 
 interface IFeedbackProviderProps {
   children: ReactNode;
@@ -19,16 +22,13 @@ type FeedbackContextData = {
 const FeedbackContext = createContext({} as FeedbackContextData);
 
 export function FeedbackProvider({ children }: IFeedbackProviderProps) {
-  const toast = useToast();
-
-  function genericFeedbackToast(title: string, description?: string, status?: AlertStatus) {
-    toast({
+  function genericFeedbackToast(title: string, description?: string, type?: ToastType) {
+    toaster.create({
       title,
       description,
-      status,
-      position: 'top',
+      type,
       duration: 8000,
-      isClosable: true,
+      closable: true,
     });
   }
 

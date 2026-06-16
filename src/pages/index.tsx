@@ -1,10 +1,9 @@
-import {
-  Box, Divider, Link, ListItem, Text, UnorderedList,
-} from '@chakra-ui/react';
+import { Box, Link, List, Separator, Text } from '@chakra-ui/react';
 import type { User } from '@supabase/supabase-js';
 import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
+import { RiHome5Line } from 'react-icons/ri';
 
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
@@ -23,33 +22,33 @@ const Home: NextPage<IHomeProps> = ({ user }) => (
     </Head>
     <Template user={user}>
       <Card>
-        <CardHeader title="CS Manager" />
+        <CardHeader icon={RiHome5Line} title="CS Manager" />
         <CardBody>
           <Box>
             <Text>Tecnologias Utilizadas:</Text>
-            <UnorderedList mt="2">
-              <ListItem>
+            <List.Root mt="2">
+              <List.Item>
                 <Link href="https://nextjs.org">Next.js</Link>
-              </ListItem>
-              <ListItem>
+              </List.Item>
+              <List.Item>
                 <Link href="https://www.typescriptlang.org">TypeScript</Link>
-              </ListItem>
-              <ListItem>
+              </List.Item>
+              <List.Item>
                 <Link href="https://chakra-ui.com">Chakra UI</Link>
-              </ListItem>
-              <ListItem>
+              </List.Item>
+              <List.Item>
                 <Link href="https://supabase.com">Supabase</Link>
-              </ListItem>
-            </UnorderedList>
+              </List.Item>
+            </List.Root>
           </Box>
-          <Divider mt="-2" />
+          <Separator mt="-2" />
           <Box>
             <Text>Link do Projeto:</Text>
-            <UnorderedList mt="2">
-              <ListItem>
+            <List.Root mt="2">
+              <List.Item>
                 <Link href="https://github.com/JulianoBazzi/CSManager">GitHub</Link>
-              </ListItem>
-            </UnorderedList>
+              </List.Item>
+            </List.Root>
           </Box>
         </CardBody>
       </Card>

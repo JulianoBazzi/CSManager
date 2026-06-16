@@ -1,20 +1,5 @@
-import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-} from '@chakra-ui/react';
-import {
-  type ForwardRefRenderFunction,
-  forwardRef,
-  type ReactNode,
-  type RefObject,
-  useCallback,
-  useImperativeHandle,
-  useState,
-} from 'react';
+import { Dialog, Portal } from '@chakra-ui/react';
+import { type ReactNode, type Ref, type RefObject, useCallback, useImperativeHandle, useState } from 'react';
 
 export enum AlertTypeEnum {
   Create = 'create',
@@ -37,12 +22,10 @@ interface IAlertProps {
   children: ReactNode;
   cancelRef: RefObject<HTMLButtonElement | null>;
   onClose?: () => void;
+  ref?: Ref<AlertHandle>;
 }
 
-const AlertBase: ForwardRefRenderFunction<AlertHandle, IAlertProps> = (
-  { title, message, children, cancelRef, onClose, ...rest }: IAlertProps,
-  ref
-) => {
+export const Alert = ({ title, message, children, cancelRef, onClose, ref }: IAlertProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const onOpenAlert = useCallback(() => {
@@ -66,18 +49,28 @@ const AlertBase: ForwardRefRenderFunction<AlertHandle, IAlertProps> = (
   );
 
   return (
-    <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onCloseAlert} size="sm" isCentered {...rest}>
-      <AlertDialogOverlay>
-        <AlertDialogContent>
-          <AlertDialogHeader as="h6">{title}</AlertDialogHeader>
-          <AlertDialogBody>{message}</AlertDialogBody>
-          <AlertDialogFooter justifyContent="space-between" flexDir={{ base: 'column', md: 'row' }} gap="4">
-            {children}
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialogOverlay>
-    </AlertDialog>
+    <Dialog.Root
+      role="alertdialog"
+      open={isOpen}
+      onOpenChange={event => (event.open ? setIsOpen(true) : onCloseAlert())}
+      size="sm"
+      placement="center"
+      initialFocusEl={() => cancelRef.current}
+    >
+      <Portal>
+        <Dialog.Backdrop background="blackAlpha.500" />
+        <Dialog.Positioner>
+          <Dialog.Content bg="gray.900">
+            <Dialog.Header>
+              <Dialog.Title>{title}</Dialog.Title>
+            </Dialog.Header>
+            <Dialog.Body>{message}</Dialog.Body>
+            <Dialog.Footer justifyContent="space-between" flexDir={{ base: 'column', md: 'row' }} gap="4">
+              {children}
+            </Dialog.Footer>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Portal>
+    </Dialog.Root>
   );
 };
-
-export const Alert = forwardRef(AlertBase);

@@ -1,9 +1,6 @@
 import { IconButton, type IconButtonProps } from '@chakra-ui/react';
-import { type ForwardRefRenderFunction, forwardRef } from 'react';
+import type { Ref } from 'react';
 
-const GhostGrayIconButtonBase: ForwardRefRenderFunction<HTMLButtonElement, IconButtonProps> = (
-  { ...rest }: IconButtonProps,
-  ref
-) => <IconButton ref={ref} colorScheme="gray" variant="ghost" {...rest} />;
-
-export const GhostGrayIconButton = forwardRef(GhostGrayIconButtonBase);
+export const GhostGrayIconButton = ({ ref, ...rest }: IconButtonProps & { ref?: Ref<HTMLButtonElement> }) => (
+  <IconButton ref={ref} colorPalette="gray" variant="ghost" {...rest} />
+);

@@ -8,7 +8,7 @@ interface IActiveBadgeProps extends BadgeProps {
 
 export function ActiveBadge({ active, ...rest }: IActiveBadgeProps) {
   return (
-    <Badge colorScheme={active ? 'green' : 'red'} {...rest}>
+    <Badge colorPalette={active ? 'green' : 'red'} {...rest}>
       {active ? 'Ativo' : 'Inativo'}
     </Badge>
   );

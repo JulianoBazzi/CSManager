@@ -1,13 +1,12 @@
 import {
-  CardHeader as ChakraCardHeader,
+  Card as ChakraCard,
   type CardHeaderProps as ChakraCardHeaderProps,
-  Divider,
   Flex,
   Heading,
   Icon,
   Spinner,
 } from '@chakra-ui/react';
-import type { ElementType, ReactNode } from 'react';
+import { createElement, type ElementType, type ReactNode } from 'react';
 
 interface ICardHeaderProps extends ChakraCardHeaderProps {
   icon?: ElementType;
@@ -19,18 +18,30 @@ interface ICardHeaderProps extends ChakraCardHeaderProps {
 
 export default function CardHeader({ icon, size = 'lg', title, isFetching, children, ...rest }: ICardHeaderProps) {
   return (
-    <>
-      <ChakraCardHeader w="100%" {...rest}>
-        <Flex justifyContent="space-between">
-          <Flex align="center" gap="2">
-            {icon && <Icon as={icon} fontSize={size === 'lg' ? '2xl' : 'xl'} />}
-            <Heading size={size}>{title}</Heading>
-            {isFetching && <Spinner color="blue.200" />}
-          </Flex>
-          {children}
+    <ChakraCard.Header w="100%" py="4" borderBottomWidth="1px" borderColor="gray.800" {...rest}>
+      <Flex w="100%" justify="space-between" align="center" gap="3">
+        <Flex align="center" gap="3">
+          {icon && (
+            <Flex
+              align="center"
+              justify="center"
+              boxSize={size === 'lg' ? '10' : '8'}
+              bg="whiteAlpha.100"
+              borderRadius="lg"
+              color="blue.200"
+            >
+              <Icon fontSize={size === 'lg' ? '2xl' : 'xl'}>{createElement(icon)}</Icon>
+            </Flex>
+          )}
+          <Heading size={size}>{title}</Heading>
+          {isFetching && <Spinner color="blue.200" />}
         </Flex>
-      </ChakraCardHeader>
-      <Divider mt="-2" />
-    </>
+        {children && (
+          <Flex flexShrink={0} align="center" gap="2">
+            {children}
+          </Flex>
+        )}
+      </Flex>
+    </ChakraCard.Header>
   );
 }

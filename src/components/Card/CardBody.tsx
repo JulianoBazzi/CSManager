@@ -1,4 +1,4 @@
-import { CardBody as ChakraCardBody, type CardBodyProps as ChakraCardBodyProps, Stack } from '@chakra-ui/react';
+import { Card as ChakraCard, type CardBodyProps as ChakraCardBodyProps, Stack } from '@chakra-ui/react';
 import type { ReactNode } from 'react';
 
 interface ICardBodyProps extends ChakraCardBodyProps {
@@ -7,8 +7,8 @@ interface ICardBodyProps extends ChakraCardBodyProps {
 
 export default function CardBody({ children, ...rest }: ICardBodyProps) {
   return (
-    <ChakraCardBody w="100%" {...rest}>
-      <Stack>{children}</Stack>
-    </ChakraCardBody>
+    <ChakraCard.Body w="100%" {...rest}>
+      <Stack gap="4">{children}</Stack>
+    </ChakraCard.Body>
   );
 }

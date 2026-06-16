@@ -1,24 +1,15 @@
-import { forwardRef, type ForwardRefRenderFunction } from 'react';
+import { Icon, type IconButtonProps } from '@chakra-ui/react';
+import type { Ref } from 'react';
 import { RiTeamFill } from 'react-icons/ri';
-
-import { type IconButtonProps, Icon } from '@chakra-ui/react';
 
 import { GhostGrayIconButton } from '~/components/IconButton/Base/GhostGrayIconButton';
 
-type RaffleIconButtonProps = Omit<IconButtonProps, 'aria-label'>;
+type RaffleIconButtonProps = Omit<IconButtonProps, 'aria-label'> & { ref?: Ref<HTMLButtonElement> };
 
-const RaffleIconButtonBase: ForwardRefRenderFunction<HTMLButtonElement, RaffleIconButtonProps> = (
-  { ...rest }: RaffleIconButtonProps,
-  ref,
-) => (
-  <GhostGrayIconButton
-    ref={ref}
-    colorScheme="green"
-    variant="solid"
-    icon={<Icon as={RiTeamFill} fontSize="2xl" />}
-    aria-label="Sortear Times"
-    {...rest}
-  />
+export const RaffleIconButton = ({ ref, ...rest }: RaffleIconButtonProps) => (
+  <GhostGrayIconButton ref={ref} colorPalette="green" variant="solid" aria-label="Sortear Times" {...rest}>
+    <Icon fontSize="2xl">
+      <RiTeamFill />
+    </Icon>
+  </GhostGrayIconButton>
 );
-
-export const RaffleIconButton = forwardRef(RaffleIconButtonBase);

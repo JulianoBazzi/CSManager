@@ -1,9 +1,6 @@
 import { type ButtonProps, Button as ChakraButton } from '@chakra-ui/react';
-import { type ForwardRefRenderFunction, forwardRef } from 'react';
+import type { Ref } from 'react';
 
-const OutlineRedButtonBase: ForwardRefRenderFunction<HTMLButtonElement, ButtonProps> = (
-  { ...rest }: ButtonProps,
-  ref
-) => <ChakraButton ref={ref} colorScheme="red" variant="outline" w={['100%', 'inherit']} gap="2" {...rest} />;
-
-export const OutlineRedButton = forwardRef(OutlineRedButtonBase);
+export const OutlineRedButton = ({ ref, ...rest }: ButtonProps & { ref?: Ref<HTMLButtonElement> }) => (
+  <ChakraButton ref={ref} colorPalette="red" variant="outline" w={['100%', 'inherit']} gap="2" {...rest} />
+);

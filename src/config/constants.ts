@@ -5,6 +5,7 @@ export const NEXT_PUBLIC_SUPABASE_URL = String(process.env.NEXT_PUBLIC_SUPABASE_
 export const NEXT_PUBLIC_SUPABASE_ANON_KEY = String(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 export const NEXT_PUBLIC_IMGBB_API_KEY = String(process.env.NEXT_PUBLIC_IMGBB_API_KEY);
 export const OPENAI_API_KEY = String(process.env.OPENAI_API_KEY);
+export const SCRAPE_DO_TOKEN = String(process.env.SCRAPE_DO_TOKEN);
 
 export const TABLE_MAPS = 'maps';
 export const TABLE_PLAYERS = 'players';

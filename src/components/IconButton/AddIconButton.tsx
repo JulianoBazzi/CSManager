@@ -1,24 +1,15 @@
-import { forwardRef, type ForwardRefRenderFunction } from 'react';
+import { Icon, type IconButtonProps } from '@chakra-ui/react';
+import type { Ref } from 'react';
 import { RiAddLine } from 'react-icons/ri';
-
-import { type IconButtonProps, Icon } from '@chakra-ui/react';
 
 import { GhostGrayIconButton } from '~/components/IconButton/Base/GhostGrayIconButton';
 
-type AddIconButtonProps = Omit<IconButtonProps, 'aria-label'>;
+type AddIconButtonProps = Omit<IconButtonProps, 'aria-label'> & { ref?: Ref<HTMLButtonElement> };
 
-const AddIconButtonBase: ForwardRefRenderFunction<HTMLButtonElement, AddIconButtonProps> = (
-  { ...rest }: AddIconButtonProps,
-  ref,
-) => (
-  <GhostGrayIconButton
-    ref={ref}
-    colorScheme="green"
-    variant="solid"
-    icon={<Icon as={RiAddLine} fontSize="2xl" />}
-    aria-label="Adicionar"
-    {...rest}
-  />
+export const AddIconButton = ({ ref, ...rest }: AddIconButtonProps) => (
+  <GhostGrayIconButton ref={ref} colorPalette="green" variant="solid" aria-label="Adicionar" {...rest}>
+    <Icon fontSize="2xl">
+      <RiAddLine />
+    </Icon>
+  </GhostGrayIconButton>
 );
-
-export const AddIconButton = forwardRef(AddIconButtonBase);

@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
-
 import type { User } from '@supabase/supabase-js';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
+import { useEffect, useRef, useState } from 'react';
+import { RiMap2Line } from 'react-icons/ri';
 import removeAccents from 'remove-accents';
 
 import { ActiveBadge } from '~/components/Badge/ActiveBadge';
@@ -36,10 +36,13 @@ const Maps: NextPage<IMapsProps> = ({ user }) => {
   useEffect(() => {
     setDataFiltered(
       data?.filter(
-        (map) => removeAccents(map.name.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase()))
-          || removeAccents(map.format_short_game_type.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase()))
-          || removeAccents(map.format_map_type.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase())),
-      ),
+        map =>
+          removeAccents(map.name.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase())) ||
+          removeAccents(map.format_short_game_type.trim().toLowerCase()).includes(
+            removeAccents(search.trim().toLowerCase())
+          ) ||
+          removeAccents(map.format_map_type.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase()))
+      )
     );
   }, [search, data]);
 
@@ -81,15 +84,15 @@ const Maps: NextPage<IMapsProps> = ({ user }) => {
       <MapModal ref={mapModalRef} />
       <Template user={user}>
         <Card>
-          <CardHeader title="Mapas" isFetching={isFetching && !isLoading}>
+          <CardHeader icon={RiMap2Line} title="Mapas" isFetching={isFetching && !isLoading}>
             <AddIconButton onClick={() => handleShowModal()} />
           </CardHeader>
           <CardBody>
-            <SearchBar onSearch={(value) => setSearch(value)} isDisabled={isFetching} />
+            <SearchBar onSearch={value => setSearch(value)} disabled={isFetching} />
             <Table
               data={dataFiltered}
               columns={columns}
-              isLoading={isLoading}
+              loading={isLoading}
               onRowClick={({ id }) => handleShowModal(id)}
               orderBy={{
                 id: 'name',

@@ -1,39 +1,29 @@
-import {
-  Switch as ChakraSwitch,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  InputGroup,
-  Skeleton,
-  type SwitchProps,
-} from '@chakra-ui/react';
-import { type ForwardRefRenderFunction, forwardRef, type ReactNode } from 'react';
+import { Switch as ChakraSwitch, Skeleton, type SwitchRootProps } from '@chakra-ui/react';
+import type { Ref } from 'react';
 import type { FieldError } from 'react-hook-form';
 
-interface ISwitchProps extends SwitchProps {
+interface ISwitchProps extends SwitchRootProps {
   name: string;
   label?: string;
   error?: FieldError;
-  isRequired?: boolean;
-  isLoading?: boolean;
-  children?: ReactNode;
+  loading?: boolean;
+  ref?: Ref<HTMLLabelElement>;
 }
 
-const SwitchBase: ForwardRefRenderFunction<HTMLInputElement, ISwitchProps> = (
-  { name, label, error, isRequired, isLoading, maxW, children, ...rest }: ISwitchProps,
-  ref
-) => (
-  <FormControl isInvalid={!!error} isRequired={isRequired} maxW={maxW}>
-    {!!label && <FormLabel htmlFor={name}>{label}</FormLabel>}
-    {isLoading && <Skeleton height="10" borderRadius={4} />}
-    {!isLoading && (
-      <InputGroup>
-        <ChakraSwitch ref={ref} id={name} name={name} autoComplete="off" colorScheme="whiteAlpha" {...rest} />
-        {children}
-      </InputGroup>
-    )}
-    {!!error && <FormErrorMessage>{error.message}</FormErrorMessage>}
-  </FormControl>
-);
+export const Switch = ({ name, label, error, disabled, loading, ref, ...rest }: ISwitchProps) => {
+  if (loading) {
+    return <Skeleton w="12" h="6" borderRadius="full" />;
+  }
 
-export const Switch = forwardRef(SwitchBase);
+  return (
+    <ChakraSwitch.Root ref={ref} name={name} invalid={!!error} disabled={disabled} colorPalette="blue" {...rest}>
+      <ChakraSwitch.HiddenInput />
+      <ChakraSwitch.Control>
+        <ChakraSwitch.Thumb>
+          <ChakraSwitch.ThumbIndicator />
+        </ChakraSwitch.Thumb>
+      </ChakraSwitch.Control>
+      {!!label && <ChakraSwitch.Label>{label}</ChakraSwitch.Label>}
+    </ChakraSwitch.Root>
+  );
+};

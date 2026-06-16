@@ -1,7 +1,7 @@
-import { ModalBody, ModalFooter, Stack } from '@chakra-ui/react';
+import { Flex, Stack, Text } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@tanstack/react-query';
-import { type ForwardRefRenderFunction, forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
+import { type Ref, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import { type SubmitHandler, useForm } from 'react-hook-form';
 import type { InferType } from 'yup';
 import * as yup from 'yup';
@@ -12,7 +12,7 @@ import { AddSolidButton } from '~/components/Button/AddSolidButton';
 import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
 import { SaveSolidButton } from '~/components/Button/SaveSolidButton';
 import { Input } from '~/components/Form/Input';
-import { Modal, type ModalHandle } from '~/components/Form/Modal';
+import { Modal, ModalBody, ModalFooter, type ModalHandle } from '~/components/Form/Modal';
 import { Select } from '~/components/Form/Select';
 import { Switch } from '~/components/Form/Switch';
 import { TABLE_MAPS } from '~/config/constants';
@@ -28,7 +28,7 @@ export type MapModalHandle = {
   onOpenModal: (recordModal?: IRecordModal) => void;
 };
 
-const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (_, ref) => {
+export const MapModal = ({ ref }: { ref?: Ref<MapModalHandle> }) => {
   const modalRef = useRef<ModalHandle>(null);
 
   const { errorFeedbackToast, successFeedbackToast } = useFeedback();
@@ -134,16 +134,16 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (_, ref) => {
   );
 
   return (
-    <Modal title="Mapa" ref={modalRef} size="md" onSubmit={handleSubmit(handleOk)}>
+    <Modal title="Mapa" ref={modalRef} size="md" onSubmit={handleSubmit(handleOk)} disableCloseButton={isSubmitting}>
       <ModalBody>
-        <Stack spacing="4">
+        <Stack gap="4">
           <Input
             label="Nome"
             error={errors.name}
             {...register('name')}
-            isLoading={isLoading}
-            isDisabled={isSubmitting}
-            isRequired
+            loading={isLoading}
+            disabled={isSubmitting}
+            required
             autoFocus
           />
           <Select
@@ -152,9 +152,9 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (_, ref) => {
             value={watch('map_type') as ISelectOption}
             error={errors.map_type?.id}
             {...register('map_type')}
-            isLoading={isLoading}
-            isDisabled={isSubmitting}
-            isRequired
+            loading={isLoading}
+            disabled={isSubmitting}
+            required
             onChange={option => {
               setValue('map_type', option);
             }}
@@ -165,35 +165,37 @@ const MapModalBase: ForwardRefRenderFunction<MapModalHandle> = (_, ref) => {
             value={watch('game_type') as ISelectOption}
             error={errors.game_type?.id}
             {...register('game_type')}
-            isLoading={isLoading}
-            isDisabled={isSubmitting}
-            isRequired
+            loading={isLoading}
+            disabled={isSubmitting}
+            required
             onChange={option => {
               setValue('game_type', option);
             }}
           />
-          <Switch
-            label="Ativo"
-            {...register('active')}
-            isChecked={watch('active')}
-            isDisabled={isLoading || isSubmitting}
-          />
+          <Flex w="200px" direction="column" gap="2">
+            <Text>Ativo</Text>
+            <Switch
+              name="active"
+              checked={watch('active') ?? false}
+              loading={isLoading}
+              disabled={isSubmitting}
+              onCheckedChange={({ checked }) => setValue('active', checked)}
+            />
+          </Flex>
         </Stack>
       </ModalBody>
       <ModalFooter flexDir="column" gap="4">
         {recordModalProps?.id ? (
-          <SaveSolidButton w="100%" type="submit" isLoading={isSubmitting} isDisabled={isLoading} />
+          <SaveSolidButton w="100%" type="submit" loading={isSubmitting} disabled={isLoading} />
         ) : (
-          <AddSolidButton w="100%" type="submit" isLoading={isSubmitting} isDisabled={isLoading} />
+          <AddSolidButton w="100%" type="submit" loading={isSubmitting} disabled={isLoading} />
         )}
         <CancelOutlineButton
           w="100%"
           onClick={() => modalRef.current?.onCloseModal()}
-          isDisabled={isSubmitting || isLoading}
+          disabled={isSubmitting || isLoading}
         />
       </ModalFooter>
     </Modal>
   );
 };
-
-export const MapModal = forwardRef(MapModalBase);

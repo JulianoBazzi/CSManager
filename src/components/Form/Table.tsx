@@ -1,18 +1,6 @@
+import { Card, Table as ChakraTable, Flex, Icon, Skeleton, Stack, Text, useBreakpointValue } from '@chakra-ui/react';
 import {
-  Table as ChakraTable,
-  Flex,
-  Icon,
-  Skeleton,
-  TableContainer,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-  useBreakpointValue,
-} from '@chakra-ui/react';
-import {
+  type Cell,
   type ColumnDef,
   type ColumnSort,
   flexRender,
@@ -38,9 +26,12 @@ export type ITableProps<T extends IEntityBase> = {
   orderBy?: ColumnSort;
   data?: T[];
   perPage?: number;
-  isLoading?: boolean;
+  loading?: boolean;
   columnVisibility?: VisibilityState;
+  disableTotalRecords?: boolean;
+  disablePagination?: boolean;
   onRowClick?: (data: T) => void;
+  isRowSelected?: (data: T) => boolean;
 };
 
 const emptyArray: never[] = [];
@@ -50,9 +41,12 @@ export function Table<T extends IEntityBase>({
   orderBy = { id: 'id', desc: true },
   data = emptyArray,
   perPage = 10,
-  isLoading,
+  loading,
   columnVisibility,
+  disableTotalRecords,
+  disablePagination,
   onRowClick,
+  isRowSelected,
 }: ITableProps<T>) {
   const isMobile = useBreakpointValue({ base: true, md: false });
 
@@ -97,13 +91,22 @@ export function Table<T extends IEntityBase>({
     },
   });
 
+  function isActionsCell(cell: Cell<T, unknown>): boolean {
+    return (
+      cell.column.id === 'actions' ||
+      (cell.column.columnDef.header === '' && cell.column.columnDef.enableSorting === false)
+    );
+  }
+
+  const headerMap = Object.fromEntries(getHeaderGroups()[0].headers.map(h => [h.column.id, h]));
+
   const table = () => (
-    <ChakraTable size="sm" variant="striped" colorScheme="blackAlpha">
-      <Thead>
+    <ChakraTable.Root size="sm" striped colorPalette="gray">
+      <ChakraTable.Header>
         {getHeaderGroups().map(headerGroup => (
-          <Tr key={headerGroup.id}>
+          <ChakraTable.Row key={headerGroup.id}>
             {headerGroup.headers.map(header => (
-              <Th key={header.id} colSpan={header.colSpan} textTransform="none">
+              <ChakraTable.ColumnHeader key={header.id} colSpan={header.colSpan} textTransform="none">
                 <Flex
                   align="center"
                   cursor={header.column.getCanSort() ? 'pointer' : 'inherit'}
@@ -112,73 +115,161 @@ export function Table<T extends IEntityBase>({
                   {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                   {
                     {
-                      asc: <Icon as={RiArrowUpSFill} aria-label="sorted ascending" />,
-                      desc: <Icon as={RiArrowDownSFill} aria-label="sorted descending" />,
+                      asc: (
+                        <Icon aria-label="sorted ascending">
+                          <RiArrowUpSFill />
+                        </Icon>
+                      ),
+                      desc: (
+                        <Icon aria-label="sorted descending">
+                          <RiArrowDownSFill />
+                        </Icon>
+                      ),
                     }[header.column.getIsSorted() as string]
                   }
                   {!header.column.getIsSorted() && header.column.getCanSort() && (
-                    <Icon as={RiSubtractLine} aria-label="sorted ascending" />
+                    <Icon aria-label="sortable">
+                      <RiSubtractLine />
+                    </Icon>
                   )}
                 </Flex>
-              </Th>
+              </ChakraTable.ColumnHeader>
             ))}
-          </Tr>
+          </ChakraTable.Row>
         ))}
-      </Thead>
-      <Tbody>
-        {isLoading &&
+      </ChakraTable.Header>
+      <ChakraTable.Body>
+        {loading &&
           [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(index => (
-            <Tr key={index}>
+            <ChakraTable.Row key={index}>
               {columns.map((_, columnIndex) => (
-                <Td key={`${columnIndex}-${index}`}>
+                <ChakraTable.Cell key={`${columnIndex}-${index}`}>
                   <Skeleton height="16px" />
-                </Td>
+                </ChakraTable.Cell>
               ))}
-            </Tr>
+            </ChakraTable.Row>
           ))}
-        {getRowModel().rows.map(row => (
-          <Tr
-            key={row.id}
-            {...(onRowClick && {
-              transition: 'background-color 0.3s ease-in-out',
-              _hover: {
-                cursor: 'pointer',
-              },
-            })}
-          >
-            {row.getVisibleCells().map(cell => (
-              <Td
-                key={cell.id}
-                {...(onRowClick &&
-                  cell.column.id !== 'actions' && {
-                    onClick: () => onRowClick(row.original),
-                  })}
+        {getRowModel().rows.map(row => {
+          const selected = isRowSelected?.(row.original);
+          return (
+            <ChakraTable.Row
+              key={row.id}
+              transition="background-color 0.2s ease-in-out"
+              css={{
+                ...(selected && {
+                  '& td': { backgroundColor: 'var(--chakra-colors-blue-900) !important' },
+                  '& td:first-of-type': { boxShadow: 'inset 3px 0 0 var(--chakra-colors-blue-400)' },
+                }),
+                ...(onRowClick && {
+                  cursor: 'pointer',
+                  '&:hover td': {
+                    backgroundColor: `var(--chakra-colors-${selected ? 'blue-800' : 'gray-700'}) !important`,
+                  },
+                }),
+              }}
+            >
+              {row.getVisibleCells().map(cell => (
+                <ChakraTable.Cell
+                  key={cell.id}
+                  {...(onRowClick &&
+                    cell.column.id !== 'actions' && {
+                      onClick: () => onRowClick(row.original),
+                    })}
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </ChakraTable.Cell>
+              ))}
+            </ChakraTable.Row>
+          );
+        })}
+      </ChakraTable.Body>
+    </ChakraTable.Root>
+  );
+
+  const mobileCards = () => (
+    <Stack gap="3">
+      {loading
+        ? [0, 1, 2, 3, 4].map(i => (
+            <Card.Root key={i} bg="gray.800">
+              <Card.Body p="4">
+                <Stack gap="3">
+                  <Skeleton height="16px" />
+                  <Skeleton height="16px" />
+                  <Skeleton height="16px" />
+                </Stack>
+              </Card.Body>
+            </Card.Root>
+          ))
+        : getRowModel().rows.map(row => {
+            const selected = isRowSelected?.(row.original);
+            return (
+              <Card.Root
+                key={row.id}
+                bg="gray.800"
+                borderWidth="1px"
+                borderColor={selected ? 'blue.400' : 'transparent'}
+                {...(onRowClick && { cursor: 'pointer', onClick: () => onRowClick(row.original) })}
               >
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </Td>
-            ))}
-          </Tr>
-        ))}
-      </Tbody>
-    </ChakraTable>
+                <Card.Body p="4">
+                  <Stack gap="2">
+                    {row.getVisibleCells().map(cell => {
+                      const actions = isActionsCell(cell);
+                      const label =
+                        cell.column.id === 'actions'
+                          ? 'Ações'
+                          : cell.column.columnDef.header === ''
+                            ? ''
+                            : flexRender(cell.column.columnDef.header, headerMap[cell.column.id].getContext());
+                      return (
+                        <Flex key={cell.id} justify="space-between" align="center" gap="2">
+                          <Text
+                            fontSize="xs"
+                            color="gray.400"
+                            fontWeight="semibold"
+                            textTransform="uppercase"
+                            flexShrink={0}
+                          >
+                            {label}
+                          </Text>
+                          <Flex
+                            align="center"
+                            justify="flex-end"
+                            textAlign="end"
+                            {...(actions && { onClick: (e: React.MouseEvent) => e.stopPropagation() })}
+                          >
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </Flex>
+                        </Flex>
+                      );
+                    })}
+                  </Stack>
+                </Card.Body>
+              </Card.Root>
+            );
+          })}
+    </Stack>
   );
 
   return (
     <>
-      {isMobile ? <TableContainer>{table()}</TableContainer> : table()}
+      {isMobile ? mobileCards() : table()}
 
       {totalRecords > 0 ? (
         <Flex mt="4" align="center" direction={['column', 'row']} gap={['3', '0']}>
-          <Text mr={['inherit', 'auto']} color="gray.200">{`Total de ${totalRecords} registros`}</Text>
-          <Flex gap="1" align="center">
-            <FirstPageGhostIconButton onClick={() => setPageIndex(0)} isDisabled={!getCanPreviousPage()} />
-            <PreviousPageGhostIconButton onClick={() => previousPage()} isDisabled={!getCanPreviousPage()} />
-            <NextPageGhostIconButton onClick={() => nextPage()} isDisabled={!getCanNextPage()} />
-            <LastPageGhostIconButton onClick={() => setPageIndex(getPageCount() - 1)} isDisabled={!getCanNextPage()} />
-          </Flex>
+          {!disableTotalRecords && (
+            <Text mr={['inherit', 'auto']} color="gray.200">{`Total de ${totalRecords} registros`}</Text>
+          )}
+          {!disablePagination && (
+            <Flex gap="1" align="center">
+              <FirstPageGhostIconButton onClick={() => setPageIndex(0)} disabled={!getCanPreviousPage()} />
+              <PreviousPageGhostIconButton onClick={() => previousPage()} disabled={!getCanPreviousPage()} />
+              <NextPageGhostIconButton onClick={() => nextPage()} disabled={!getCanNextPage()} />
+              <LastPageGhostIconButton onClick={() => setPageIndex(getPageCount() - 1)} disabled={!getCanNextPage()} />
+            </Flex>
+          )}
         </Flex>
       ) : (
-        !isLoading && (
+        !loading && (
           <Flex mt="8" justifyContent="center" align="center" borderBottomWidth={1} borderColor="gray.50">
             <Text mb="8">Nenhum Registro Encontrado</Text>
           </Flex>
