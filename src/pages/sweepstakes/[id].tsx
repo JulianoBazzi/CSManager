@@ -21,6 +21,7 @@ import {
 import { AlertOriginEnum, AlertTypeEnum } from '~/components/Alert';
 import { ConfirmRegisterAlert, type ConfirmRegisterAlertHandle } from '~/components/Alert/ConfirmRegisterAlert';
 import { PremierBadge } from '~/components/Badge/PremierBadge';
+import { RankBadge } from '~/components/Badge/RankBadge';
 import { ScoreBadge } from '~/components/Badge/ScoreBadge';
 import { StarBadge } from '~/components/Badge/StarBadge';
 import Card from '~/components/Card';
@@ -40,6 +41,7 @@ import {
   SweepstakeMapRankingModal,
   type SweepstakeMapRankingModalHandle,
 } from '~/components/Modal/SweepstakeMapRankingModal';
+import { PlayerName } from '~/components/PlayerName';
 import Template from '~/components/Template';
 import { TABLE_SWEEPSTAKE_PLAYERS, TABLE_SWEEPSTAKES } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
@@ -93,25 +95,31 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
 
   const rankingColumns: ColumnDef<IViewSeepstakeRankingAPI>[] = [
     {
-      accessorKey: 'name',
-      header: 'Nome',
+      id: 'position',
+      header: '#',
+      enableSorting: false,
+      cell: ({ row, table }) => (
+        <RankBadge position={table.getSortedRowModel().rows.findIndex(r => r.id === row.id) + 1} />
+      ),
     },
     {
-      accessorKey: 'username',
-      header: 'Steam',
+      accessorKey: 'name',
+      header: 'Jogador',
+      cell: ({ row }) => <PlayerName name={row.original.name} username={row.original.username} />,
     },
-    // {
-    //   accessorKey: 'premier',
-    //   header: 'Premier',
-    //   cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
-    // },
     {
       accessorKey: 'kills',
       header: 'Vítimas',
+      cell: ({ row }) => (
+        <Text color="green.300" fontWeight="medium">
+          {row.original.kills}
+        </Text>
+      ),
     },
     {
       accessorKey: 'deaths',
       header: 'Mortes',
+      cell: ({ row }) => <Text color="red.300">{row.original.deaths}</Text>,
     },
     {
       accessorKey: 'assistances',
@@ -120,10 +128,16 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
     {
       accessorKey: 'headshot_percentage',
       header: '%TC',
+      cell: ({ row }) => <Text fontWeight="medium">{row.original.headshot_percentage}</Text>,
     },
     {
       accessorKey: 'damage',
       header: 'Dano',
+      cell: ({ row }) => (
+        <Text color="orange.300" fontWeight="semibold">
+          {row.original.damage}
+        </Text>
+      ),
     },
   ];
 
@@ -286,26 +300,26 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
         <Card>
           <CardHeader title={(isMobile ? sweepstake.format_short_game_type : sweepstake.format_game_type) || ''} />
           <CardBody>
-            <Flex align="center" gap="2">
-              <Icon fontSize="xl">
-                <RiCalendarEventLine />
-              </Icon>
-              <Text>{sweepstake.format_departure_at}</Text>
-            </Flex>
-            <Stack direction={['column', 'row']}>
-              <Flex align="center" gap="2">
+            <Flex gap="3" wrap="wrap" direction={['column', 'row']}>
+              <Flex align="center" gap="2" bg="gray.800" px="3" py="2" borderRadius="md">
+                <Icon fontSize="xl">
+                  <RiCalendarEventLine />
+                </Icon>
+                <Text>{sweepstake.format_departure_at}</Text>
+              </Flex>
+              <Flex align="center" gap="2" bg="gray.800" px="3" py="2" borderRadius="md">
                 <Icon fontSize="xl">
                   <RiMap2Line />
                 </Icon>
                 <Text>{sweepstake.quantity_maps} mapas</Text>
               </Flex>
-              <Flex align="center" gap="2">
+              <Flex align="center" gap="2" bg="gray.800" px="3" py="2" borderRadius="md">
                 <Icon fontSize="xl">
                   <RiUser3Line />
                 </Icon>
                 <Text>{sweepstake.quantity_players} jogadores</Text>
               </Flex>
-            </Stack>
+            </Flex>
           </CardBody>
         </Card>
         <Stack direction={['column', 'row']} w="100%">
@@ -326,9 +340,15 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                   .map((sweepstakePlayer, index) => (
                     <Stack direction={['column', 'row']} key={sweepstakePlayer.id}>
                       <Flex align="center" gap="2" justify={isMobile ? 'space-between' : 'inherit'}>
-                        <Text lineClamp={1}>
-                          {index + 1} - {sweepstakePlayer.players.name} ({sweepstakePlayer.players.username})
-                        </Text>
+                        <Flex align="center" gap="3">
+                          <Text color="gray.400" fontWeight="medium" minW="6">
+                            {index + 1}
+                          </Text>
+                          <PlayerName
+                            name={sweepstakePlayer.players.name}
+                            username={sweepstakePlayer.players.username}
+                          />
+                        </Flex>
                         {sweepstake.engine === SeepstakeEngineEnum.Premier ? (
                           <PremierBadge premier={sweepstakePlayer.score} />
                         ) : (
@@ -384,9 +404,15 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                   .map((sweepstakePlayer, index) => (
                     <Stack direction={['column', 'row']} key={sweepstakePlayer.id}>
                       <Flex align="center" gap="2" justify={isMobile ? 'space-between' : 'inherit'}>
-                        <Text lineClamp={1}>
-                          {index + 1} - {sweepstakePlayer.players.name} ({sweepstakePlayer.players.username})
-                        </Text>
+                        <Flex align="center" gap="3">
+                          <Text color="gray.400" fontWeight="medium" minW="6">
+                            {index + 1}
+                          </Text>
+                          <PlayerName
+                            name={sweepstakePlayer.players.name}
+                            username={sweepstakePlayer.players.username}
+                          />
+                        </Flex>
                         {sweepstake.engine === SeepstakeEngineEnum.Premier ? (
                           <PremierBadge premier={sweepstakePlayer.score} />
                         ) : (
@@ -435,7 +461,14 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
           <CardBody>
             <Stack direction={['column', 'row']}>
               {sweepstakeMaps?.map(sweepstakeMap => (
-                <Card key={sweepstakeMap.id} bg="gray.800">
+                <Card
+                  key={sweepstakeMap.id}
+                  bg="gray.800"
+                  borderWidth="1px"
+                  borderColor={
+                    isWinnerTeam(sweepstakeMap, 0) || isWinnerTeam(sweepstakeMap, 1) ? 'yellow.500' : 'transparent'
+                  }
+                >
                   <CardHeader
                     p={isMobile ? '5' : '3'}
                     icon={sweepstakeMap?.maps.map_type === 'bomb' ? GiUnlitBomb : MdEmojiPeople}
@@ -472,7 +505,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                             sweepstakeMap.team_start_from_terrorist === SweepstakeTeamEnum.One ? 'red.500' : 'inherit'
                           }
                         />
-                        <Text>
+                        <Text fontWeight={isWinnerTeam(sweepstakeMap, 0) ? 'bold' : 'normal'}>
                           {sweepstakeMap.team_one_score_1} + {sweepstakeMap.team_one_score_2}
                         </Text>
                         {isNoWinner(sweepstakeMap) && (
@@ -493,7 +526,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                             sweepstakeMap.team_start_from_terrorist === SweepstakeTeamEnum.Two ? 'red.500' : 'inherit'
                           }
                         />
-                        <Text>
+                        <Text fontWeight={isWinnerTeam(sweepstakeMap, 1) ? 'bold' : 'normal'}>
                           {sweepstakeMap.team_two_score_1} + {sweepstakeMap.team_two_score_2}
                         </Text>
                         {isNoWinner(sweepstakeMap) && (
@@ -531,6 +564,8 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                   id: 'damage',
                   desc: true,
                 }}
+                disableTotalRecords
+                disablePagination
               />
             </Box>
           </CardBody>

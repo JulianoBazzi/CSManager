@@ -1,8 +1,10 @@
+import { Text } from '@chakra-ui/react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { type Ref, useCallback, useImperativeHandle, useRef, useState } from 'react';
 
 import { MapBadge } from '~/components/Badge/MapBadge';
-import { Modal, ModalBody, ModalFooter, type ModalHandle } from '~/components/Form/Modal';
+import { RankBadge } from '~/components/Badge/RankBadge';
+import { Modal, ModalBody, type ModalHandle } from '~/components/Form/Modal';
 import { Table } from '~/components/Form/Table';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import type IViewMapRankingAPI from '~/models/Entity/Ranking/IViewMapRankingAPI';
@@ -24,6 +26,14 @@ export const PlayerMapRankingModal = ({ ref }: { ref?: Ref<PlayerMapRankingModal
 
   const rankingColumns: ColumnDef<IViewMapRankingAPI>[] = [
     {
+      id: 'position',
+      header: '#',
+      enableSorting: false,
+      cell: ({ row, table }) => (
+        <RankBadge position={table.getSortedRowModel().rows.findIndex(r => r.id === row.id) + 1} />
+      ),
+    },
+    {
       accessorKey: 'name',
       header: 'Nome',
     },
@@ -40,10 +50,16 @@ export const PlayerMapRankingModal = ({ ref }: { ref?: Ref<PlayerMapRankingModal
     {
       accessorKey: 'kills',
       header: 'Vítimas',
+      cell: ({ row }) => (
+        <Text color="green.300" fontWeight="medium">
+          {row.original.kills}
+        </Text>
+      ),
     },
     {
       accessorKey: 'deaths',
       header: 'Mortes',
+      cell: ({ row }) => <Text color="red.300">{row.original.deaths}</Text>,
     },
     {
       accessorKey: 'assistances',
@@ -52,10 +68,16 @@ export const PlayerMapRankingModal = ({ ref }: { ref?: Ref<PlayerMapRankingModal
     {
       accessorKey: 'headshot_percentage',
       header: '%TC',
+      cell: ({ row }) => <Text fontWeight="medium">{row.original.headshot_percentage}</Text>,
     },
     {
       accessorKey: 'damage',
       header: 'Dano',
+      cell: ({ row }) => (
+        <Text color="orange.300" fontWeight="semibold">
+          {row.original.damage}
+        </Text>
+      ),
     },
   ];
 
@@ -83,9 +105,8 @@ export const PlayerMapRankingModal = ({ ref }: { ref?: Ref<PlayerMapRankingModal
   return (
     <Modal ref={modalRef} title={`Ranking: ${recordModalProps?.player?.name}`} size="xl">
       <ModalBody>
-        <Table data={rankings} columns={rankingColumns} loading={isLoading} />
+        <Table data={rankings} columns={rankingColumns} loading={isLoading} orderBy={{ id: 'damage', desc: true }} />
       </ModalBody>
-      <ModalFooter />
     </Modal>
   );
 };

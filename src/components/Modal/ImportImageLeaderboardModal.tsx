@@ -112,7 +112,7 @@ export const ImportImageLeaderboardModal = ({ ref }: { ref?: Ref<ImportImageLead
 
   const { mutateAsync: createOrUpdateRankingAsync, isPending: isLoadingRanking } = useMutation({
     mutationFn: async () => {
-      if (!recordModalProps?.user || !recordModalProps?.sweepstakeMap || !recordModalProps?.sweepstakeMap.maps) {
+      if (!recordModalProps?.user || !recordModalProps?.sweepstakeMap?.maps) {
         return;
       }
 
