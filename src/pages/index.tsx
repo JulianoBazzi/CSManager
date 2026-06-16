@@ -3,6 +3,7 @@ import type { User } from '@supabase/supabase-js';
 import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
+import { RiHome5Line } from 'react-icons/ri';
 
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
@@ -21,7 +22,7 @@ const Home: NextPage<IHomeProps> = ({ user }) => (
     </Head>
     <Template user={user}>
       <Card>
-        <CardHeader title="CS Manager" />
+        <CardHeader icon={RiHome5Line} title="CS Manager" />
         <CardBody>
           <Box>
             <Text>Tecnologias Utilizadas:</Text>

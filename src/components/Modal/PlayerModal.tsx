@@ -190,18 +190,26 @@ export const PlayerModal = ({ ref }: { ref?: Ref<PlayerModalHandle> }) => {
             />
           </Flex>
           <Stack direction="row" gap="4">
-            <Switch
-              label="Ativo"
-              {...register('active')}
-              checked={watch('active')}
-              disabled={isLoading || isSubmitting}
-            />
-            <Switch
-              label="Buscar Dados"
-              {...register('fetch_data')}
-              checked={watch('fetch_data')}
-              disabled={isLoading || isSubmitting}
-            />
+            <Flex w="200px" direction="column" gap="2">
+              <Text>Ativo</Text>
+              <Switch
+                name="active"
+                checked={watch('active') ?? false}
+                loading={isLoading}
+                disabled={isSubmitting}
+                onCheckedChange={({ checked }) => setValue('active', checked)}
+              />
+            </Flex>
+            <Flex w="200px" direction="column" gap="2">
+              <Text>Buscar Dados</Text>
+              <Switch
+                name="fetch_data"
+                checked={watch('fetch_data') ?? false}
+                loading={isLoading}
+                disabled={isSubmitting}
+                onCheckedChange={({ checked }) => setValue('fetch_data', checked)}
+              />
+            </Flex>
           </Stack>
         </Stack>
       </ModalBody>

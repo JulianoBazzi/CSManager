@@ -1,4 +1,4 @@
-import { Stack } from '@chakra-ui/react';
+import { Flex, Stack, Text } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@tanstack/react-query';
 import { type Ref, useCallback, useImperativeHandle, useRef, useState } from 'react';
@@ -172,12 +172,16 @@ export const MapModal = ({ ref }: { ref?: Ref<MapModalHandle> }) => {
               setValue('game_type', option);
             }}
           />
-          <Switch
-            label="Ativo"
-            {...register('active')}
-            checked={watch('active')}
-            disabled={isLoading || isSubmitting}
-          />
+          <Flex w="200px" direction="column" gap="2">
+            <Text>Ativo</Text>
+            <Switch
+              name="active"
+              checked={watch('active') ?? false}
+              loading={isLoading}
+              disabled={isSubmitting}
+              onCheckedChange={({ checked }) => setValue('active', checked)}
+            />
+          </Flex>
         </Stack>
       </ModalBody>
       <ModalFooter flexDir="column" gap="4">

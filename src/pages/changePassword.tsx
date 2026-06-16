@@ -5,6 +5,7 @@ import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'ne
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
 import { type SubmitHandler, useForm } from 'react-hook-form';
+import { RiLockPasswordLine } from 'react-icons/ri';
 import type { InferType } from 'yup';
 import * as yup from 'yup';
 
@@ -48,7 +49,7 @@ const ChangePassword: NextPage<IChangePasswordProps> = ({ user }) => {
       </Head>
       <Template user={user}>
         <Card maxW={['100%', '600px']} as="form" onSubmit={handleSubmit(handleChangePassword)}>
-          <CardHeader title="Alterar Senha" />
+          <CardHeader icon={RiLockPasswordLine} title="Alterar Senha" />
           <CardBody>
             <Stack gap="4">
               <PasswordInput

@@ -8,7 +8,7 @@ interface ICardBodyProps extends ChakraCardBodyProps {
 export default function CardBody({ children, ...rest }: ICardBodyProps) {
   return (
     <ChakraCard.Body w="100%" {...rest}>
-      <Stack>{children}</Stack>
+      <Stack gap="4">{children}</Stack>
     </ChakraCard.Body>
   );
 }

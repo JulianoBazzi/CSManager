@@ -7,7 +7,15 @@ interface ICardProps extends CardRootProps {
 
 export default function Card({ children, ...rest }: ICardProps) {
   return (
-    <ChakraCard.Root bg="gray.900" w="100%" {...rest}>
+    <ChakraCard.Root
+      bg="gray.900"
+      w="100%"
+      borderWidth="1px"
+      borderColor="gray.800"
+      borderRadius="xl"
+      boxShadow="sm"
+      {...rest}
+    >
       {children}
     </ChakraCard.Root>
   );

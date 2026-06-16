@@ -4,6 +4,7 @@ import type { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
 import { type SubmitHandler, useForm } from 'react-hook-form';
+import { RiLoginBoxLine } from 'react-icons/ri';
 import * as yup from 'yup';
 
 import Card from '~/components/Card';
@@ -43,7 +44,7 @@ export default function Login() {
       </Head>
       <Template>
         <Card maxW={600}>
-          <CardHeader title="Entrar" />
+          <CardHeader icon={RiLoginBoxLine} title="Entrar" />
           <CardBody as="form" onSubmit={handleSubmit(handleSignIn)}>
             <Input
               type="email"

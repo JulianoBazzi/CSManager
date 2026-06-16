@@ -5,6 +5,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
 import { useEffect, useState } from 'react';
+import { RiTrophyLine } from 'react-icons/ri';
 import removeAccents from 'remove-accents';
 
 import Card from '~/components/Card';
@@ -91,7 +92,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user }) => {
       </Head>
       <Template user={user}>
         <Card>
-          <CardHeader title="Sorteios" isFetching={isFetching && !isLoading}>
+          <CardHeader icon={RiTrophyLine} title="Sorteios" isFetching={isFetching && !isLoading}>
             <AddIconButton onClick={() => handleVisualization()} />
           </CardHeader>
           <CardBody>

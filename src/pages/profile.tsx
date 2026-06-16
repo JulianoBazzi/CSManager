@@ -5,6 +5,7 @@ import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'ne
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
 import { type SubmitHandler, useForm } from 'react-hook-form';
+import { RiUserSettingsLine } from 'react-icons/ri';
 import type { InferType } from 'yup';
 import * as yup from 'yup';
 
@@ -74,7 +75,7 @@ const Profile: NextPage<IProfileProps> = ({ user }) => {
       </Head>
       <Template user={user}>
         <Card maxW={['100%', '600px']} as="form" onSubmit={handleSubmit(handleUpdateProfile)}>
-          <CardHeader title="Meu Perfil" />
+          <CardHeader icon={RiUserSettingsLine} title="Meu Perfil" />
           <CardBody>
             <Stack gap="4">
               <Input label="Nome Completo" error={errors.name} {...register('name')} disabled={isSubmitting} required />

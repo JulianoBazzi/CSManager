@@ -4,6 +4,7 @@ import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'ne
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
 import { useEffect, useRef, useState } from 'react';
+import { RiMap2Line } from 'react-icons/ri';
 import removeAccents from 'remove-accents';
 
 import { ActiveBadge } from '~/components/Badge/ActiveBadge';
@@ -83,7 +84,7 @@ const Maps: NextPage<IMapsProps> = ({ user }) => {
       <MapModal ref={mapModalRef} />
       <Template user={user}>
         <Card>
-          <CardHeader title="Mapas" isFetching={isFetching && !isLoading}>
+          <CardHeader icon={RiMap2Line} title="Mapas" isFetching={isFetching && !isLoading}>
             <AddIconButton onClick={() => handleShowModal()} />
           </CardHeader>
           <CardBody>

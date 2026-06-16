@@ -5,8 +5,8 @@ import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'ne
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
 import { useEffect, useRef, useState } from 'react';
+import { RiTeamLine } from 'react-icons/ri';
 import removeAccents from 'remove-accents';
-
 import { ActiveBadge } from '~/components/Badge/ActiveBadge';
 import { BooleanBadge } from '~/components/Badge/BooleanBadge';
 import { LinkBadge } from '~/components/Badge/LinkBadge';
@@ -15,6 +15,7 @@ import { StarBadge } from '~/components/Badge/StarBadge';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
+
 import { Table } from '~/components/Form/Table';
 import { AddIconButton } from '~/components/IconButton/AddIconButton';
 import { RankingIconButton } from '~/components/IconButton/RankingIconButton';
@@ -121,7 +122,7 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
       <PlayerMapRankingModal ref={playerMapRankingModalRef} />
       <Template user={user}>
         <Card>
-          <CardHeader title="Jogadores" isFetching={isFetching && !isLoading}>
+          <CardHeader icon={RiTeamLine} title="Jogadores" isFetching={isFetching && !isLoading}>
             <Flex gap="2">
               <AddIconButton onClick={() => handleShowModal()} />
             </Flex>

@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
 import { useState } from 'react';
 import { type SubmitHandler, useForm } from 'react-hook-form';
+import { RiMap2Line, RiShuffleLine, RiTeamLine } from 'react-icons/ri';
 import { v4 } from 'uuid';
 import type { InferType } from 'yup';
 import * as yup from 'yup';
@@ -301,7 +302,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
       </Head>
       <Template user={user}>
         <Card as="form" onSubmit={handleSubmit(handleOk)}>
-          <CardHeader title="Novo Sorteio">
+          <CardHeader icon={RiShuffleLine} title="Novo Sorteio">
             <SweepstakeIconButton type="submit" loading={isLoadingCreate} />
           </CardHeader>
           <CardBody>
@@ -359,7 +360,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
         </Card>
         <Flex direction={['column', 'row']} w="100%" gap={['0', '2']}>
           <Card w={['100%', '60%']}>
-            <CardHeader title="Jogadores" />
+            <CardHeader icon={RiTeamLine} title="Jogadores" />
             <CardBody>
               <Table
                 data={players}
@@ -371,7 +372,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
             </CardBody>
           </Card>
           <Card w={['100%', '40%']}>
-            <CardHeader title="Mapas" />
+            <CardHeader icon={RiMap2Line} title="Mapas" />
             <CardBody>
               <Table
                 data={maps}

@@ -14,6 +14,7 @@ import {
   RiMap2Line,
   RiNumbersLine,
   RiTrophyFill,
+  RiTrophyLine,
   RiUser3Fill,
   RiUser3Line,
 } from 'react-icons/ri';
@@ -298,7 +299,10 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
       <ConfirmRegisterAlert ref={confirmRegisterAlertRef} isSubmitting={isLoadingDeletePlayer} />
       <Template user={user}>
         <Card>
-          <CardHeader title={(isMobile ? sweepstake.format_short_game_type : sweepstake.format_game_type) || ''} />
+          <CardHeader
+            icon={RiTrophyLine}
+            title={(isMobile ? sweepstake.format_short_game_type : sweepstake.format_game_type) || ''}
+          />
           <CardBody>
             <Flex gap="3" wrap="wrap" direction={['column', 'row']}>
               <Flex align="center" gap="2" bg="gray.800" px="3" py="2" borderRadius="md">
