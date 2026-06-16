@@ -1,6 +1,6 @@
-import { ModalBody, ModalFooter, Stack } from '@chakra-ui/react';
+import { Stack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { type ForwardRefRenderFunction, forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
+import { type Ref, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import { type SubmitHandler, useForm } from 'react-hook-form';
 import type { InferType } from 'yup';
 import * as yup from 'yup';
@@ -8,7 +8,7 @@ import * as yup from 'yup';
 import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
 import { SaveSolidButton } from '~/components/Button/SaveSolidButton';
 import { Input } from '~/components/Form/Input';
-import { Modal, type ModalHandle } from '~/components/Form/Modal';
+import { Modal, ModalBody, ModalFooter, type ModalHandle } from '~/components/Form/Modal';
 import { NumberInput } from '~/components/Form/NumberInput';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import type IPlayerLeaderboardAPI from '~/models/Entity/Leaderboard/IPlayerLeaderboardAPI';
@@ -21,7 +21,7 @@ export type PlayerLeaderboardModalHandle = {
   onOpenModal: (recordModal: IPlayerLeaderboardModal) => void;
 };
 
-const PlayerLeaderboardModalBase: ForwardRefRenderFunction<PlayerLeaderboardModalHandle> = (_, ref) => {
+export const PlayerLeaderboardModal = ({ ref }: { ref?: Ref<PlayerLeaderboardModalHandle> }) => {
   const modalRef = useRef<ModalHandle>(null);
 
   const { warningFeedbackToast } = useFeedback();
@@ -87,35 +87,29 @@ const PlayerLeaderboardModalBase: ForwardRefRenderFunction<PlayerLeaderboardModa
   return (
     <Modal title={watch('name')} ref={modalRef} size="md" onSubmit={handleSubmit(handleOk)}>
       <ModalBody>
-        <Stack spacing="4">
+        <Stack gap="4">
           <Select
             label="Jogador"
             options={playerOptions}
             value={watch('player') as ISelectOption}
             error={errors.player?.id}
             {...register('player')}
-            isDisabled={isSubmitting}
-            isRequired
+            disabled={isSubmitting}
+            required
             isSearchable
             onChange={option => {
               setValue('player', option);
             }}
           />
           <Stack direction={['column', 'row']}>
-            <NumberInput
-              label="Vítimas"
-              error={errors.kills}
-              {...register('kills')}
-              isDisabled={isSubmitting}
-              isRequired
-            />
-            <Input label="Mortes" error={errors.deaths} {...register('deaths')} isDisabled={isSubmitting} isRequired />
+            <NumberInput label="Vítimas" error={errors.kills} {...register('kills')} disabled={isSubmitting} required />
+            <Input label="Mortes" error={errors.deaths} {...register('deaths')} disabled={isSubmitting} required />
             <NumberInput
               label="Assistências"
               error={errors.assistances}
               {...register('assistances')}
-              isDisabled={isSubmitting}
-              isRequired
+              disabled={isSubmitting}
+              required
             />
           </Stack>
           <Stack direction={['column', 'row']}>
@@ -123,25 +117,17 @@ const PlayerLeaderboardModalBase: ForwardRefRenderFunction<PlayerLeaderboardModa
               label="% Headshot"
               error={errors.headshot_percentage}
               {...register('headshot_percentage')}
-              isDisabled={isSubmitting}
-              isRequired
+              disabled={isSubmitting}
+              required
             />
-            <NumberInput
-              label="Dano"
-              error={errors.damage}
-              {...register('damage')}
-              isDisabled={isSubmitting}
-              isRequired
-            />
+            <NumberInput label="Dano" error={errors.damage} {...register('damage')} disabled={isSubmitting} required />
           </Stack>
         </Stack>
       </ModalBody>
       <ModalFooter flexDir="column" gap="4">
-        <SaveSolidButton w="100%" type="submit" isLoading={isSubmitting} />
-        <CancelOutlineButton w="100%" onClick={() => modalRef.current?.onCloseModal()} isDisabled={isSubmitting} />
+        <SaveSolidButton w="100%" type="submit" loading={isSubmitting} />
+        <CancelOutlineButton w="100%" onClick={() => modalRef.current?.onCloseModal()} disabled={isSubmitting} />
       </ModalFooter>
     </Modal>
   );
 };
-
-export const PlayerLeaderboardModal = forwardRef(PlayerLeaderboardModalBase);

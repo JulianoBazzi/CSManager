@@ -80,7 +80,7 @@ export function PremierBadge({ premier, ...rest }: IPremierBadgeProps) {
       bgSize="contain"
       {...rest}
     >
-      <Text ml="3" transform="skewX(-15deg)" textShadow="0 1px black" fontWeight="bold" textColor={textColor()}>
+      <Text ml="3" transform="skewX(-15deg)" textShadow="0 1px black" fontWeight="bold" color={textColor()}>
         {splitNumber()[0]}
         <Text as="small">{`,${splitNumber()[1]}`}</Text>
       </Text>

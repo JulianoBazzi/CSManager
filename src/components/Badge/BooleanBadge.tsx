@@ -8,7 +8,7 @@ interface IBooleanBadgeProps extends BadgeProps {
 
 export function BooleanBadge({ active, ...rest }: IBooleanBadgeProps) {
   return (
-    <Badge colorScheme={active ? 'green' : 'red'} {...rest}>
+    <Badge colorPalette={active ? 'green' : 'red'} {...rest}>
       {active ? 'Sim' : 'Não'}
     </Badge>
   );

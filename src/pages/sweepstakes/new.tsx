@@ -182,11 +182,14 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
       header: '',
       enableSorting: false,
       cell: ({ row }) => (
-        <Checkbox
-          isChecked={!!selectedPlayers.find(player => player.id === row.original.id)}
-          onChange={() => handleSelectedPlayers(row.original)}
-          isDisabled={isLoadingCreate}
-        />
+        <Checkbox.Root
+          checked={!!selectedPlayers.find(player => player.id === row.original.id)}
+          onCheckedChange={() => handleSelectedPlayers(row.original)}
+          disabled={isLoadingCreate}
+        >
+          <Checkbox.HiddenInput />
+          <Checkbox.Control />
+        </Checkbox.Root>
       ),
     },
     {
@@ -219,11 +222,14 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
       header: '',
       enableSorting: false,
       cell: ({ row }) => (
-        <Checkbox
-          isChecked={!!selectedMaps.find(id => id === row.original.id)}
-          onChange={() => handleSelectedMaps(row.original.id)}
-          isDisabled={isLoadingCreate}
-        />
+        <Checkbox.Root
+          checked={!!selectedMaps.find(id => id === row.original.id)}
+          onCheckedChange={() => handleSelectedMaps(row.original.id)}
+          disabled={isLoadingCreate}
+        >
+          <Checkbox.HiddenInput />
+          <Checkbox.Control />
+        </Checkbox.Root>
       ),
     },
     {
@@ -296,18 +302,18 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
       <Template user={user}>
         <Card as="form" onSubmit={handleSubmit(handleOk)}>
           <CardHeader title="Novo Sorteio">
-            <SweepstakeIconButton type="submit" isLoading={isLoadingCreate} />
+            <SweepstakeIconButton type="submit" loading={isLoadingCreate} />
           </CardHeader>
           <CardBody>
-            <Stack direction={['column', 'row']} spacing="4">
+            <Stack direction={['column', 'row']} gap="4">
               <Select
                 label="Jogo"
                 options={games}
                 value={watch('game_type') as ISelectOption}
                 error={errors.game_type?.id}
                 {...register('game_type')}
-                isDisabled={isLoadingCreate}
-                isRequired
+                disabled={isLoadingCreate}
+                required
                 onChange={option => {
                   setValue('game_type', option);
                 }}
@@ -317,8 +323,8 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
                 label="Data/Hora da Partida"
                 error={errors.departure_at}
                 {...register('departure_at')}
-                isDisabled={isLoadingCreate}
-                isRequired
+                disabled={isLoadingCreate}
+                required
               />
               <Select
                 label="Método de Sorteio"
@@ -326,26 +332,26 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
                 value={watch('engine') as ISelectOption}
                 error={errors.engine?.id}
                 {...register('engine')}
-                isDisabled={isLoadingCreate}
-                isRequired
+                disabled={isLoadingCreate}
+                required
                 onChange={option => {
                   setValue('engine', option);
                 }}
               />
-              <Stack direction="row" spacing="4" w="100%">
+              <Stack direction="row" gap="4" w="100%">
                 <NumberInput
                   maxW={['100%', '150px']}
                   label="Qtd. Jogadores"
                   name="quantity_players"
                   value={selectedPlayers.length}
-                  isDisabled
+                  disabled
                 />
                 <NumberInput
                   maxW={['100%', '150px']}
                   label="Qtd. Mapas"
                   name="quantity_maps"
                   value={selectedMaps.length}
-                  isDisabled
+                  disabled
                 />
               </Stack>
             </Stack>
@@ -358,7 +364,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
               <Table
                 data={players}
                 columns={playerColumns}
-                isLoading={isLoadingPlayers}
+                loading={isLoadingPlayers}
                 onRowClick={value => handleSelectedPlayers(value)}
               />
             </CardBody>
@@ -369,7 +375,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
               <Table
                 data={maps}
                 columns={mapColumns}
-                isLoading={isLoadingMaps}
+                loading={isLoadingMaps}
                 onRowClick={({ id }) => handleSelectedMaps(id)}
               />
             </CardBody>

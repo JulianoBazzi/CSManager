@@ -16,10 +16,7 @@ export function formatPlayer(player: IPlayerAPI): IPlayerAPI {
 }
 
 export async function getPlayers(userId: string, params?: IParamsRequest): Promise<IPlayerAPI[]> {
-  let query = supabase
-    .from(TABLE_PLAYERS)
-    .select()
-    .eq('user_id', userId);
+  let query = supabase.from(TABLE_PLAYERS).select().eq('user_id', userId);
 
   if (params?.active) {
     query = query.eq('active', true);
@@ -28,12 +25,12 @@ export async function getPlayers(userId: string, params?: IParamsRequest): Promi
   let sweepstakePlayers: string[] = [];
   if (params?.sweepstakeId) {
     const players = await getSweepstakePlayers(params?.sweepstakeId);
-    sweepstakePlayers = players.map((sweepstakePlayer) => sweepstakePlayer.players.id);
+    sweepstakePlayers = players.map(sweepstakePlayer => sweepstakePlayer.players.id);
   }
 
   if (params?.sweepstakeIdNot) {
     const players = await getSweepstakePlayers(params?.sweepstakeIdNot);
-    sweepstakePlayers = players.map((sweepstakePlayer) => sweepstakePlayer.players.id);
+    sweepstakePlayers = players.map(sweepstakePlayer => sweepstakePlayer.players.id);
   }
 
   query = query.order('name', { ascending: true });
@@ -50,20 +47,18 @@ export async function getPlayers(userId: string, params?: IParamsRequest): Promi
   }
 
   if (params?.sweepstakeId) {
-    return formattedData.filter((player) => sweepstakePlayers.includes(player.id));
+    return formattedData.filter(player => sweepstakePlayers.includes(player.id));
   }
 
   if (params?.sweepstakeIdNot) {
-    return formattedData.filter((player) => !sweepstakePlayers.includes(player.id));
+    return formattedData.filter(player => !sweepstakePlayers.includes(player.id));
   }
 
   return formattedData;
 }
 
 export async function getPlayer(id: string, userId: string): Promise<IPlayerAPI> {
-  const { data } = await supabase.from(TABLE_PLAYERS).select().eq('user_id', userId).eq('id', id)
-    .limit(1)
-    .single();
+  const { data } = await supabase.from(TABLE_PLAYERS).select().eq('user_id', userId).eq('id', id).limit(1).single();
 
   return formatPlayer(data);
 }

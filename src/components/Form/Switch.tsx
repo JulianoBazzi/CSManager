@@ -1,39 +1,45 @@
-import {
-  Switch as ChakraSwitch,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  InputGroup,
-  Skeleton,
-  type SwitchProps,
-} from '@chakra-ui/react';
-import { type ForwardRefRenderFunction, forwardRef, type ReactNode } from 'react';
+import { Switch as ChakraSwitch, Field, Skeleton } from '@chakra-ui/react';
+import type { ReactNode, Ref } from 'react';
 import type { FieldError } from 'react-hook-form';
 
-interface ISwitchProps extends SwitchProps {
+interface ISwitchProps {
   name: string;
   label?: string;
   error?: FieldError;
-  isRequired?: boolean;
-  isLoading?: boolean;
+  required?: boolean;
+  loading?: boolean;
+  checked?: boolean;
+  disabled?: boolean;
+  maxW?: string | string[];
   children?: ReactNode;
+  ref?: Ref<HTMLInputElement>;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  onBlur?: React.FocusEventHandler<HTMLInputElement>;
 }
 
-const SwitchBase: ForwardRefRenderFunction<HTMLInputElement, ISwitchProps> = (
-  { name, label, error, isRequired, isLoading, maxW, children, ...rest }: ISwitchProps,
-  ref
-) => (
-  <FormControl isInvalid={!!error} isRequired={isRequired} maxW={maxW}>
-    {!!label && <FormLabel htmlFor={name}>{label}</FormLabel>}
-    {isLoading && <Skeleton height="10" borderRadius={4} />}
-    {!isLoading && (
-      <InputGroup>
-        <ChakraSwitch ref={ref} id={name} name={name} autoComplete="off" colorScheme="whiteAlpha" {...rest} />
+export const Switch = ({
+  name,
+  label,
+  error,
+  required,
+  loading,
+  checked,
+  disabled,
+  maxW,
+  children,
+  ref,
+  ...rest
+}: ISwitchProps) => (
+  <Field.Root invalid={!!error} required={required} maxW={maxW}>
+    {!!label && <Field.Label htmlFor={name}>{label}</Field.Label>}
+    {loading && <Skeleton height="10" borderRadius={4} />}
+    {!loading && (
+      <ChakraSwitch.Root checked={checked} disabled={disabled} colorPalette="blue">
+        <ChakraSwitch.HiddenInput ref={ref} id={name} name={name} {...rest} />
+        <ChakraSwitch.Control />
         {children}
-      </InputGroup>
+      </ChakraSwitch.Root>
     )}
-    {!!error && <FormErrorMessage>{error.message}</FormErrorMessage>}
-  </FormControl>
+    {!!error && <Field.ErrorText>{error.message}</Field.ErrorText>}
+  </Field.Root>
 );
-
-export const Switch = forwardRef(SwitchBase);

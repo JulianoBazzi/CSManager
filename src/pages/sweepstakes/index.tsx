@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react';
-
 import type { User } from '@supabase/supabase-js';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/navigation';
 import { parseCookies } from 'nookies';
+import { useEffect, useState } from 'react';
 import removeAccents from 'remove-accents';
 
 import Card from '~/components/Card';
@@ -34,10 +33,17 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user }) => {
   useEffect(() => {
     setDataFiltered(
       data?.filter(
-        (sweepstake) => removeAccents(sweepstake.format_departure_at.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase()))
-          || removeAccents(sweepstake.format_short_game_type.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase()))
-          || removeAccents(sweepstake.format_game_type.trim().toLowerCase()).includes(removeAccents(search.trim().toLowerCase())),
-      ),
+        sweepstake =>
+          removeAccents(sweepstake.format_departure_at.trim().toLowerCase()).includes(
+            removeAccents(search.trim().toLowerCase())
+          ) ||
+          removeAccents(sweepstake.format_short_game_type.trim().toLowerCase()).includes(
+            removeAccents(search.trim().toLowerCase())
+          ) ||
+          removeAccents(sweepstake.format_game_type.trim().toLowerCase()).includes(
+            removeAccents(search.trim().toLowerCase())
+          )
+      )
     );
   }, [search, data]);
 
@@ -89,11 +95,11 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user }) => {
             <AddIconButton onClick={() => handleVisualization()} />
           </CardHeader>
           <CardBody>
-            <SearchBar onSearch={(value) => setSearch(value)} isDisabled={isFetching} />
+            <SearchBar onSearch={value => setSearch(value)} disabled={isFetching} />
             <Table
               data={dataFiltered}
               columns={columns}
-              isLoading={isLoading}
+              loading={isLoading}
               onRowClick={({ id }) => handleVisualization(id)}
             />
           </CardBody>

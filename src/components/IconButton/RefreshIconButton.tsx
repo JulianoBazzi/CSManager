@@ -1,23 +1,15 @@
-import { forwardRef, type ForwardRefRenderFunction } from 'react';
+import { Icon, type IconButtonProps } from '@chakra-ui/react';
+import type { Ref } from 'react';
 import { RiRepeatFill } from 'react-icons/ri';
-
-import { type IconButtonProps, Icon } from '@chakra-ui/react';
 
 import { SolidGrayIconButton } from '~/components/IconButton/Base/SolidGrayIconButton';
 
-type RefreshIconButtonProps = Omit<IconButtonProps, 'aria-label'>;
+type RefreshIconButtonProps = Omit<IconButtonProps, 'aria-label'> & { ref?: Ref<HTMLButtonElement> };
 
-const RefreshIconButtonBase: ForwardRefRenderFunction<HTMLButtonElement, RefreshIconButtonProps> = (
-  { ...rest }: RefreshIconButtonProps,
-  ref,
-) => (
-  <SolidGrayIconButton
-    ref={ref}
-    icon={<Icon as={RiRepeatFill} fontSize="xl" />}
-    aria-label="Atualizar"
-    title="Atualizar"
-    {...rest}
-  />
+export const RefreshIconButton = ({ ref, ...rest }: RefreshIconButtonProps) => (
+  <SolidGrayIconButton ref={ref} aria-label="Atualizar" title="Atualizar" {...rest}>
+    <Icon fontSize="xl">
+      <RiRepeatFill />
+    </Icon>
+  </SolidGrayIconButton>
 );
-
-export const RefreshIconButton = forwardRef(RefreshIconButtonBase);

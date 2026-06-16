@@ -1,18 +1,15 @@
+import { Icon, Input, InputGroup } from '@chakra-ui/react';
 import { type ChangeEvent, useState } from 'react';
 import { RiSearchLine } from 'react-icons/ri';
-
-import {
-  Icon, Input, InputGroup, InputLeftElement,
-} from '@chakra-ui/react';
 
 import useDebounce from '~/hooks/useDebounce';
 
 interface ISearchBarProps {
   onSearch: (value: string) => void;
-  isDisabled?: boolean;
+  disabled?: boolean;
 }
 
-export function SearchBar({ onSearch, isDisabled }: ISearchBarProps) {
+export function SearchBar({ onSearch, disabled }: ISearchBarProps) {
   const [displayValue, setDisplayValue] = useState('');
 
   const debouncedChange = useDebounce(onSearch, 200);
@@ -27,15 +24,19 @@ export function SearchBar({ onSearch, isDisabled }: ISearchBarProps) {
   };
 
   return (
-    <InputGroup maxW={['100%', '30%']} gap="1">
-      <InputLeftElement pointerEvents="none">
-        <Icon as={RiSearchLine} />
-      </InputLeftElement>
+    <InputGroup
+      maxW={['100%', '30%']}
+      startElement={
+        <Icon>
+          <RiSearchLine />
+        </Icon>
+      }
+    >
       <Input
         type="search"
         name="search"
         placeholder="Pesquisar"
-        isDisabled={isDisabled}
+        disabled={disabled}
         value={displayValue}
         onChange={changeSearch}
         autoComplete="off"

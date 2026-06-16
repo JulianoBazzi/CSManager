@@ -1,7 +1,7 @@
-import { Flex, ModalBody, ModalFooter, Stack, Text } from '@chakra-ui/react';
+import { Flex, Stack, Text } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@tanstack/react-query';
-import { type ForwardRefRenderFunction, forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
+import { type Ref, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import { type SubmitHandler, useForm } from 'react-hook-form';
 import { Rating } from 'react-simple-star-rating';
 import type { InferType } from 'yup';
@@ -11,7 +11,7 @@ import { AddSolidButton } from '~/components/Button/AddSolidButton';
 import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
 import { SaveSolidButton } from '~/components/Button/SaveSolidButton';
 import { Input } from '~/components/Form/Input';
-import { Modal, type ModalHandle } from '~/components/Form/Modal';
+import { Modal, ModalBody, ModalFooter, type ModalHandle } from '~/components/Form/Modal';
 import { NumberInput } from '~/components/Form/NumberInput';
 import { Switch } from '~/components/Form/Switch';
 import { TABLE_PLAYERS } from '~/config/constants';
@@ -26,7 +26,7 @@ export type PlayerModalHandle = {
   onOpenModal: (recordModal?: IRecordModal) => void;
 };
 
-const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (_, ref) => {
+export const PlayerModal = ({ ref }: { ref?: Ref<PlayerModalHandle> }) => {
   const modalRef = useRef<ModalHandle>(null);
 
   const { errorFeedbackToast, successFeedbackToast } = useFeedback();
@@ -122,40 +122,40 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (_, ref) =>
   return (
     <Modal title="Jogador" ref={modalRef} size="lg" onSubmit={handleSubmit(handleOk)}>
       <ModalBody>
-        <Stack spacing="4">
+        <Stack gap="4">
           <Input
             label="Nome"
             error={errors.name}
             {...register('name')}
-            isLoading={isLoading}
-            isDisabled={isSubmitting}
-            isRequired
+            loading={isLoading}
+            disabled={isSubmitting}
+            required
             autoFocus
           />
           <Input
             label="Usuário da Steam"
             error={errors.username}
             {...register('username')}
-            isLoading={isLoading}
-            isDisabled={isSubmitting}
-            isRequired
+            loading={isLoading}
+            disabled={isSubmitting}
+            required
           />
-          <Stack direction={['column', 'row']} spacing="4">
+          <Stack direction={['column', 'row']} gap="4">
             <Input
               label="Steam ID"
               error={errors.steam_id}
               {...register('steam_id')}
-              isLoading={isLoading}
-              isDisabled={isSubmitting}
-              isRequired
+              loading={isLoading}
+              disabled={isSubmitting}
+              required
             />
             <NumberInput
               label="Ranking no Premier"
               error={errors.premier}
               {...register('premier')}
-              isLoading={isLoading}
-              isDisabled={isSubmitting}
-              isRequired
+              loading={isLoading}
+              disabled={isSubmitting}
+              required
             >
               {/* {watch('steam_id') && (
                 <InputRightElement>
@@ -189,36 +189,34 @@ const PlayerModalBase: ForwardRefRenderFunction<PlayerModalHandle> = (_, ref) =>
               style={{ marginBottom: -10 }}
             />
           </Flex>
-          <Stack direction="row" spacing="4">
+          <Stack direction="row" gap="4">
             <Switch
               label="Ativo"
               {...register('active')}
-              isChecked={watch('active')}
-              isDisabled={isLoading || isSubmitting}
+              checked={watch('active')}
+              disabled={isLoading || isSubmitting}
             />
             <Switch
               label="Buscar Dados"
               {...register('fetch_data')}
-              isChecked={watch('fetch_data')}
-              isDisabled={isLoading || isSubmitting}
+              checked={watch('fetch_data')}
+              disabled={isLoading || isSubmitting}
             />
           </Stack>
         </Stack>
       </ModalBody>
       <ModalFooter flexDir="column" gap="4">
         {recordModalProps?.id ? (
-          <SaveSolidButton w="100%" type="submit" isLoading={isSubmitting} isDisabled={isLoading} />
+          <SaveSolidButton w="100%" type="submit" loading={isSubmitting} disabled={isLoading} />
         ) : (
-          <AddSolidButton w="100%" type="submit" isLoading={isSubmitting} isDisabled={isLoading} />
+          <AddSolidButton w="100%" type="submit" loading={isSubmitting} disabled={isLoading} />
         )}
         <CancelOutlineButton
           w="100%"
           onClick={() => modalRef.current?.onCloseModal()}
-          isDisabled={isSubmitting || isLoading}
+          disabled={isSubmitting || isLoading}
         />
       </ModalFooter>
     </Modal>
   );
 };
-
-export const PlayerModal = forwardRef(PlayerModalBase);

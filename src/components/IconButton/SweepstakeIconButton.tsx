@@ -1,24 +1,15 @@
-import { forwardRef, type ForwardRefRenderFunction } from 'react';
+import { Icon, type IconButtonProps } from '@chakra-ui/react';
+import type { Ref } from 'react';
 import { MdOutlineSafetyDivider } from 'react-icons/md';
-
-import { type IconButtonProps, Icon } from '@chakra-ui/react';
 
 import { GhostGrayIconButton } from '~/components/IconButton/Base/GhostGrayIconButton';
 
-type SweepstakeIconButtonProps = Omit<IconButtonProps, 'aria-label'>;
+type SweepstakeIconButtonProps = Omit<IconButtonProps, 'aria-label'> & { ref?: Ref<HTMLButtonElement> };
 
-const SweepstakeIconButtonBase: ForwardRefRenderFunction<HTMLButtonElement, SweepstakeIconButtonProps> = (
-  { ...rest }: SweepstakeIconButtonProps,
-  ref,
-) => (
-  <GhostGrayIconButton
-    ref={ref}
-    colorScheme="green"
-    variant="solid"
-    icon={<Icon as={MdOutlineSafetyDivider} fontSize="2xl" />}
-    aria-label="Sortear"
-    {...rest}
-  />
+export const SweepstakeIconButton = ({ ref, ...rest }: SweepstakeIconButtonProps) => (
+  <GhostGrayIconButton ref={ref} colorPalette="green" variant="solid" aria-label="Sortear" {...rest}>
+    <Icon fontSize="2xl">
+      <MdOutlineSafetyDivider />
+    </Icon>
+  </GhostGrayIconButton>
 );
-
-export const SweepstakeIconButton = forwardRef(SweepstakeIconButtonBase);

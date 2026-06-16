@@ -127,11 +127,11 @@ const Players: NextPage<IPlayersProps> = ({ user }) => {
             </Flex>
           </CardHeader>
           <CardBody>
-            <SearchBar onSearch={value => setSearch(value)} isDisabled={isFetching} />
+            <SearchBar onSearch={value => setSearch(value)} disabled={isFetching} />
             <Table
               data={dataFiltered}
               columns={columns}
-              isLoading={isLoading}
+              loading={isLoading}
               onRowClick={({ id }) => handleShowModal(id)}
               orderBy={{
                 id: 'name',

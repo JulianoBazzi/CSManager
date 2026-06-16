@@ -14,7 +14,10 @@ export async function getPlayerMapRanking(playerId: string): Promise<IViewMapRan
   return data as unknown as IViewMapRankingAPI[];
 }
 
-export function usePlayerMapRanking(playerId: string, options?: Omit<QueryObserverOptions<IViewMapRankingAPI[]>, 'queryKey' | 'queryFn'>) {
+export function usePlayerMapRanking(
+  playerId: string,
+  options?: Omit<QueryObserverOptions<IViewMapRankingAPI[]>, 'queryKey' | 'queryFn'>
+) {
   return useQuery({
     queryKey: [VIEW_MAP_RANKING, playerId],
     queryFn: () => getPlayerMapRanking(playerId),

@@ -1,9 +1,6 @@
 import { type ButtonProps, Button as ChakraButton } from '@chakra-ui/react';
-import { type ForwardRefRenderFunction, forwardRef } from 'react';
+import type { Ref } from 'react';
 
-const SolidBlueButtonBase: ForwardRefRenderFunction<HTMLButtonElement, ButtonProps> = (
-  { ...rest }: ButtonProps,
-  ref
-) => <ChakraButton ref={ref} colorScheme="blue" variant="solid" w={['100%', 'inherit']} gap="2" {...rest} />;
-
-export const SolidBlueButton = forwardRef(SolidBlueButtonBase);
+export const SolidBlueButton = ({ ref, ...rest }: ButtonProps & { ref?: Ref<HTMLButtonElement> }) => (
+  <ChakraButton ref={ref} colorPalette="blue" variant="solid" w={['100%', 'inherit']} gap="2" {...rest} />
+);

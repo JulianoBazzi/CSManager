@@ -1,10 +1,10 @@
-import { ModalBody, ModalFooter, Stack, useBreakpointValue } from '@chakra-ui/react';
+import { Stack, useBreakpointValue } from '@chakra-ui/react';
 import type { ColumnDef } from '@tanstack/react-table';
-import { type ForwardRefRenderFunction, forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
+import { type Ref, useCallback, useImperativeHandle, useRef, useState } from 'react';
 
 import { PremierBadge } from '~/components/Badge/PremierBadge';
 import { OutlineGrayButton } from '~/components/Button/Base/OutlineGrayButton';
-import { Modal, type ModalHandle } from '~/components/Form/Modal';
+import { Modal, ModalBody, ModalFooter, type ModalHandle } from '~/components/Form/Modal';
 import { Table } from '~/components/Form/Table';
 import {
   ImportImageLeaderboardModal,
@@ -19,7 +19,7 @@ export type SweepstakeMapRankingModalHandle = {
   onOpenModal: (recordModal: ISweepstakeMapModal) => void;
 };
 
-const SweepstakeMapRankingModalBase: ForwardRefRenderFunction<SweepstakeMapRankingModalHandle> = (_, ref) => {
+export const SweepstakeMapRankingModal = ({ ref }: { ref?: Ref<SweepstakeMapRankingModalHandle> }) => {
   const modalRef = useRef<ModalHandle>(null);
   const importImageLeaderboardModalRef = useRef<ImportImageLeaderboardModalHandle>(null);
 
@@ -105,9 +105,9 @@ const SweepstakeMapRankingModalBase: ForwardRefRenderFunction<SweepstakeMapRanki
   return (
     <>
       <ImportImageLeaderboardModal ref={importImageLeaderboardModalRef} />
-      <Modal ref={modalRef} title={`Ranking: ${recordModalProps?.sweepstakeMap?.maps?.name}`} size="4xl">
+      <Modal ref={modalRef} title={`Ranking: ${recordModalProps?.sweepstakeMap?.maps?.name}`} size="cover">
         <ModalBody>
-          <Stack spacing="4">
+          <Stack gap="4">
             {!isMobile &&
               recordModalProps?.user &&
               recordModalProps?.user.id === recordModalProps?.sweepstakeMap.user_id && (
@@ -115,7 +115,7 @@ const SweepstakeMapRankingModalBase: ForwardRefRenderFunction<SweepstakeMapRanki
                   Importar Pontuação
                 </OutlineGrayButton>
               )}
-            <Table data={rankings} columns={rankingColumns} isLoading={isLoading} />
+            <Table data={rankings} columns={rankingColumns} loading={isLoading} />
           </Stack>
         </ModalBody>
         <ModalFooter />
@@ -123,5 +123,3 @@ const SweepstakeMapRankingModalBase: ForwardRefRenderFunction<SweepstakeMapRanki
     </>
   );
 };
-
-export const SweepstakeMapRankingModal = forwardRef(SweepstakeMapRankingModalBase);

@@ -1,17 +1,4 @@
-import {
-  Table as ChakraTable,
-  Flex,
-  Icon,
-  Skeleton,
-  TableContainer,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-  useBreakpointValue,
-} from '@chakra-ui/react';
+import { Table as ChakraTable, Flex, Icon, Skeleton, Text, useBreakpointValue } from '@chakra-ui/react';
 import {
   type ColumnDef,
   type ColumnSort,
@@ -38,7 +25,7 @@ export type ITableProps<T extends IEntityBase> = {
   orderBy?: ColumnSort;
   data?: T[];
   perPage?: number;
-  isLoading?: boolean;
+  loading?: boolean;
   columnVisibility?: VisibilityState;
   onRowClick?: (data: T) => void;
 };
@@ -50,7 +37,7 @@ export function Table<T extends IEntityBase>({
   orderBy = { id: 'id', desc: true },
   data = emptyArray,
   perPage = 10,
-  isLoading,
+  loading,
   columnVisibility,
   onRowClick,
 }: ITableProps<T>) {
@@ -98,12 +85,12 @@ export function Table<T extends IEntityBase>({
   });
 
   const table = () => (
-    <ChakraTable size="sm" variant="striped" colorScheme="blackAlpha">
-      <Thead>
+    <ChakraTable.Root size="sm" striped colorPalette="gray">
+      <ChakraTable.Header>
         {getHeaderGroups().map(headerGroup => (
-          <Tr key={headerGroup.id}>
+          <ChakraTable.Row key={headerGroup.id}>
             {headerGroup.headers.map(header => (
-              <Th key={header.id} colSpan={header.colSpan} textTransform="none">
+              <ChakraTable.ColumnHeader key={header.id} colSpan={header.colSpan} textTransform="none">
                 <Flex
                   align="center"
                   cursor={header.column.getCanSort() ? 'pointer' : 'inherit'}
@@ -112,32 +99,42 @@ export function Table<T extends IEntityBase>({
                   {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                   {
                     {
-                      asc: <Icon as={RiArrowUpSFill} aria-label="sorted ascending" />,
-                      desc: <Icon as={RiArrowDownSFill} aria-label="sorted descending" />,
+                      asc: (
+                        <Icon aria-label="sorted ascending">
+                          <RiArrowUpSFill />
+                        </Icon>
+                      ),
+                      desc: (
+                        <Icon aria-label="sorted descending">
+                          <RiArrowDownSFill />
+                        </Icon>
+                      ),
                     }[header.column.getIsSorted() as string]
                   }
                   {!header.column.getIsSorted() && header.column.getCanSort() && (
-                    <Icon as={RiSubtractLine} aria-label="sorted ascending" />
+                    <Icon aria-label="sortable">
+                      <RiSubtractLine />
+                    </Icon>
                   )}
                 </Flex>
-              </Th>
+              </ChakraTable.ColumnHeader>
             ))}
-          </Tr>
+          </ChakraTable.Row>
         ))}
-      </Thead>
-      <Tbody>
-        {isLoading &&
+      </ChakraTable.Header>
+      <ChakraTable.Body>
+        {loading &&
           [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(index => (
-            <Tr key={index}>
+            <ChakraTable.Row key={index}>
               {columns.map((_, columnIndex) => (
-                <Td key={`${columnIndex}-${index}`}>
+                <ChakraTable.Cell key={`${columnIndex}-${index}`}>
                   <Skeleton height="16px" />
-                </Td>
+                </ChakraTable.Cell>
               ))}
-            </Tr>
+            </ChakraTable.Row>
           ))}
         {getRowModel().rows.map(row => (
-          <Tr
+          <ChakraTable.Row
             key={row.id}
             {...(onRowClick && {
               transition: 'background-color 0.3s ease-in-out',
@@ -147,7 +144,7 @@ export function Table<T extends IEntityBase>({
             })}
           >
             {row.getVisibleCells().map(cell => (
-              <Td
+              <ChakraTable.Cell
                 key={cell.id}
                 {...(onRowClick &&
                   cell.column.id !== 'actions' && {
@@ -155,30 +152,30 @@ export function Table<T extends IEntityBase>({
                   })}
               >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </Td>
+              </ChakraTable.Cell>
             ))}
-          </Tr>
+          </ChakraTable.Row>
         ))}
-      </Tbody>
-    </ChakraTable>
+      </ChakraTable.Body>
+    </ChakraTable.Root>
   );
 
   return (
     <>
-      {isMobile ? <TableContainer>{table()}</TableContainer> : table()}
+      {isMobile ? <ChakraTable.ScrollArea>{table()}</ChakraTable.ScrollArea> : table()}
 
       {totalRecords > 0 ? (
         <Flex mt="4" align="center" direction={['column', 'row']} gap={['3', '0']}>
           <Text mr={['inherit', 'auto']} color="gray.200">{`Total de ${totalRecords} registros`}</Text>
           <Flex gap="1" align="center">
-            <FirstPageGhostIconButton onClick={() => setPageIndex(0)} isDisabled={!getCanPreviousPage()} />
-            <PreviousPageGhostIconButton onClick={() => previousPage()} isDisabled={!getCanPreviousPage()} />
-            <NextPageGhostIconButton onClick={() => nextPage()} isDisabled={!getCanNextPage()} />
-            <LastPageGhostIconButton onClick={() => setPageIndex(getPageCount() - 1)} isDisabled={!getCanNextPage()} />
+            <FirstPageGhostIconButton onClick={() => setPageIndex(0)} disabled={!getCanPreviousPage()} />
+            <PreviousPageGhostIconButton onClick={() => previousPage()} disabled={!getCanPreviousPage()} />
+            <NextPageGhostIconButton onClick={() => nextPage()} disabled={!getCanNextPage()} />
+            <LastPageGhostIconButton onClick={() => setPageIndex(getPageCount() - 1)} disabled={!getCanNextPage()} />
           </Flex>
         </Flex>
       ) : (
-        !isLoading && (
+        !loading && (
           <Flex mt="8" justifyContent="center" align="center" borderBottomWidth={1} borderColor="gray.50">
             <Text mb="8">Nenhum Registro Encontrado</Text>
           </Flex>

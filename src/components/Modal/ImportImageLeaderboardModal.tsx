@@ -1,17 +1,9 @@
-import { Flex, Icon, ModalBody, ModalFooter, Stack, Text } from '@chakra-ui/react';
+import { Flex, Icon, Stack, Text } from '@chakra-ui/react';
 import { useMutation } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
 import axios from 'axios';
 import imgbbUpload from 'imgbb-image-uploader';
-import {
-  type ChangeEvent,
-  type ForwardRefRenderFunction,
-  forwardRef,
-  useCallback,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
+import { type ChangeEvent, type Ref, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import { RiAlertLine } from 'react-icons/ri';
 import removeAccents from 'remove-accents';
 import { v4 } from 'uuid';
@@ -19,7 +11,7 @@ import { v4 } from 'uuid';
 import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
 import { SaveSolidButton } from '~/components/Button/SaveSolidButton';
 import { Input } from '~/components/Form/Input';
-import { Modal, type ModalHandle } from '~/components/Form/Modal';
+import { Modal, ModalBody, ModalFooter, type ModalHandle } from '~/components/Form/Modal';
 import { Table } from '~/components/Form/Table';
 import { DeleteSolidIconButton } from '~/components/IconButton/DeleteSolidIconButton';
 import { PlayerLeaderboardModal, type PlayerLeaderboardModalHandle } from '~/components/Modal/PlayerLeaderboardModal';
@@ -44,7 +36,7 @@ export type ImportImageLeaderboardModalHandle = {
   onOpenModal: (recordModal: ISweepstakeMapModal) => void;
 };
 
-const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeaderboardModalHandle> = (_, ref) => {
+export const ImportImageLeaderboardModal = ({ ref }: { ref?: Ref<ImportImageLeaderboardModalHandle> }) => {
   const modalRef = useRef<ModalHandle>(null);
   const playerLeaderboardModalRef = useRef<PlayerLeaderboardModalHandle>(null);
 
@@ -180,14 +172,7 @@ const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeade
       cell: ({ row }) => (
         <Flex gap="2" align="center">
           <Text>{row.original.name}</Text>
-          {!row.original.player && (
-            <Icon
-              as={RiAlertLine}
-              title="Informe o jogador correspondente a este Nick"
-              color="yellow.500"
-              fontSize="xl"
-            />
-          )}
+          {!row.original.player && <Icon as={RiAlertLine} color="yellow.500" fontSize="xl" />}
         </Flex>
       ),
     },
@@ -224,7 +209,7 @@ const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeade
         <DeleteSolidIconButton
           size="xs"
           onClick={() => handleDeletePlayerLeaderboard(row.original.id)}
-          isDisabled={isLoading || isLoadingAnalyzeImage || isLoadingRanking}
+          disabled={isLoading || isLoadingAnalyzeImage || isLoadingRanking}
         />
       ),
     },
@@ -310,10 +295,10 @@ const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeade
       <Modal
         ref={modalRef}
         title={`Importar Ranking: ${recordModalProps?.sweepstakeMap?.maps?.name}`}
-        size={leaderboard ? '4xl' : '2xl'}
+        size={leaderboard ? 'cover' : 'xl'}
       >
         <ModalBody>
-          <Stack spacing="4">
+          <Stack gap="4">
             <Input
               pt="2"
               h="50px"
@@ -322,13 +307,13 @@ const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeade
               accept="image/*"
               capture="environment"
               onChange={event => handleFileChange(event)}
-              isDisabled={isLoading || isLoadingAnalyzeImage || isLoadingRanking}
+              disabled={isLoading || isLoadingAnalyzeImage || isLoadingRanking}
             />
             {(leaderboard || isLoadingAnalyzeImage) && (
               <Table
                 data={playerLeaderboards}
                 columns={playerLeaderboardColumns}
-                isLoading={isLoadingAnalyzeImage}
+                loading={isLoadingAnalyzeImage}
                 onRowClick={playerLeaderboard => handlePlayerLeaderboardModal(playerLeaderboard)}
               />
             )}
@@ -338,18 +323,12 @@ const ImportImageLeaderboardModalBase: ForwardRefRenderFunction<ImportImageLeade
           <SaveSolidButton
             w="100%"
             onClick={() => handleOk()}
-            isLoading={isLoadingRanking}
-            isDisabled={playerLeaderboards.length === 0}
+            loading={isLoadingRanking}
+            disabled={playerLeaderboards.length === 0}
           />
-          <CancelOutlineButton
-            w="100%"
-            onClick={() => modalRef.current?.onCloseModal()}
-            isDisabled={isLoadingRanking}
-          />
+          <CancelOutlineButton w="100%" onClick={() => modalRef.current?.onCloseModal()} disabled={isLoadingRanking} />
         </ModalFooter>
       </Modal>
     </>
   );
 };
-
-export const ImportImageLeaderboardModal = forwardRef(ImportImageLeaderboardModalBase);

@@ -1,14 +1,14 @@
-import { Card as ChakraCard, type CardProps as ChakraCardProps } from '@chakra-ui/react';
+import { type CardRootProps, Card as ChakraCard } from '@chakra-ui/react';
 import type { ReactNode } from 'react';
 
-interface ICardProps extends ChakraCardProps {
+interface ICardProps extends CardRootProps {
   children: ReactNode;
 }
 
 export default function Card({ children, ...rest }: ICardProps) {
   return (
-    <ChakraCard bg="gray.900" w="100%" {...rest}>
+    <ChakraCard.Root bg="gray.900" w="100%" {...rest}>
       {children}
-    </ChakraCard>
+    </ChakraCard.Root>
   );
 }

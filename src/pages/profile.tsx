@@ -1,13 +1,12 @@
-import { type SubmitHandler, useForm } from 'react-hook-form';
-
 import { Button, CardFooter, Stack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import type { User } from '@supabase/supabase-js';
 import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
-import * as yup from 'yup';
+import { type SubmitHandler, useForm } from 'react-hook-form';
 import type { InferType } from 'yup';
+import * as yup from 'yup';
 
 import { games } from '~/assets/games';
 import { sweepstakeEngines } from '~/assets/sweepstakeEngines';
@@ -34,7 +33,7 @@ const Profile: NextPage<IProfileProps> = ({ user }) => {
     game_type: yup
       .object()
       .shape({
-        id: yup.lazy((value) => (typeof value === 'number' ? yup.number() : yup.string()).required().nullable()),
+        id: yup.lazy(value => (typeof value === 'number' ? yup.number() : yup.string()).required().nullable()),
         name: yup.string(),
       })
       .nullable()
@@ -42,7 +41,7 @@ const Profile: NextPage<IProfileProps> = ({ user }) => {
     engine: yup
       .object()
       .shape({
-        id: yup.lazy((value) => (typeof value === 'number' ? yup.number() : yup.string()).required().nullable()),
+        id: yup.lazy(value => (typeof value === 'number' ? yup.number() : yup.string()).required().nullable()),
         name: yup.string(),
       })
       .nullable()
@@ -59,12 +58,12 @@ const Profile: NextPage<IProfileProps> = ({ user }) => {
     resolver: yupResolver(profileFormSchema),
     defaultValues: {
       name: user.user_metadata.name,
-      game_type: games.find((game) => game.id === user.user_metadata.gameType),
-      engine: sweepstakeEngines.find((engine) => engine.id === user.user_metadata.sweepstakeEngine),
+      game_type: games.find(game => game.id === user.user_metadata.gameType),
+      engine: sweepstakeEngines.find(engine => engine.id === user.user_metadata.sweepstakeEngine),
     },
   });
 
-  const handleUpdateProfile: SubmitHandler<InferType<typeof profileFormSchema>> = async (data) => {
+  const handleUpdateProfile: SubmitHandler<InferType<typeof profileFormSchema>> = async data => {
     await updateProfile(data as IProfile);
   };
 
@@ -77,14 +76,8 @@ const Profile: NextPage<IProfileProps> = ({ user }) => {
         <Card maxW={['100%', '600px']} as="form" onSubmit={handleSubmit(handleUpdateProfile)}>
           <CardHeader title="Meu Perfil" />
           <CardBody>
-            <Stack spacing="4">
-              <Input
-                label="Nome Completo"
-                error={errors.name}
-                {...register('name')}
-                isDisabled={isSubmitting}
-                isRequired
-              />
+            <Stack gap="4">
+              <Input label="Nome Completo" error={errors.name} {...register('name')} disabled={isSubmitting} required />
 
               <Select
                 label="Jogo Favorito"
@@ -92,9 +85,9 @@ const Profile: NextPage<IProfileProps> = ({ user }) => {
                 value={watch('game_type') as ISelectOption}
                 error={errors.game_type?.id}
                 {...register('game_type')}
-                isDisabled={isSubmitting}
-                isRequired
-                onChange={(option) => {
+                disabled={isSubmitting}
+                required
+                onChange={option => {
                   setValue('game_type', option);
                 }}
               />
@@ -105,16 +98,16 @@ const Profile: NextPage<IProfileProps> = ({ user }) => {
                 value={watch('engine') as ISelectOption}
                 error={errors.engine?.id}
                 {...register('engine')}
-                isDisabled={isSubmitting}
-                isRequired
-                onChange={(option) => {
+                disabled={isSubmitting}
+                required
+                onChange={option => {
                   setValue('engine', option);
                 }}
               />
             </Stack>
           </CardBody>
           <CardFooter>
-            <Button colorScheme="blue" type="submit" w="100%" isLoading={isSubmitting}>
+            <Button colorPalette="blue" type="submit" w="100%" loading={isSubmitting}>
               Atualizar Perfil
             </Button>
           </CardFooter>

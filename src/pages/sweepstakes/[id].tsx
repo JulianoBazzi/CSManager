@@ -1,4 +1,4 @@
-import { Divider, Flex, Icon, IconButton, Stack, TableContainer, Text, useBreakpointValue } from '@chakra-ui/react';
+import { Box, Flex, Icon, IconButton, Separator, Stack, Text, useBreakpointValue } from '@chakra-ui/react';
 import type { User } from '@supabase/supabase-js';
 import { useMutation } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
@@ -287,16 +287,22 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
           <CardHeader title={(isMobile ? sweepstake.format_short_game_type : sweepstake.format_game_type) || ''} />
           <CardBody>
             <Flex align="center" gap="2">
-              <Icon as={RiCalendarEventLine} fontSize="xl" />
+              <Icon fontSize="xl">
+                <RiCalendarEventLine />
+              </Icon>
               <Text>{sweepstake.format_departure_at}</Text>
             </Flex>
             <Stack direction={['column', 'row']}>
               <Flex align="center" gap="2">
-                <Icon as={RiMap2Line} fontSize="xl" />
+                <Icon fontSize="xl">
+                  <RiMap2Line />
+                </Icon>
                 <Text>{sweepstake.quantity_maps} mapas</Text>
               </Flex>
               <Flex align="center" gap="2">
-                <Icon as={RiUser3Line} fontSize="xl" />
+                <Icon fontSize="xl">
+                  <RiUser3Line />
+                </Icon>
                 <Text>{sweepstake.quantity_players} jogadores</Text>
               </Flex>
             </Stack>
@@ -314,13 +320,13 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
               )}
             </CardHeader>
             <CardBody>
-              <Stack divider={<Divider />}>
+              <Stack separator={<Separator />}>
                 {sweepstakePlayers
                   ?.filter(sweepstakePlayer => sweepstakePlayer.team === SweepstakeTeamEnum.One)
                   .map((sweepstakePlayer, index) => (
                     <Stack direction={['column', 'row']} key={sweepstakePlayer.id}>
                       <Flex align="center" gap="2" justify={isMobile ? 'space-between' : 'inherit'}>
-                        <Text noOfLines={1}>
+                        <Text lineClamp={1}>
                           {index + 1} - {sweepstakePlayer.players.name} ({sweepstakePlayer.players.username})
                         </Text>
                         {sweepstake.engine === SeepstakeEngineEnum.Premier ? (
@@ -341,7 +347,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                                 score: sweepstakePlayer.score,
                               })
                             }
-                            isDisabled={isLoadingChangeTeam}
+                            disabled={isLoadingChangeTeam}
                           />
                           <DeleteSolidIconButton
                             size="xs"
@@ -352,7 +358,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                                 score: sweepstakePlayer.score,
                               })
                             }
-                            isDisabled={isLoadingChangeTeam}
+                            disabled={isLoadingChangeTeam}
                           />
                         </>
                       )}
@@ -372,13 +378,13 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
               )}
             </CardHeader>
             <CardBody>
-              <Stack divider={<Divider />}>
+              <Stack separator={<Separator />}>
                 {sweepstakePlayers
                   ?.filter(sweepstakePlayer => sweepstakePlayer.team === SweepstakeTeamEnum.Two)
                   .map((sweepstakePlayer, index) => (
                     <Stack direction={['column', 'row']} key={sweepstakePlayer.id}>
                       <Flex align="center" gap="2" justify={isMobile ? 'space-between' : 'inherit'}>
-                        <Text noOfLines={1}>
+                        <Text lineClamp={1}>
                           {index + 1} - {sweepstakePlayer.players.name} ({sweepstakePlayer.players.username})
                         </Text>
                         {sweepstake.engine === SeepstakeEngineEnum.Premier ? (
@@ -399,7 +405,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                                 score: sweepstakePlayer.score,
                               })
                             }
-                            isDisabled={isLoadingChangeTeam}
+                            disabled={isLoadingChangeTeam}
                           />
                           <DeleteSolidIconButton
                             size="xs"
@@ -410,7 +416,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                                 score: sweepstakePlayer.score,
                               })
                             }
-                            isDisabled={isLoadingChangeTeam}
+                            disabled={isLoadingChangeTeam}
                           />
                         </>
                       )}
@@ -439,13 +445,16 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                     <Flex gap="2">
                       {user && user.id === sweepstake.user_id && (
                         <IconButton
-                          colorScheme="gray"
-                          icon={<Icon as={RiEditBoxLine} fontSize="xl" />}
+                          colorPalette="gray"
                           aria-label="Placar"
                           title="Atualizar Placares"
                           onClick={() => handleUpdateScore(sweepstakeMap)}
                           size="sm"
-                        />
+                        >
+                          <Icon fontSize="xl">
+                            <RiEditBoxLine />
+                          </Icon>
+                        </IconButton>
                       )}
                       {sweepstakeMap.team_one_score_1 +
                         sweepstakeMap.team_one_score_2 +
@@ -455,7 +464,7 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                     </Flex>
                   </CardHeader>
                   <CardBody>
-                    <Stack divider={<Divider />}>
+                    <Stack separator={<Separator />}>
                       <Flex align="center" gap="2">
                         <Icon
                           as={RiUser3Line}
@@ -466,8 +475,16 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                         <Text>
                           {sweepstakeMap.team_one_score_1} + {sweepstakeMap.team_one_score_2}
                         </Text>
-                        {isNoWinner(sweepstakeMap) && <Icon as={RiTrophyFill} color="gray.400" />}
-                        {isWinnerTeam(sweepstakeMap, 0) && <Icon as={RiTrophyFill} color="yellow.400" />}
+                        {isNoWinner(sweepstakeMap) && (
+                          <Icon color="gray.400">
+                            <RiTrophyFill />
+                          </Icon>
+                        )}
+                        {isWinnerTeam(sweepstakeMap, 0) && (
+                          <Icon color="yellow.400">
+                            <RiTrophyFill />
+                          </Icon>
+                        )}
                       </Flex>
                       <Flex align="center" gap="2">
                         <Icon
@@ -479,8 +496,16 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
                         <Text>
                           {sweepstakeMap.team_two_score_1} + {sweepstakeMap.team_two_score_2}
                         </Text>
-                        {isNoWinner(sweepstakeMap) && <Icon as={RiTrophyFill} color="gray.400" />}
-                        {isWinnerTeam(sweepstakeMap, 1) && <Icon as={RiTrophyFill} color="yellow.400" />}
+                        {isNoWinner(sweepstakeMap) && (
+                          <Icon color="gray.400">
+                            <RiTrophyFill />
+                          </Icon>
+                        )}
+                        {isWinnerTeam(sweepstakeMap, 1) && (
+                          <Icon color="yellow.400">
+                            <RiTrophyFill />
+                          </Icon>
+                        )}
                       </Flex>
                     </Stack>
                   </CardBody>
@@ -496,18 +521,18 @@ const Sweepstakes: NextPage<ISweepstakesProps> = ({ user, sweepstake: sweepstake
             isFetching={isFetchingSweepstakeRankings && !isLoadingSweepstakeRankings}
           />
           <CardBody>
-            <TableContainer>
+            <Box overflowX="auto">
               <Table
                 data={sweepstakeRankings}
                 columns={rankingColumns}
-                isLoading={isLoadingSweepstakeRankings}
+                loading={isLoadingSweepstakeRankings}
                 perPage={20}
                 orderBy={{
                   id: 'damage',
                   desc: true,
                 }}
               />
-            </TableContainer>
+            </Box>
           </CardBody>
         </Card>
       </Template>

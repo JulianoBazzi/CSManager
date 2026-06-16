@@ -27,7 +27,10 @@ function balanceTeams(players: IPlayerScoreAPI[]): [IPlayerScoreAPI[], IPlayerSc
 
       const worstPlayerIndex = sourceTeam.reduce((worstIdx, player, idx, arr) => {
         const worstPlayer = arr[worstIdx];
-        if (player.rating < worstPlayer.rating || (player.rating === worstPlayer.rating && player.score < worstPlayer.score)) {
+        if (
+          player.rating < worstPlayer.rating ||
+          (player.rating === worstPlayer.rating && player.score < worstPlayer.score)
+        ) {
           return idx;
         }
         return worstIdx;
@@ -48,7 +51,10 @@ function balanceTeams(players: IPlayerScoreAPI[]): [IPlayerScoreAPI[], IPlayerSc
 
       const worstPlayerIndex = sourceTeam.reduce((worstIdx, player, idx, arr) => {
         const worstPlayer = arr[worstIdx];
-        if (player.rating < worstPlayer.rating || (player.rating === worstPlayer.rating && player.score < worstPlayer.score)) {
+        if (
+          player.rating < worstPlayer.rating ||
+          (player.rating === worstPlayer.rating && player.score < worstPlayer.score)
+        ) {
           return idx;
         }
         return worstIdx;

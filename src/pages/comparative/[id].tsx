@@ -1,4 +1,4 @@
-import { Box, Flex, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useBreakpointValue } from '@chakra-ui/react';
+import { Box, Flex, Stack, Tabs, Text, useBreakpointValue } from '@chakra-ui/react';
 import type { User } from '@supabase/supabase-js';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
@@ -12,7 +12,7 @@ import { RiAwardLine } from 'react-icons/ri';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
-import ApexChart from '~/components/Chart/ApexChart';
+import Chart from '~/components/Chart/Chart';
 import { Select } from '~/components/Form/Select';
 import Template from '~/components/Template';
 import { useFeedback } from '~/contexts/FeedbackContext';
@@ -525,9 +525,9 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({ user, us
                   label="Jogador 1"
                   options={playerOptions.filter(player => player.id !== playerTwo?.id)}
                   value={playerOne}
-                  isDisabled={isLoading}
-                  isLoading={isFetching}
-                  isRequired
+                  disabled={isLoading}
+                  loading={isFetching}
+                  required
                   isSearchable
                   isClearable
                   onChange={option => {
@@ -556,9 +556,9 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({ user, us
                   label="Jogador 2"
                   options={playerOptions.filter(player => player.id !== playerOne?.id)}
                   value={playerTwo}
-                  isDisabled={isLoading}
-                  isLoading={isFetching}
-                  isRequired
+                  disabled={isLoading}
+                  loading={isFetching}
+                  required
                   isSearchable
                   isClearable
                   onChange={option => {
@@ -591,214 +591,210 @@ const ComparativePlayersPublic: NextPage<IComparativePlayersProps> = ({ user, us
 
             {!!playerOne && !!playerTwo && (
               <>
-                <Tabs
+                <Tabs.Root
                   mt="4"
-                  isFitted
-                  variant="soft-rounded"
-                  colorScheme="blue"
-                  index={tabIndex}
-                  onChange={handleTabsChange}
+                  fitted
+                  variant="subtle"
+                  colorPalette="blue"
+                  value={String(tabIndex)}
+                  onValueChange={event => handleTabsChange(Number(event.value))}
                 >
-                  <TabList overflowY="hidden" overflowX="auto">
-                    <Tab px="16" _selected={{ bg: 'blue.800', color: 'white' }}>
+                  <Tabs.List overflowY="hidden" overflowX="auto">
+                    <Tabs.Trigger value="0" px="16" _selected={{ bg: 'blue.800', color: 'white' }}>
                       {isMobile ? playerOne?.name : `${playerOne?.name} (${playerOne?.description})`}
-                    </Tab>
-                    <Tab px="16" _selected={{ bg: 'green.800', color: 'white' }}>
+                    </Tabs.Trigger>
+                    <Tabs.Trigger value="1" px="16" _selected={{ bg: 'green.800', color: 'white' }}>
                       {isMobile ? playerTwo?.name : `${playerTwo?.name} (${playerTwo?.description})`}
-                    </Tab>
-                  </TabList>
-                  <TabPanels>
-                    <TabPanel>
-                      <Text fontSize="x-large" fontWeight="bold">
-                        Por que o{' '}
-                        <Text as="span" fontWeight="bold" color="blue.600">
-                          {playerOne?.name}
-                        </Text>{' '}
-                        é melhor que o{' '}
-                        <Text as="span" fontWeight="bold" color="green.600">
-                          {playerTwo.name}
-                        </Text>
-                        ?
+                    </Tabs.Trigger>
+                  </Tabs.List>
+                  <Tabs.Content value="0">
+                    <Text fontSize="x-large" fontWeight="bold">
+                      Por que o{' '}
+                      <Text as="span" fontWeight="bold" color="blue.600">
+                        {playerOne?.name}
+                      </Text>{' '}
+                      é melhor que o{' '}
+                      <Text as="span" fontWeight="bold" color="green.600">
+                        {playerTwo.name}
                       </Text>
-                      <Stack mt="4">
-                        {damageCard()}
-                        {killCard()}
-                        {assistanceCard()}
-                        {deathCard()}
-                        {headshotCard()}
-                        {quantityCard()}
-                        {noRecordCard()}
-                      </Stack>
-                    </TabPanel>
-                    <TabPanel>
-                      <Text fontSize="x-large" fontWeight="bold">
-                        Por que o{' '}
-                        <Text as="span" fontWeight="bold" color="green.600">
-                          {playerTwo.name}
-                        </Text>{' '}
-                        é melhor que o{' '}
-                        <Text as="span" fontWeight="bold" color="blue.600">
-                          {playerOne?.name}
-                        </Text>
-                        ?
+                      ?
+                    </Text>
+                    <Stack mt="4">
+                      {damageCard()}
+                      {killCard()}
+                      {assistanceCard()}
+                      {deathCard()}
+                      {headshotCard()}
+                      {quantityCard()}
+                      {noRecordCard()}
+                    </Stack>
+                  </Tabs.Content>
+                  <Tabs.Content value="1">
+                    <Text fontSize="x-large" fontWeight="bold">
+                      Por que o{' '}
+                      <Text as="span" fontWeight="bold" color="green.600">
+                        {playerTwo.name}
+                      </Text>{' '}
+                      é melhor que o{' '}
+                      <Text as="span" fontWeight="bold" color="blue.600">
+                        {playerOne?.name}
                       </Text>
-                      <Stack mt="4">
-                        {damageCard()}
-                        {killCard()}
-                        {assistanceCard()}
-                        {deathCard()}
-                        {headshotCard()}
-                        {quantityCard()}
-                        {noRecordCard()}
-                      </Stack>
-                    </TabPanel>
-                  </TabPanels>
-                </Tabs>
+                      ?
+                    </Text>
+                    <Stack mt="4">
+                      {damageCard()}
+                      {killCard()}
+                      {assistanceCard()}
+                      {deathCard()}
+                      {headshotCard()}
+                      {quantityCard()}
+                      {noRecordCard()}
+                    </Stack>
+                  </Tabs.Content>
+                </Tabs.Root>
 
-                <Tabs mt="4" isFitted variant="solid-rounded">
-                  <TabList overflowY="hidden" overflowX="auto">
-                    <Tab>Dano</Tab>
-                    <Tab>Vítimas</Tab>
-                    <Tab>Mortes</Tab>
-                    <Tab>Assistências</Tab>
-                    <Tab>%TC</Tab>
-                    <Tab>Partidas</Tab>
-                  </TabList>
-                  <TabPanels>
-                    <TabPanel>
-                      <ApexChart
-                        id="damageChartId"
-                        type="line"
-                        categories={rankingMapComparison.map(map => map.name)}
-                        series={[
-                          {
-                            name: playerOne.name,
-                            data: rankingMapComparison.map(map => map.player_one_damage),
-                          },
-                          {
-                            name: playerTwo?.name,
-                            data: rankingMapComparison.map(map => map.player_two_damage),
-                          },
-                        ]}
-                        showDataLabels
-                        height="300px"
-                        width="100%"
-                        colors={['#1A3478', '#124A28']}
-                        isLoading={isLoadingRankingOne || isLoadingRankingTwo}
-                      />
-                    </TabPanel>
-                    <TabPanel>
-                      <ApexChart
-                        id="damageChartId"
-                        type="line"
-                        categories={rankingMapComparison.map(map => map.name)}
-                        series={[
-                          {
-                            name: playerOne.name,
-                            data: rankingMapComparison.map(map => map.player_one_kills),
-                          },
-                          {
-                            name: playerTwo?.name,
-                            data: rankingMapComparison.map(map => map.player_two_kills),
-                          },
-                        ]}
-                        showDataLabels
-                        height="300px"
-                        width="100%"
-                        colors={['#1A3478', '#124A28']}
-                        isLoading={isLoadingRankingOne || isLoadingRankingTwo}
-                      />
-                    </TabPanel>
-                    <TabPanel>
-                      <ApexChart
-                        id="damageChartId"
-                        type="line"
-                        categories={rankingMapComparison.map(map => map.name)}
-                        series={[
-                          {
-                            name: playerOne.name,
-                            data: rankingMapComparison.map(map => map.player_one_deaths),
-                          },
-                          {
-                            name: playerTwo?.name,
-                            data: rankingMapComparison.map(map => map.player_two_deaths),
-                          },
-                        ]}
-                        showDataLabels
-                        height="300px"
-                        width="100%"
-                        colors={['#1A3478', '#124A28']}
-                        isLoading={isLoadingRankingOne || isLoadingRankingTwo}
-                      />
-                    </TabPanel>
-                    <TabPanel>
-                      <ApexChart
-                        id="damageChartId"
-                        type="line"
-                        categories={rankingMapComparison.map(map => map.name)}
-                        series={[
-                          {
-                            name: playerOne.name,
-                            data: rankingMapComparison.map(map => map.player_one_assistances),
-                          },
-                          {
-                            name: playerTwo?.name,
-                            data: rankingMapComparison.map(map => map.player_two_assistances),
-                          },
-                        ]}
-                        showDataLabels
-                        height="300px"
-                        width="100%"
-                        colors={['#1A3478', '#124A28']}
-                        isLoading={isLoadingRankingOne || isLoadingRankingTwo}
-                      />
-                    </TabPanel>
-                    <TabPanel>
-                      <ApexChart
-                        id="damageChartId"
-                        type="line"
-                        categories={rankingMapComparison.map(map => map.name)}
-                        series={[
-                          {
-                            name: playerOne.name,
-                            data: rankingMapComparison.map(map => map.player_one_headshot_percentage),
-                          },
-                          {
-                            name: playerTwo?.name,
-                            data: rankingMapComparison.map(map => map.player_two_headshot_percentage),
-                          },
-                        ]}
-                        showDataLabels
-                        height="300px"
-                        width="100%"
-                        colors={['#1A3478', '#124A28']}
-                        isLoading={isLoadingRankingOne || isLoadingRankingTwo}
-                      />
-                    </TabPanel>
-                    <TabPanel>
-                      <ApexChart
-                        id="damageChartId"
-                        type="line"
-                        categories={rankingMapComparison.map(map => map.name)}
-                        series={[
-                          {
-                            name: playerOne.name,
-                            data: rankingMapComparison.map(map => map.player_one_quantity),
-                          },
-                          {
-                            name: playerTwo?.name,
-                            data: rankingMapComparison.map(map => map.player_two_quantity),
-                          },
-                        ]}
-                        showDataLabels
-                        height="300px"
-                        width="100%"
-                        colors={['#1A3478', '#124A28']}
-                        isLoading={isLoadingRankingOne || isLoadingRankingTwo}
-                      />
-                    </TabPanel>
-                  </TabPanels>
-                </Tabs>
+                <Tabs.Root mt="4" fitted variant="enclosed" defaultValue="0">
+                  <Tabs.List overflowY="hidden" overflowX="auto">
+                    <Tabs.Trigger value="0">Dano</Tabs.Trigger>
+                    <Tabs.Trigger value="1">Vítimas</Tabs.Trigger>
+                    <Tabs.Trigger value="2">Mortes</Tabs.Trigger>
+                    <Tabs.Trigger value="3">Assistências</Tabs.Trigger>
+                    <Tabs.Trigger value="4">%TC</Tabs.Trigger>
+                    <Tabs.Trigger value="5">Partidas</Tabs.Trigger>
+                  </Tabs.List>
+                  <Tabs.Content value="0">
+                    <Chart
+                      id="damageChartId"
+                      type="line"
+                      categories={rankingMapComparison.map(map => map.name)}
+                      series={[
+                        {
+                          name: playerOne.name,
+                          data: rankingMapComparison.map(map => map.player_one_damage),
+                        },
+                        {
+                          name: playerTwo?.name,
+                          data: rankingMapComparison.map(map => map.player_two_damage),
+                        },
+                      ]}
+                      showDataLabels
+                      height="300px"
+                      width="100%"
+                      colors={['#1A3478', '#124A28']}
+                      loading={isLoadingRankingOne || isLoadingRankingTwo}
+                    />
+                  </Tabs.Content>
+                  <Tabs.Content value="1">
+                    <Chart
+                      id="damageChartId"
+                      type="line"
+                      categories={rankingMapComparison.map(map => map.name)}
+                      series={[
+                        {
+                          name: playerOne.name,
+                          data: rankingMapComparison.map(map => map.player_one_kills),
+                        },
+                        {
+                          name: playerTwo?.name,
+                          data: rankingMapComparison.map(map => map.player_two_kills),
+                        },
+                      ]}
+                      showDataLabels
+                      height="300px"
+                      width="100%"
+                      colors={['#1A3478', '#124A28']}
+                      loading={isLoadingRankingOne || isLoadingRankingTwo}
+                    />
+                  </Tabs.Content>
+                  <Tabs.Content value="2">
+                    <Chart
+                      id="damageChartId"
+                      type="line"
+                      categories={rankingMapComparison.map(map => map.name)}
+                      series={[
+                        {
+                          name: playerOne.name,
+                          data: rankingMapComparison.map(map => map.player_one_deaths),
+                        },
+                        {
+                          name: playerTwo?.name,
+                          data: rankingMapComparison.map(map => map.player_two_deaths),
+                        },
+                      ]}
+                      showDataLabels
+                      height="300px"
+                      width="100%"
+                      colors={['#1A3478', '#124A28']}
+                      loading={isLoadingRankingOne || isLoadingRankingTwo}
+                    />
+                  </Tabs.Content>
+                  <Tabs.Content value="3">
+                    <Chart
+                      id="damageChartId"
+                      type="line"
+                      categories={rankingMapComparison.map(map => map.name)}
+                      series={[
+                        {
+                          name: playerOne.name,
+                          data: rankingMapComparison.map(map => map.player_one_assistances),
+                        },
+                        {
+                          name: playerTwo?.name,
+                          data: rankingMapComparison.map(map => map.player_two_assistances),
+                        },
+                      ]}
+                      showDataLabels
+                      height="300px"
+                      width="100%"
+                      colors={['#1A3478', '#124A28']}
+                      loading={isLoadingRankingOne || isLoadingRankingTwo}
+                    />
+                  </Tabs.Content>
+                  <Tabs.Content value="4">
+                    <Chart
+                      id="damageChartId"
+                      type="line"
+                      categories={rankingMapComparison.map(map => map.name)}
+                      series={[
+                        {
+                          name: playerOne.name,
+                          data: rankingMapComparison.map(map => map.player_one_headshot_percentage),
+                        },
+                        {
+                          name: playerTwo?.name,
+                          data: rankingMapComparison.map(map => map.player_two_headshot_percentage),
+                        },
+                      ]}
+                      showDataLabels
+                      height="300px"
+                      width="100%"
+                      colors={['#1A3478', '#124A28']}
+                      loading={isLoadingRankingOne || isLoadingRankingTwo}
+                    />
+                  </Tabs.Content>
+                  <Tabs.Content value="5">
+                    <Chart
+                      id="damageChartId"
+                      type="line"
+                      categories={rankingMapComparison.map(map => map.name)}
+                      series={[
+                        {
+                          name: playerOne.name,
+                          data: rankingMapComparison.map(map => map.player_one_quantity),
+                        },
+                        {
+                          name: playerTwo?.name,
+                          data: rankingMapComparison.map(map => map.player_two_quantity),
+                        },
+                      ]}
+                      showDataLabels
+                      height="300px"
+                      width="100%"
+                      colors={['#1A3478', '#124A28']}
+                      loading={isLoadingRankingOne || isLoadingRankingTwo}
+                    />
+                  </Tabs.Content>
+                </Tabs.Root>
               </>
             )}
           </CardBody>

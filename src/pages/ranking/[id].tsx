@@ -1,4 +1,4 @@
-import { Flex, TableContainer } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import type { User } from '@supabase/supabase-js';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
@@ -102,22 +102,22 @@ const RankingPublic: NextPage<IRankingProps> = ({ user, userId }) => {
           <CardHeader icon={RiNumbersLine} title="Ranking" isFetching={isFetching && !isLoading} />
           <CardBody>
             <Flex gap="2">
-              <SearchBar onSearch={value => setSearch(value)} isDisabled={isFetching} />
+              <SearchBar onSearch={value => setSearch(value)} disabled={isFetching} />
               <Flex w={['190px', '120px']}>
                 <Select
                   name="year"
                   options={years}
                   value={selectedYear}
-                  isRequired
+                  required
                   onChange={option => setSelectedYear(option)}
                 />
               </Flex>
             </Flex>
-            <TableContainer>
+            <Box overflowX="auto">
               <Table
                 data={dataFiltered}
                 columns={rankingColumns}
-                isLoading={isLoading}
+                loading={isLoading}
                 perPage={50}
                 orderBy={{
                   id: 'damage',
@@ -127,7 +127,7 @@ const RankingPublic: NextPage<IRankingProps> = ({ user, userId }) => {
                   rating: user?.id === userId,
                 }}
               />
-            </TableContainer>
+            </Box>
           </CardBody>
         </Card>
       </Template>

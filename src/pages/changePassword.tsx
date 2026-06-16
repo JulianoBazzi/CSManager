@@ -1,13 +1,12 @@
-import { type SubmitHandler, useForm } from 'react-hook-form';
-
 import { Button, CardFooter, Stack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import type { User } from '@supabase/supabase-js';
 import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
-import * as yup from 'yup';
+import { type SubmitHandler, useForm } from 'react-hook-form';
 import type { InferType } from 'yup';
+import * as yup from 'yup';
 
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
@@ -51,14 +50,14 @@ const ChangePassword: NextPage<IChangePasswordProps> = ({ user }) => {
         <Card maxW={['100%', '600px']} as="form" onSubmit={handleSubmit(handleChangePassword)}>
           <CardHeader title="Alterar Senha" />
           <CardBody>
-            <Stack spacing="4">
+            <Stack gap="4">
               <PasswordInput
                 label="Nova Senha"
                 placeholder="Senha"
                 error={errors.password}
                 {...register('password')}
-                isDisabled={isSubmitting}
-                isRequired
+                disabled={isSubmitting}
+                required
               />
 
               <PasswordInput
@@ -66,13 +65,13 @@ const ChangePassword: NextPage<IChangePasswordProps> = ({ user }) => {
                 placeholder="Confirmar Senha"
                 error={errors.password_confirmation}
                 {...register('password_confirmation')}
-                isDisabled={isSubmitting}
-                isRequired
+                disabled={isSubmitting}
+                required
               />
             </Stack>
           </CardBody>
           <CardFooter>
-            <Button colorScheme="blue" type="submit" w="100%" isLoading={isSubmitting}>
+            <Button colorPalette="blue" type="submit" w="100%" loading={isSubmitting}>
               Alterar Senha
             </Button>
           </CardFooter>

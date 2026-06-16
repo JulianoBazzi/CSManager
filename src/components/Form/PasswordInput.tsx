@@ -2,15 +2,12 @@ import {
   Button,
   Input as ChakraInput,
   type InputProps as ChakraInputProps,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
+  Field,
   Icon,
   InputGroup,
-  InputRightElement,
   Skeleton,
 } from '@chakra-ui/react';
-import { forwardRef, useState } from 'react';
+import { type Ref, useState } from 'react';
 import type { FieldError } from 'react-hook-form';
 import { RiEyeLine, RiEyeOffLine } from 'react-icons/ri';
 
@@ -18,33 +15,32 @@ interface IPasswordInputProps extends ChakraInputProps {
   name: string;
   label?: string;
   error?: FieldError;
-  isRequired?: boolean;
-  isLoading?: boolean;
+  required?: boolean;
+  loading?: boolean;
+  ref?: Ref<HTMLInputElement>;
 }
 
-function PasswordInputBase(
-  { name, label, error, isRequired, isLoading, maxW, ...rest }: IPasswordInputProps,
-  ref: React.ForwardedRef<HTMLInputElement>
-) {
+export const PasswordInput = ({ name, label, error, required, loading, maxW, ref, ...rest }: IPasswordInputProps) => {
   const [show, setShow] = useState(false);
 
   return (
-    <FormControl isInvalid={!!error} isRequired={isRequired} maxW={maxW}>
-      {!!label && <FormLabel htmlFor={name}>{label}</FormLabel>}
-      {isLoading && <Skeleton height="10" borderRadius={4} />}
-      {!isLoading && (
-        <InputGroup size="md">
-          <ChakraInput type={show ? 'text' : 'password'} ref={ref} id={name} name={name} autoComplete="off" {...rest} />
-          <InputRightElement mx="1">
-            <Button variant="unstyled" onClick={() => setShow(!show)}>
-              <Icon as={show ? RiEyeOffLine : RiEyeLine} fontSize="1.3rem" mt="1" color="gray.200" />
+    <Field.Root invalid={!!error} required={required} maxW={maxW}>
+      {!!label && <Field.Label htmlFor={name}>{label}</Field.Label>}
+      {loading && <Skeleton height="10" borderRadius={4} />}
+      {!loading && (
+        <InputGroup
+          endElement={
+            <Button variant="plain" h="auto" minW="auto" p="0" onClick={() => setShow(!show)}>
+              <Icon fontSize="1.3rem" color="gray.200">
+                {show ? <RiEyeOffLine /> : <RiEyeLine />}
+              </Icon>
             </Button>
-          </InputRightElement>
+          }
+        >
+          <ChakraInput type={show ? 'text' : 'password'} ref={ref} id={name} name={name} autoComplete="off" {...rest} />
         </InputGroup>
       )}
-      {!!error && <FormErrorMessage my="1">{error.message}</FormErrorMessage>}
-    </FormControl>
+      {!!error && <Field.ErrorText>{error.message}</Field.ErrorText>}
+    </Field.Root>
   );
-}
-
-export const PasswordInput = forwardRef(PasswordInputBase);
+};

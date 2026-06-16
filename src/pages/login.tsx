@@ -1,10 +1,9 @@
-import { type SubmitHandler, useForm } from 'react-hook-form';
-
 import { Button } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import type { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
+import { type SubmitHandler, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
 import Card from '~/components/Card';
@@ -33,7 +32,7 @@ export default function Login() {
     resolver: yupResolver(signInFormSchema),
   });
 
-  const handleSignIn: SubmitHandler<ISignIn> = async (data) => {
+  const handleSignIn: SubmitHandler<ISignIn> = async data => {
     await signIn(data);
   };
 
@@ -52,8 +51,8 @@ export default function Login() {
               placeholder="E-mail"
               error={errors.email}
               {...register('email')}
-              isDisabled={isSubmitting}
-              isRequired
+              disabled={isSubmitting}
+              required
             />
 
             <PasswordInput
@@ -61,18 +60,18 @@ export default function Login() {
               placeholder="Senha"
               error={errors.password}
               {...register('password')}
-              isDisabled={isSubmitting}
-              isRequired
+              disabled={isSubmitting}
+              required
             />
 
-            <Button colorScheme="blue" type="submit" mt="6" isLoading={isSubmitting}>
+            <Button colorPalette="blue" type="submit" mt="6" loading={isSubmitting}>
               Entrar
             </Button>
             {/* <Button
-              colorScheme="green"
+              colorPalette="green"
               variant="outline"
               mt="6"
-              isDisabled={isSubmitting}
+              disabled={isSubmitting}
               onClick={() => Router.push('/register')}
             >
               Registrar-se
