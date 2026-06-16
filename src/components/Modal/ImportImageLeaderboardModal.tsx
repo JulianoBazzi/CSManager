@@ -2,7 +2,6 @@ import { Flex, Icon, Stack, Text } from '@chakra-ui/react';
 import { useMutation } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
 import axios from 'axios';
-import imgbbUpload from 'imgbb-image-uploader';
 import { type ChangeEvent, type Ref, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import { RiAlertLine } from 'react-icons/ri';
 import removeAccents from 'remove-accents';
@@ -16,7 +15,6 @@ import { Table } from '~/components/Form/Table';
 import { DeleteSolidIconButton } from '~/components/IconButton/DeleteSolidIconButton';
 import { PlayerLeaderboardModal, type PlayerLeaderboardModalHandle } from '~/components/Modal/PlayerLeaderboardModal';
 import {
-  NEXT_PUBLIC_IMGBB_API_KEY,
   TABLE_PLAYERS,
   TABLE_RANKING,
   VIEW_MAP_RANKING,
@@ -76,15 +74,15 @@ export const ImportImageLeaderboardModal = ({ ref }: { ref?: Ref<ImportImageLead
       setLeaderboard(undefined);
       setPlayerLeaderboards([]);
 
-      const data = await imgbbUpload({
-        key: NEXT_PUBLIC_IMGBB_API_KEY,
-        image: file,
-        expiration: 600,
-        name: v4(),
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
       });
 
       const response = await axios.post<ILeaderboardAPI>('/api/read-scores', {
-        image_url: data.data.url,
+        image_url: dataUrl,
       });
 
       return response.data;

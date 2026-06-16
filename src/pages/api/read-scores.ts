@@ -3,6 +3,8 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { openai } from '~/config/openai';
 import type ILeaderboardAPI from '~/models/Entity/Leaderboard/ILeaderboardAPI';
 
+export const config = { api: { bodyParser: { sizeLimit: '8mb' } } };
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     res.status(405).end('Method Not Allowed');
