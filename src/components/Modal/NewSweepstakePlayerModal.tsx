@@ -174,6 +174,7 @@ export const NewSweepstakePlayerModal = ({ ref }: { ref?: Ref<NewSweepstakePlaye
       ref={modalRef}
       title={`Adicionar Jogadores ao Time ${recordModalProps?.team === SweepstakeTeamEnum.One ? '1' : '2'}`}
       size="xl"
+      disableCloseButton={isLoadingCreate}
     >
       <ModalBody>
         <Table
@@ -181,6 +182,7 @@ export const NewSweepstakePlayerModal = ({ ref }: { ref?: Ref<NewSweepstakePlaye
           columns={playerColumns}
           loading={isLoading}
           onRowClick={value => handleSelectedPlayers(value)}
+          isRowSelected={player => !!selectedPlayers.find(item => item.id === player.id)}
         />
       </ModalBody>
       <ModalFooter flexDir="column" gap="4">

@@ -134,7 +134,7 @@ export const MapModal = ({ ref }: { ref?: Ref<MapModalHandle> }) => {
   );
 
   return (
-    <Modal title="Mapa" ref={modalRef} size="md" onSubmit={handleSubmit(handleOk)}>
+    <Modal title="Mapa" ref={modalRef} size="md" onSubmit={handleSubmit(handleOk)} disableCloseButton={isSubmitting}>
       <ModalBody>
         <Stack gap="4">
           <Input

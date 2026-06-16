@@ -1,4 +1,4 @@
-import { Dialog, type DialogRootProps, Portal, Text } from '@chakra-ui/react';
+import { CloseButton, Dialog, type DialogRootProps, Portal, Text } from '@chakra-ui/react';
 import { type ReactNode, type Ref, useCallback, useImperativeHandle, useState } from 'react';
 
 export interface IModalProps extends Omit<DialogRootProps, 'open' | 'onOpenChange' | 'children'> {
@@ -39,7 +39,7 @@ export const Modal = ({ title, children, disableCloseButton, onSubmit, ref, ...r
     <Dialog.Root
       open={isOpen}
       onOpenChange={event => setIsOpen(event.open)}
-      closeOnEscape
+      closeOnEscape={!disableCloseButton}
       closeOnInteractOutside={false}
       {...rest}
     >
@@ -50,7 +50,9 @@ export const Modal = ({ title, children, disableCloseButton, onSubmit, ref, ...r
             <Dialog.Header>
               <Text as="h5">{title}</Text>
             </Dialog.Header>
-            {!disableCloseButton && <Dialog.CloseTrigger />}
+            <Dialog.CloseTrigger asChild>
+              <CloseButton size="sm" disabled={disableCloseButton} />
+            </Dialog.CloseTrigger>
             {children}
           </Dialog.Content>
         </Dialog.Positioner>

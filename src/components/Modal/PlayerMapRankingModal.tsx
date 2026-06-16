@@ -81,7 +81,7 @@ export const PlayerMapRankingModal = ({ ref }: { ref?: Ref<PlayerMapRankingModal
   );
 
   return (
-    <Modal ref={modalRef} title={`Ranking: ${recordModalProps?.player?.name}`} size="cover">
+    <Modal ref={modalRef} title={`Ranking: ${recordModalProps?.player?.name}`} size="xl">
       <ModalBody>
         <Table data={rankings} columns={rankingColumns} loading={isLoading} />
       </ModalBody>

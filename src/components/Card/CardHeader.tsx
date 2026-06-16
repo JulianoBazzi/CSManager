@@ -21,16 +21,20 @@ export default function CardHeader({ icon, size = 'lg', title, isFetching, child
   return (
     <>
       <ChakraCard.Header w="100%" {...rest}>
-        <Flex justifyContent="space-between">
+        <Flex w="100%" justify="space-between" align="center" gap="3">
           <Flex align="center" gap="2">
             {icon && <Icon fontSize={size === 'lg' ? '2xl' : 'xl'}>{createElement(icon)}</Icon>}
             <Heading size={size}>{title}</Heading>
             {isFetching && <Spinner color="blue.200" />}
           </Flex>
-          {children}
+          {children && (
+            <Flex flexShrink={0} gap="2">
+              {children}
+            </Flex>
+          )}
         </Flex>
       </ChakraCard.Header>
-      <Separator mt="-2" />
+      <Separator />
     </>
   );
 }

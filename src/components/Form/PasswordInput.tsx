@@ -25,7 +25,12 @@ export const PasswordInput = ({ name, label, error, required, loading, maxW, ref
 
   return (
     <Field.Root invalid={!!error} required={required} maxW={maxW}>
-      {!!label && <Field.Label htmlFor={name}>{label}</Field.Label>}
+      {!!label && (
+        <Field.Label htmlFor={name}>
+          {label}
+          <Field.RequiredIndicator />
+        </Field.Label>
+      )}
       {loading && <Skeleton height="10" borderRadius={4} />}
       {!loading && (
         <InputGroup

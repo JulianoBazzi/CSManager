@@ -28,6 +28,7 @@ export type ITableProps<T extends IEntityBase> = {
   loading?: boolean;
   columnVisibility?: VisibilityState;
   onRowClick?: (data: T) => void;
+  isRowSelected?: (data: T) => boolean;
 };
 
 const emptyArray: never[] = [];
@@ -40,6 +41,7 @@ export function Table<T extends IEntityBase>({
   loading,
   columnVisibility,
   onRowClick,
+  isRowSelected,
 }: ITableProps<T>) {
   const isMobile = useBreakpointValue({ base: true, md: false });
 
@@ -133,29 +135,39 @@ export function Table<T extends IEntityBase>({
               ))}
             </ChakraTable.Row>
           ))}
-        {getRowModel().rows.map(row => (
-          <ChakraTable.Row
-            key={row.id}
-            {...(onRowClick && {
-              transition: 'background-color 0.3s ease-in-out',
-              _hover: {
-                cursor: 'pointer',
-              },
-            })}
-          >
-            {row.getVisibleCells().map(cell => (
-              <ChakraTable.Cell
-                key={cell.id}
-                {...(onRowClick &&
-                  cell.column.id !== 'actions' && {
-                    onClick: () => onRowClick(row.original),
-                  })}
-              >
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </ChakraTable.Cell>
-            ))}
-          </ChakraTable.Row>
-        ))}
+        {getRowModel().rows.map(row => {
+          const selected = isRowSelected?.(row.original);
+          return (
+            <ChakraTable.Row
+              key={row.id}
+              transition="background-color 0.2s ease-in-out"
+              css={{
+                ...(selected && {
+                  '& td': { backgroundColor: 'var(--chakra-colors-blue-900) !important' },
+                  '& td:first-of-type': { boxShadow: 'inset 3px 0 0 var(--chakra-colors-blue-400)' },
+                }),
+                ...(onRowClick && {
+                  cursor: 'pointer',
+                  '&:hover td': {
+                    backgroundColor: `var(--chakra-colors-${selected ? 'blue-800' : 'gray-700'}) !important`,
+                  },
+                }),
+              }}
+            >
+              {row.getVisibleCells().map(cell => (
+                <ChakraTable.Cell
+                  key={cell.id}
+                  {...(onRowClick &&
+                    cell.column.id !== 'actions' && {
+                      onClick: () => onRowClick(row.original),
+                    })}
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </ChakraTable.Cell>
+              ))}
+            </ChakraTable.Row>
+          );
+        })}
       </ChakraTable.Body>
     </ChakraTable.Root>
   );

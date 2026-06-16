@@ -120,7 +120,7 @@ export const PlayerModal = ({ ref }: { ref?: Ref<PlayerModalHandle> }) => {
   );
 
   return (
-    <Modal title="Jogador" ref={modalRef} size="lg" onSubmit={handleSubmit(handleOk)}>
+    <Modal title="Jogador" ref={modalRef} size="lg" onSubmit={handleSubmit(handleOk)} disableCloseButton={isSubmitting}>
       <ModalBody>
         <Stack gap="4">
           <Input

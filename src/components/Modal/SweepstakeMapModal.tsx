@@ -115,7 +115,7 @@ export const SweepstakeMapModal = ({ ref }: { ref?: Ref<SweepstakeMapModalHandle
   );
 
   return (
-    <Modal title="Atualizar Placar" ref={modalRef} onSubmit={handleSubmit(handleOk)}>
+    <Modal title="Atualizar Placar" ref={modalRef} onSubmit={handleSubmit(handleOk)} disableCloseButton={isSubmitting}>
       <ModalBody>
         <Stack>
           <Card>

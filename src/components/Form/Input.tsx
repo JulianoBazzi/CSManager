@@ -20,7 +20,12 @@ interface IInputProps extends ChakraInputProps {
 
 export const Input = ({ name, label, error, required, loading, maxW, children, ref, ...rest }: IInputProps) => (
   <Field.Root invalid={!!error} required={required} maxW={maxW}>
-    {!!label && <Field.Label htmlFor={name}>{label}</Field.Label>}
+    {!!label && (
+      <Field.Label htmlFor={name}>
+        {label}
+        <Field.RequiredIndicator />
+      </Field.Label>
+    )}
     {loading && <Skeleton height="10" borderRadius={4} />}
     {!loading && (
       <InputGroup endElement={children}>

@@ -31,7 +31,12 @@ export const Switch = ({
   ...rest
 }: ISwitchProps) => (
   <Field.Root invalid={!!error} required={required} maxW={maxW}>
-    {!!label && <Field.Label htmlFor={name}>{label}</Field.Label>}
+    {!!label && (
+      <Field.Label htmlFor={name}>
+        {label}
+        <Field.RequiredIndicator />
+      </Field.Label>
+    )}
     {loading && <Skeleton height="10" borderRadius={4} />}
     {!loading && (
       <ChakraSwitch.Root checked={checked} disabled={disabled} colorPalette="blue">

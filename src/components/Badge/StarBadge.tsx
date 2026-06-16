@@ -3,9 +3,10 @@ import { RiStarFill, RiStarHalfFill, RiStarLine } from 'react-icons/ri';
 
 interface IStarBadgeProps extends FlexProps {
   rating: number;
+  size?: string;
 }
 
-export function StarBadge({ rating, ...rest }: IStarBadgeProps) {
+export function StarBadge({ rating, size = 'lg', ...rest }: IStarBadgeProps) {
   const fullStars = Math.floor(rating);
   const hasHalfStar = rating % 1 !== 0;
 
@@ -14,7 +15,7 @@ export function StarBadge({ rating, ...rest }: IStarBadgeProps) {
       return 'yellow.400';
     }
 
-    return 'gray.500';
+    return 'gray.600';
   };
 
   const getStarIcon = (index: number) => {
@@ -28,10 +29,10 @@ export function StarBadge({ rating, ...rest }: IStarBadgeProps) {
   };
 
   return (
-    <Flex gap="1px" {...rest}>
+    <Flex gap="0.5" align="center" {...rest}>
       {Array.from({ length: 5 }, (_, index) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: <ignore>
-        <Icon key={index} as={getStarIcon(index)} color={getStarColor(index)} />
+        <Icon key={index} as={getStarIcon(index)} color={getStarColor(index)} fontSize={size} />
       ))}
     </Flex>
   );

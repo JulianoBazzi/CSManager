@@ -366,6 +366,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
                 columns={playerColumns}
                 loading={isLoadingPlayers}
                 onRowClick={value => handleSelectedPlayers(value)}
+                isRowSelected={value => !!selectedPlayers.find(item => item.id === value.id)}
               />
             </CardBody>
           </Card>
@@ -377,6 +378,7 @@ const NewSweepstake: NextPage<INewSweepstakeProps> = ({ user }) => {
                 columns={mapColumns}
                 loading={isLoadingMaps}
                 onRowClick={({ id }) => handleSelectedMaps(id)}
+                isRowSelected={({ id }) => selectedMaps.includes(id)}
               />
             </CardBody>
           </Card>

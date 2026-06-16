@@ -296,6 +296,7 @@ export const ImportImageLeaderboardModal = ({ ref }: { ref?: Ref<ImportImageLead
         ref={modalRef}
         title={`Importar Ranking: ${recordModalProps?.sweepstakeMap?.maps?.name}`}
         size={leaderboard ? 'cover' : 'xl'}
+        disableCloseButton={isLoadingAnalyzeImage || isLoadingRanking}
       >
         <ModalBody>
           <Stack gap="4">

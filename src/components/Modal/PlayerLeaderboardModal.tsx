@@ -85,7 +85,13 @@ export const PlayerLeaderboardModal = ({ ref }: { ref?: Ref<PlayerLeaderboardMod
   );
 
   return (
-    <Modal title={watch('name')} ref={modalRef} size="md" onSubmit={handleSubmit(handleOk)}>
+    <Modal
+      title={watch('name')}
+      ref={modalRef}
+      size="md"
+      onSubmit={handleSubmit(handleOk)}
+      disableCloseButton={isSubmitting}
+    >
       <ModalBody>
         <Stack gap="4">
           <Select
