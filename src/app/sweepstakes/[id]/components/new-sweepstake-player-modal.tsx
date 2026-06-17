@@ -1,0 +1,203 @@
+'use client';
+
+import { Checkbox } from '@chakra-ui/react';
+import { useMutation } from '@tanstack/react-query';
+import type { ColumnDef } from '@tanstack/react-table';
+import { type Ref, useCallback, useImperativeHandle, useRef, useState } from 'react';
+
+import { PremierBadge } from '~/components/Badge/PremierBadge';
+import { SolidBlueButton } from '~/components/Button/Base/SolidBlueButton';
+import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
+import { Modal, ModalBody, ModalFooter, type ModalHandle } from '~/components/Form/Modal';
+import { Table } from '~/components/Form/Table';
+import { TABLE_SWEEPSTAKE_PLAYERS } from '~/config/constants';
+import { useFeedback } from '~/contexts/FeedbackContext';
+import type IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
+import type IPlayerScoreAPI from '~/models/Entity/Player/IPlayerScoreAPI';
+import { SeepstakeEngineEnum } from '~/models/Entity/Sweepstake/ISweepstakeAPI';
+import type ISweepstakePlayer from '~/models/Entity/Sweepstake/ISweepstakePlayer';
+import { SweepstakeTeamEnum } from '~/models/Entity/Sweepstake/ISweepstakePlayerAPI';
+import type INewSweepstakePlayerModal from '~/models/Modal/INewSweepstakePlayerModal';
+import { getPlayersScoresOnMaps } from '~/services/hooks/usePlayerScoresOnMaps';
+import { getPlayers } from '~/services/hooks/usePlayers';
+import { queryClient } from '~/services/queryClient';
+import supabase from '~/services/supabase';
+
+export type NewSweepstakePlayerModalHandle = {
+  onOpenModal: (recordModal?: INewSweepstakePlayerModal) => void;
+};
+
+export const NewSweepstakePlayerModal = ({ ref }: { ref?: Ref<NewSweepstakePlayerModalHandle> }) => {
+  const modalRef = useRef<ModalHandle>(null);
+
+  const { errorFeedbackToast, successFeedbackToast } = useFeedback();
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [recordModalProps, setRecordModalProps] = useState<INewSweepstakePlayerModal | undefined>();
+  const [players, setPlayers] = useState<IPlayerAPI[]>([]);
+  const [selectedPlayers, setSelectedPlayers] = useState<IPlayerAPI[]>([]);
+
+  function handleSelectedPlayers(value: IPlayerAPI) {
+    const find = selectedPlayers.find(player => player.id === value.id);
+    if (find) {
+      setSelectedPlayers(previousPlayers => previousPlayers.filter(player => player.id !== value.id));
+    } else {
+      setSelectedPlayers(previousPlayers => [...previousPlayers, value]);
+    }
+  }
+
+  const playerColumns: ColumnDef<IPlayerAPI>[] = [
+    {
+      accessorKey: 'id',
+      header: '',
+      enableSorting: false,
+      cell: ({ row }) => (
+        <Checkbox.Root
+          checked={!!selectedPlayers.find(player => player.id === row.original.id)}
+          onCheckedChange={() => handleSelectedPlayers(row.original)}
+          disabled={isLoading}
+        >
+          <Checkbox.HiddenInput />
+          <Checkbox.Control />
+        </Checkbox.Root>
+      ),
+    },
+    {
+      accessorKey: 'name',
+      header: 'Nome',
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'username',
+      header: 'Steam',
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'premier',
+      header: 'Premier',
+      enableSorting: false,
+      cell: ({ row }) => <PremierBadge premier={row.original.premier} />,
+    },
+  ];
+
+  const onOpenModal = useCallback(
+    (recordModal?: INewSweepstakePlayerModal) => {
+      setPlayers([]);
+      setSelectedPlayers([]);
+      setRecordModalProps(recordModal);
+      if (recordModal?.id) {
+        setIsLoading(true);
+        getPlayers(recordModal.user.id, {
+          active: true,
+          sweepstakeIdNot: recordModal.id,
+        })
+          .then(response => {
+            setPlayers(response);
+          })
+          .catch(error => {
+            errorFeedbackToast('Jogadores', error);
+            modalRef.current?.onCloseModal();
+          })
+          .finally(() => {
+            setIsLoading(false);
+          });
+      }
+      modalRef.current?.onOpenModal();
+    },
+    [errorFeedbackToast]
+  );
+
+  const { mutateAsync: createMutateAsync, isPending: isLoadingCreate } = useMutation({
+    mutationFn: async () => {
+      if (
+        !recordModalProps?.user ||
+        !recordModalProps?.id ||
+        !recordModalProps?.sweepstake ||
+        !recordModalProps?.maps
+      ) {
+        return [];
+      }
+
+      let playerScoreList: IPlayerScoreAPI[] = [];
+
+      if (recordModalProps?.sweepstake?.engine === SeepstakeEngineEnum.Ranking) {
+        playerScoreList =
+          (await getPlayersScoresOnMaps(
+            selectedPlayers.map(player => player.id),
+            recordModalProps.maps.map(map => map.map_id),
+            recordModalProps.user.id
+          )) ?? [];
+      }
+
+      const playerList: ISweepstakePlayer[] = [];
+      for (let i = 0; i < selectedPlayers.length; ) {
+        let score = selectedPlayers[i].premier;
+        const ranking = playerScoreList.find(player => player.id === selectedPlayers[i].id);
+        if (recordModalProps?.sweepstake?.engine === SeepstakeEngineEnum.Ranking && ranking) {
+          score = ranking.score;
+        }
+
+        playerList.push({
+          user_id: recordModalProps.user.id,
+          sweepstake_id: recordModalProps.id,
+          player_id: selectedPlayers[i].id,
+          team: recordModalProps.team,
+          score,
+        });
+
+        i += 1;
+      }
+
+      await supabase.from(TABLE_SWEEPSTAKE_PLAYERS).insert(playerList);
+
+      return playerList;
+    },
+    async onSuccess(data) {
+      successFeedbackToast('Adicionar Jogadores', 'Jogadores adicionados com sucesso!');
+      recordModalProps?.onSubmit(data);
+      await queryClient.invalidateQueries({ queryKey: [TABLE_SWEEPSTAKE_PLAYERS, recordModalProps?.id] });
+      modalRef.current?.onCloseModal();
+    },
+    onError(error) {
+      errorFeedbackToast('Adicionar Jogadores', error);
+    },
+  });
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      onOpenModal,
+    }),
+    [onOpenModal]
+  );
+
+  return (
+    <Modal
+      ref={modalRef}
+      title={`Adicionar Jogadores ao Time ${recordModalProps?.team === SweepstakeTeamEnum.One ? '1' : '2'}`}
+      size="xl"
+      disableCloseButton={isLoadingCreate}
+    >
+      <ModalBody>
+        <Table
+          data={players}
+          columns={playerColumns}
+          loading={isLoading}
+          onRowClick={value => handleSelectedPlayers(value)}
+          isRowSelected={player => !!selectedPlayers.find(item => item.id === player.id)}
+        />
+      </ModalBody>
+      <ModalFooter flexDir="column" gap="4">
+        <SolidBlueButton
+          w="100%"
+          onClick={() => createMutateAsync()}
+          loading={isLoadingCreate}
+          disabled={selectedPlayers.length === 0}
+        >
+          {`Adicionar ${selectedPlayers.length > 0 ? ` ${selectedPlayers.length} jogadores` : ''}`}
+        </SolidBlueButton>
+        <CancelOutlineButton w="100%" onClick={() => modalRef.current?.onCloseModal()} disabled={isLoadingCreate} />
+      </ModalFooter>
+    </Modal>
+  );
+};
