@@ -1,9 +1,8 @@
+import { formatDate } from '@julianobazzi/utils';
 import { NextResponse } from 'next/server';
-
 import type ISweepstakeMapAPI from '~/models/Entity/Sweepstake/ISweepstakeMapAPI';
 import { getSweepstakeMaps } from '~/services/hooks/useSweepstakeMaps';
 import { getSweepstake } from '~/services/hooks/useSweepstakes';
-import { formatDate } from '~/utils/formatDate';
 
 function calculateMapStatus({
   team_one_score_1,

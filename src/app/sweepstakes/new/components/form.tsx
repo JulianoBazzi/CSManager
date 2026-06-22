@@ -2,6 +2,7 @@
 
 import { Checkbox, Flex, Stack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { getRandomInt } from '@julianobazzi/utils';
 import type { User } from '@supabase/supabase-js';
 import { useMutation } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
@@ -44,7 +45,6 @@ import { usePlayers } from '~/services/hooks/usePlayers';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';
 import balanceTeams from '~/utils/balanceTeams';
-import randomUnique from '~/utils/randomUnique';
 
 interface INewSweepstakeProps {
   user: User;
@@ -126,7 +126,7 @@ export function NewSweepstakeForm({ user }: INewSweepstakeProps) {
       }
 
       const mapList: ISweepstakeMap[] = [];
-      const startFromTerrorist = randomUnique(2, 1)[0] - 1;
+      const startFromTerrorist = getRandomInt(0, 1);
       for (let i = 0; i < selectedMaps.length; ) {
         mapList.push({
           user_id: user?.id,

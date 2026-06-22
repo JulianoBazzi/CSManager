@@ -1,3 +1,4 @@
+import { formatBoolean } from '@julianobazzi/utils';
 import { useQuery } from '@tanstack/react-query';
 
 import { games } from '~/assets/games';
@@ -7,7 +8,6 @@ import type IMapAPI from '~/models/Entity/Map/IMapAPI';
 import type IParamsRequest from '~/models/Request/IParamsRequest';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';
-import { formatBoolean } from '~/utils/formatBoolean';
 
 export function formatMap(map: IMapAPI): IMapAPI {
   return {

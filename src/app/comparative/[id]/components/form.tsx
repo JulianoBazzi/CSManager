@@ -1,6 +1,7 @@
 'use client';
 
 import { Box, Flex, Stack, Tabs, Text, useBreakpointValue } from '@chakra-ui/react';
+import { formatPercentage, safeDivide } from '@julianobazzi/utils';
 import type { User } from '@supabase/supabase-js';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
@@ -20,8 +21,6 @@ import type IViewMapRankingAPI from '~/models/Entity/Ranking/IViewMapRankingAPI'
 import type ISelectOption from '~/models/ISelectOption';
 import { usePlayerMapRanking } from '~/services/hooks/usePlayerMapRanking';
 import { usePlayers } from '~/services/hooks/usePlayers';
-import formatPercentage from '~/utils/formatPercentage';
-import getDivision from '~/utils/getDivision';
 
 interface IComparativePlayersProps {
   user?: User;
@@ -416,8 +415,8 @@ export function ComparativeForm({ user, userId, usernameOne, usernameTwo }: ICom
                   {comparativeMessage?.headshot ? comparativeMessage?.headshot : 'Maior Percentual de Tiros na Cabeça'}
                 </Text>
                 <Text fontSize="sm">
-                  <b>{formatPercentage(getDivision(one, count), true)}</b> vs{' '}
-                  {formatPercentage(getDivision(two, count), true)}
+                  <b>{formatPercentage(safeDivide(one, count), true)}</b> vs{' '}
+                  {formatPercentage(safeDivide(two, count), true)}
                 </Text>
               </Box>
             </Flex>
@@ -478,7 +477,7 @@ export function ComparativeForm({ user, userId, usernameOne, usernameTwo }: ICom
       killOne < killTwo &&
       assistanceOne < assistanceTwo &&
       deathOne > deathTwo &&
-      getDivision(headshotOne, count) < getDivision(headshotTwo, count) &&
+      safeDivide(headshotOne, count) < safeDivide(headshotTwo, count) &&
       quantityOne < quantitytwo
     ) {
       return (

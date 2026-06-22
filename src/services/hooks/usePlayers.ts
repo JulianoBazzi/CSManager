@@ -1,3 +1,4 @@
+import { formatBoolean } from '@julianobazzi/utils';
 import { useQuery } from '@tanstack/react-query';
 
 import { TABLE_PLAYERS } from '~/config/constants';
@@ -6,7 +7,6 @@ import type IParamsRequest from '~/models/Request/IParamsRequest';
 import { getSweepstakePlayers } from '~/services/hooks/useSweepstakePlayers';
 import { queryClient } from '~/services/queryClient';
 import supabase from '~/services/supabase';
-import { formatBoolean } from '~/utils/formatBoolean';
 
 export function formatPlayer(player: IPlayerAPI): IPlayerAPI {
   return {

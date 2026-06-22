@@ -1,8 +1,7 @@
 import { Icon, Input, InputGroup } from '@chakra-ui/react';
-import { type ChangeEvent, useState } from 'react';
+import { useDebounce } from '@julianobazzi/nextjs-utils';
+import { type ChangeEvent, useEffect, useRef, useState } from 'react';
 import { RiSearchLine } from 'react-icons/ri';
-
-import useDebounce from '~/hooks/useDebounce';
 
 interface ISearchBarProps {
   onSearch: (value: string) => void;
@@ -11,16 +10,21 @@ interface ISearchBarProps {
 
 export function SearchBar({ onSearch, disabled }: ISearchBarProps) {
   const [displayValue, setDisplayValue] = useState('');
+  const debouncedValue = useDebounce(displayValue, 200);
+  const didMount = useRef(false);
+  const onSearchRef = useRef(onSearch);
+  onSearchRef.current = onSearch;
 
-  const debouncedChange = useDebounce(onSearch, 200);
-
-  function handleSearch(value: string) {
-    setDisplayValue(value);
-    debouncedChange(value);
-  }
+  useEffect(() => {
+    if (!didMount.current) {
+      didMount.current = true;
+      return;
+    }
+    onSearchRef.current(debouncedValue);
+  }, [debouncedValue]);
 
   const changeSearch = (event: ChangeEvent<HTMLInputElement>) => {
-    handleSearch(event.target.value);
+    setDisplayValue(event.target.value);
   };
 
   return (

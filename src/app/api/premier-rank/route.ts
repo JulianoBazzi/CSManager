@@ -1,3 +1,4 @@
+import { onlyNumbers } from '@julianobazzi/utils';
 import axios from 'axios';
 import { NextResponse } from 'next/server';
 
@@ -25,7 +26,7 @@ function extractPeak(html: string): number {
   let match: RegExpExecArray | null;
   // biome-ignore lint/suspicious/noAssignInExpressions: padrão idiomático de exec em loop
   while ((match = regex.exec(html)) !== null) {
-    const digits = match[1].replace(/<[^>]*>/g, '').replace(/\D/g, '');
+    const digits = onlyNumbers(match[1].replace(/<[^>]*>/g, ''));
     if (digits) {
       numbers.push(Number.parseInt(digits, 10));
     }
