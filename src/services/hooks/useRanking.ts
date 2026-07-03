@@ -6,16 +6,14 @@ import type IViewRankingAPI from '~/models/Entity/Ranking/IViewRankingAPI';
 import supabase from '~/services/supabase';
 
 export async function getRanking(userId: string, year: number): Promise<IViewRankingAPI[]> {
-  const { data }: PostgrestResponse<IViewRankingAPI> = await supabase.rpc(FUNCTION_GET_RANKING_BY_YEAR, {
+  const { data, error }: PostgrestResponse<IViewRankingAPI> = await supabase.rpc(FUNCTION_GET_RANKING_BY_YEAR, {
     p_user_id: userId,
     p_year: year,
   });
 
-  // const { data } = await supabase
-  //   .from(FUNCTION_GET_RANKING_BY_YEAR)
-  //   .select()
-  //   .order('damage', { ascending: false })
-  //   .eq('user_id', userId);
+  if (error) {
+    throw error;
+  }
 
   return data || [];
 }

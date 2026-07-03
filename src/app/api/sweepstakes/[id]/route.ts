@@ -1,32 +1,8 @@
 import { formatDate } from '@julianobazzi/utils';
 import { NextResponse } from 'next/server';
-import type ISweepstakeMapAPI from '~/models/Entity/Sweepstake/ISweepstakeMapAPI';
 import { getSweepstakeMaps } from '~/services/hooks/useSweepstakeMaps';
 import { getSweepstake } from '~/services/hooks/useSweepstakes';
-
-function calculateMapStatus({
-  team_one_score_1,
-  team_one_score_2,
-  team_two_score_1,
-  team_two_score_2,
-}: ISweepstakeMapAPI): string {
-  const teamOneTotal = team_one_score_1 + team_one_score_2;
-  const teamTwoTotal = team_two_score_1 + team_two_score_2;
-
-  if (teamOneTotal === teamTwoTotal && teamOneTotal > 0) {
-    return 'draw';
-  }
-
-  if (teamOneTotal > teamTwoTotal) {
-    return 'team_one';
-  }
-
-  if (teamTwoTotal > teamOneTotal) {
-    return 'team_two';
-  }
-
-  return 'pending';
-}
+import { calculateMapStatus } from '~/utils/sweepstake';
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {

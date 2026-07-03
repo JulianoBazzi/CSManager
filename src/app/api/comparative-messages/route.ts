@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { openai } from '~/config/openai';
+import { parseJsonFromCompletion } from '~/utils/openai';
 
 export async function POST(request: Request) {
   const body = await request.json();
@@ -17,6 +18,7 @@ export async function POST(request: Request) {
   try {
     const response = await openai.chat.completions.create({
       model: 'gpt-5.5',
+      response_format: { type: 'json_object' },
       messages: [
         {
           role: 'system',
@@ -92,12 +94,12 @@ export async function POST(request: Request) {
       ],
     });
 
-    if (!response.choices[0].message.content) {
-      return NextResponse.json({ error: 'An error occurred while generating the data' }, { status: 400 });
-    }
-
-    return NextResponse.json(JSON.parse(response.choices[0].message.content.replace(/`/g, '').replace('json', '')));
+    return NextResponse.json(parseJsonFromCompletion(response));
   } catch (error) {
-    return NextResponse.json({ error }, { status: 500 });
+    console.error(error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'An error occurred while generating the data' },
+      { status: 500 }
+    );
   }
 }

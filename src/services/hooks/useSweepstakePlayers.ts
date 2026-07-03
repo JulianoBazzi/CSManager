@@ -13,19 +13,18 @@ export function formatSweepstakePlayer(sweepstakePlayer: ISweepstakePlayerAPI): 
 }
 
 export async function getSweepstakePlayers(sweepstakeId: string): Promise<ISweepstakePlayerAPI[]> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from(TABLE_SWEEPSTAKE_PLAYERS)
     .select('id, sweepstake_id, team, score, players(id, name, username, rating)')
     .eq('sweepstake_id', sweepstakeId);
 
-  const formattedData: ISweepstakePlayerAPI[] = [];
-
-  if (data) {
-    for (let i = 0; i < data.length; i++) {
-      const sweepstakePlayer = data[i];
-      formattedData.push(formatSweepstakePlayer(sweepstakePlayer as unknown as ISweepstakePlayerAPI));
-    }
+  if (error) {
+    throw error;
   }
+
+  const formattedData = (data ?? []).map(sweepstakePlayer =>
+    formatSweepstakePlayer(sweepstakePlayer as unknown as ISweepstakePlayerAPI)
+  );
 
   const sortedData = formattedData.sort((a, b) => {
     if (b.players.rating !== a.players.rating) {

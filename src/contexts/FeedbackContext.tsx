@@ -1,6 +1,4 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: <ignore> */
-
-import type { AuthError } from '@supabase/supabase-js';
+import { isAuthError } from '@supabase/supabase-js';
 import { type Context, createContext, type ReactNode, useContext } from 'react';
 
 import { toaster } from '~/components/Toaster';
@@ -12,7 +10,7 @@ interface IFeedbackProviderProps {
 }
 
 type FeedbackContextData = {
-  errorFeedbackToast: (title: string, error: any) => void;
+  errorFeedbackToast: (title: string, error: unknown) => void;
   infoFeedbackToast: (title: string, description?: string) => void;
   warningFeedbackToast: (title: string, description?: string) => void;
   successFeedbackToast: (title: string, description?: string) => void;
@@ -48,13 +46,14 @@ export function FeedbackProvider({ children }: IFeedbackProviderProps) {
     genericFeedbackToast(title, description, 'error');
   }
 
-  function errorFeedbackToast(title: string, error: any): void {
-    if (error as AuthError) {
-      warningFeedbackToast(title, `${error.message}`);
-    } else if (error?.message) {
-      dangerFeedbackToast(title, `Ocorreu um erro: ${error.message}`);
+  function errorFeedbackToast(title: string, error: unknown): void {
+    if (isAuthError(error)) {
+      warningFeedbackToast(title, error.message);
+    } else if (error instanceof Error || (typeof error === 'object' && error !== null && 'message' in error)) {
+      const { message } = error as { message?: unknown };
+      dangerFeedbackToast(title, `Ocorreu um erro: ${String(message)}`);
     } else {
-      dangerFeedbackToast(title, `Ocorreu um erro: ${error}`);
+      dangerFeedbackToast(title, `Ocorreu um erro: ${String(error)}`);
     }
   }
 

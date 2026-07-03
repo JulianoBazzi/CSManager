@@ -6,7 +6,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import { RiTeamLine } from 'react-icons/ri';
-import removeAccents from 'remove-accents';
+import { removeAccents } from '@julianobazzi/utils';
 import {
   PlayerMapRankingModal,
   type PlayerMapRankingModalHandle,
@@ -131,7 +131,7 @@ export function PlayersForm({ user }: IPlayersProps) {
       cell: ({ row }) => (
         <LinkBadge
           value={row.original.steam_id}
-          link={`https://xsteamcommunity.com/profiles/${row.original.steam_id}`}
+          link={`https://steamcommunity.com/profiles/${row.original.steam_id}`}
         />
       ),
     },

@@ -35,16 +35,13 @@ export async function getPlayers(userId: string, params?: IParamsRequest): Promi
 
   query = query.order('name', { ascending: true });
 
-  const { data } = await query;
+  const { data, error } = await query;
 
-  const formattedData: IPlayerAPI[] = [];
-
-  if (data) {
-    for (let i = 0; i < data.length; i++) {
-      const player = data[i];
-      formattedData.push(formatPlayer(player));
-    }
+  if (error) {
+    throw error;
   }
+
+  const formattedData = (data ?? []).map(formatPlayer);
 
   if (params?.sweepstakeId) {
     return formattedData.filter(player => sweepstakePlayers.includes(player.id));
@@ -58,7 +55,17 @@ export async function getPlayers(userId: string, params?: IParamsRequest): Promi
 }
 
 export async function getPlayer(id: string, userId: string): Promise<IPlayerAPI> {
-  const { data } = await supabase.from(TABLE_PLAYERS).select().eq('user_id', userId).eq('id', id).limit(1).single();
+  const { data, error } = await supabase
+    .from(TABLE_PLAYERS)
+    .select()
+    .eq('user_id', userId)
+    .eq('id', id)
+    .limit(1)
+    .single();
+
+  if (error) {
+    throw error;
+  }
 
   return formatPlayer(data);
 }

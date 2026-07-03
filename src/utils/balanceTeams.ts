@@ -43,26 +43,29 @@ function balanceTeams(players: IPlayerScoreAPI[]): [IPlayerScoreAPI[], IPlayerSc
     }
 
     if (team1.length !== team2.length) {
-      const score1 = calculateTeamScore(team1);
-      const score2 = calculateTeamScore(team2);
+      const largerTeam = team1.length > team2.length ? team1 : team2;
+      const smallerTeam = team1.length > team2.length ? team2 : team1;
 
-      const sourceTeam = score1 > score2 ? team1 : team2;
-      const targetTeam = score1 > score2 ? team2 : team1;
+      // Com número ímpar de jogadores as equipes têm tamanhos diferentes por
+      // definição. Só reequilibra quando a equipe maior também é a mais forte
+      // (situação duplamente injusta): move o pior jogador dela para a menor,
+      // preservando a diferença de tamanho de no máximo um.
+      if (calculateTeamScore(largerTeam) > calculateTeamScore(smallerTeam)) {
+        const worstPlayerIndex = largerTeam.reduce((worstIdx, player, idx, arr) => {
+          const worstPlayer = arr[worstIdx];
+          if (
+            player.rating < worstPlayer.rating ||
+            (player.rating === worstPlayer.rating && player.score < worstPlayer.score)
+          ) {
+            return idx;
+          }
+          return worstIdx;
+        }, 0);
 
-      const worstPlayerIndex = sourceTeam.reduce((worstIdx, player, idx, arr) => {
-        const worstPlayer = arr[worstIdx];
-        if (
-          player.rating < worstPlayer.rating ||
-          (player.rating === worstPlayer.rating && player.score < worstPlayer.score)
-        ) {
-          return idx;
+        const playerToMove = largerTeam.splice(worstPlayerIndex, 1)[0];
+        if (playerToMove) {
+          smallerTeam.push(playerToMove);
         }
-        return worstIdx;
-      }, 0);
-
-      const playerToMove = sourceTeam.splice(worstPlayerIndex, 1)[0];
-      if (playerToMove) {
-        targetTeam.push(playerToMove);
       }
     }
 

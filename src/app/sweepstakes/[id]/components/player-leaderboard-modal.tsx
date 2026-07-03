@@ -105,7 +105,7 @@ export const PlayerLeaderboardModal = ({ ref }: { ref?: Ref<PlayerLeaderboardMod
             required
             isSearchable
             onChange={option => {
-              setValue('player', option);
+              setValue('player', option as { id: string; name: string });
             }}
           />
           <Stack direction={['column', 'row']}>

@@ -4,7 +4,7 @@ import type { User } from '@supabase/supabase-js';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useEffect, useRef, useState } from 'react';
 import { RiMap2Line } from 'react-icons/ri';
-import removeAccents from 'remove-accents';
+import { removeAccents } from '@julianobazzi/utils';
 import { MapModal, type MapModalHandle } from '~/app/maps/components/modal';
 import { ActiveBadge } from '~/components/Badge/ActiveBadge';
 import { MapBadge } from '~/components/Badge/MapBadge';

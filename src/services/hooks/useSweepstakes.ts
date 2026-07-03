@@ -1,4 +1,4 @@
-import { formatDateTime } from '@julianobazzi/utils';
+import { formatDateTime, getLabelById } from '@julianobazzi/utils';
 import { useQuery } from '@tanstack/react-query';
 import { games } from '~/assets/games';
 import { sweepstakeEngines } from '~/assets/sweepstakeEngines';
@@ -10,34 +10,33 @@ import supabase from '~/services/supabase';
 export function formatSweepstakes(sweepstake: ISweepstakeAPI): ISweepstakeAPI {
   return {
     ...sweepstake,
-    format_game_type: games.find(game => game.id === sweepstake.game_type)?.name ?? 'Não Localizado',
-    format_short_game_type: games.find(game => game.id === sweepstake.game_type)?.shortName ?? 'Não Localizado',
-    format_engine: sweepstakeEngines.find(engine => engine.id === sweepstake.engine)?.name ?? 'Não Localizado',
+    format_game_type: getLabelById(games, sweepstake.game_type, 'name', 'Não Localizado'),
+    format_short_game_type: getLabelById(games, sweepstake.game_type, 'shortName', 'Não Localizado'),
+    format_engine: getLabelById(sweepstakeEngines, sweepstake.engine, 'name', 'Não Localizado'),
     format_departure_at: formatDateTime(sweepstake.departure_at),
   };
 }
 
 export async function getSweepstakes(userId: string): Promise<ISweepstakeAPI[]> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from(TABLE_SWEEPSTAKES)
     .select()
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
 
-  const formattedData: ISweepstakeAPI[] = [];
-
-  if (data) {
-    for (let i = 0; i < data.length; i++) {
-      const sweepstake = data[i];
-      formattedData.push(formatSweepstakes(sweepstake));
-    }
+  if (error) {
+    throw error;
   }
 
-  return formattedData;
+  return (data ?? []).map(formatSweepstakes);
 }
 
 export async function getSweepstake(id: string): Promise<ISweepstakeAPI> {
-  const { data } = await supabase.from(TABLE_SWEEPSTAKES).select().eq('id', id).limit(1).single();
+  const { data, error } = await supabase.from(TABLE_SWEEPSTAKES).select().eq('id', id).limit(1).single();
+
+  if (error) {
+    throw error;
+  }
 
   return formatSweepstakes(data);
 }

@@ -5,13 +5,17 @@ import type IViewSeepstakeRankingAPI from '~/models/Entity/Ranking/IViewSeepstak
 import supabase from '~/services/supabase';
 
 export async function getSweepstakeRanking(sweepstakeId: string): Promise<IViewSeepstakeRankingAPI[]> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from(VIEW_SWEEPSTAKE_RANKING)
     .select()
     .order('damage', { ascending: false })
     .eq('sweepstake_id', sweepstakeId);
 
-  return data as unknown as IViewSeepstakeRankingAPI[];
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []) as unknown as IViewSeepstakeRankingAPI[];
 }
 
 export function useSweepstakeRanking(sweepstakeId: string) {

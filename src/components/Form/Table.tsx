@@ -57,7 +57,14 @@ export function Table<T extends IEntityBase>({
     pageSize: perPage,
   });
 
-  const [sorting, setSorting] = useState<SortingState>([orderBy]);
+  const [sorting, setSorting] = useState<SortingState>(() => {
+    const columnIds = new Set(
+      columns
+        .map(column => column.id ?? ('accessorKey' in column ? String(column.accessorKey) : undefined))
+        .filter((id): id is string => Boolean(id))
+    );
+    return columnIds.has(orderBy.id) ? [orderBy] : [];
+  });
 
   const pagination = useMemo(
     () => ({

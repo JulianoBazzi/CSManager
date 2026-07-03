@@ -6,7 +6,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import axios from 'axios';
 import { type ChangeEvent, type Ref, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import { RiAlertLine } from 'react-icons/ri';
-import removeAccents from 'remove-accents';
+import { removeAccents } from '@julianobazzi/utils';
 import { v4 } from 'uuid';
 import {
   PlayerLeaderboardModal,
@@ -317,15 +317,21 @@ export const ImportImageLeaderboardModal = ({ ref }: { ref?: Ref<ImportImageLead
             )}
           </Stack>
         </ModalBody>
-        <ModalFooter flexDir="column" gap="4">
-          <SaveSolidButton
-            w="100%"
-            onClick={() => handleOk()}
-            loading={isLoadingRanking}
-            disabled={playerLeaderboards.length === 0}
-          />
-          <CancelOutlineButton w="100%" onClick={() => modalRef.current?.onCloseModal()} disabled={isLoadingRanking} />
-        </ModalFooter>
+        {leaderboard && (
+          <ModalFooter flexDir="column" gap="4">
+            <SaveSolidButton
+              w="100%"
+              onClick={() => handleOk()}
+              loading={isLoadingRanking}
+              disabled={playerLeaderboards.length === 0}
+            />
+            <CancelOutlineButton
+              w="100%"
+              onClick={() => modalRef.current?.onCloseModal()}
+              disabled={isLoadingRanking}
+            />
+          </ModalFooter>
+        )}
       </Modal>
     </>
   );

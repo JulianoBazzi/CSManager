@@ -9,11 +9,15 @@ export async function getPlayersScoresOnMaps(
   mapsIds: string[],
   userId: string
 ): Promise<IPlayerScoreAPI[] | null> {
-  const { data }: PostgrestResponse<IPlayerScoreAPI> = await supabase.rpc(FUNCTION_GET_PLAYER_SCORES_ON_MAPS, {
+  const { data, error }: PostgrestResponse<IPlayerScoreAPI> = await supabase.rpc(FUNCTION_GET_PLAYER_SCORES_ON_MAPS, {
     map_ids: mapsIds,
     player_ids: playerIds,
     user_id: userId,
   });
+
+  if (error) {
+    throw error;
+  }
 
   return data;
 }
@@ -23,11 +27,15 @@ export async function getPlayerScoresOnMaps(
   mapsIds: string[],
   userId: string
 ): Promise<IPlayerScoreAPI | null> {
-  const { data }: PostgrestResponse<IPlayerScoreAPI> = await supabase.rpc(FUNCTION_GET_PLAYER_SCORES_ON_MAPS, {
+  const { data, error }: PostgrestResponse<IPlayerScoreAPI> = await supabase.rpc(FUNCTION_GET_PLAYER_SCORES_ON_MAPS, {
     map_ids: mapsIds,
     player_ids: [playerId],
     user_id: userId,
   });
+
+  if (error) {
+    throw error;
+  }
 
   return data && data.length > 0 ? data[0] : null;
 }

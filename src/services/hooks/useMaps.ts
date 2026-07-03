@@ -1,4 +1,4 @@
-import { formatBoolean } from '@julianobazzi/utils';
+import { formatBoolean, getLabelById } from '@julianobazzi/utils';
 import { useQuery } from '@tanstack/react-query';
 
 import { games } from '~/assets/games';
@@ -12,8 +12,8 @@ import supabase from '~/services/supabase';
 export function formatMap(map: IMapAPI): IMapAPI {
   return {
     ...map,
-    format_short_game_type: games.find(patent => patent.id === map.game_type)?.shortName ?? 'Não Localizado',
-    format_map_type: maps.find(patent => patent.id === map.map_type)?.name ?? 'Não Localizado',
+    format_short_game_type: getLabelById(games, map.game_type, 'shortName', 'Não Localizado'),
+    format_map_type: getLabelById(maps, map.map_type, 'name', 'Não Localizado'),
     format_active: formatBoolean(map.active),
   };
 }
@@ -27,22 +27,27 @@ export async function getMaps(userId: string, params?: IParamsRequest): Promise<
 
   query = query.order('name', { ascending: true });
 
-  const { data } = await query;
+  const { data, error } = await query;
 
-  const formattedData: IMapAPI[] = [];
-
-  if (data) {
-    for (let i = 0; i < data.length; i++) {
-      const player = data[i];
-      formattedData.push(formatMap(player));
-    }
+  if (error) {
+    throw error;
   }
 
-  return formattedData;
+  return (data ?? []).map(formatMap);
 }
 
 export async function getMap(id: string, userId: string): Promise<IMapAPI> {
-  const { data } = await supabase.from(TABLE_MAPS).select().eq('user_id', userId).eq('id', id).limit(1).single();
+  const { data, error } = await supabase
+    .from(TABLE_MAPS)
+    .select()
+    .eq('user_id', userId)
+    .eq('id', id)
+    .limit(1)
+    .single();
+
+  if (error) {
+    throw error;
+  }
 
   return formatMap(data);
 }

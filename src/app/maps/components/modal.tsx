@@ -2,6 +2,7 @@
 
 import { Flex, Stack, Text } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { findOptionById } from '@julianobazzi/utils';
 import { useMutation } from '@tanstack/react-query';
 import { type Ref, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import { type SubmitHandler, useForm } from 'react-hook-form';
@@ -78,8 +79,8 @@ export const MapModal = ({ ref }: { ref?: Ref<MapModalHandle> }) => {
           .then(response => {
             reset({
               ...response,
-              map_type: maps.find(map => map.id === response.map_type),
-              game_type: games.find(game => game.id === response.game_type),
+              map_type: findOptionById(maps, response.map_type) ?? undefined,
+              game_type: findOptionById(games, response.game_type) ?? undefined,
             });
           })
           .catch(error => {
@@ -92,7 +93,7 @@ export const MapModal = ({ ref }: { ref?: Ref<MapModalHandle> }) => {
       } else {
         reset({
           active: true,
-          game_type: games.find(game => game.id === recordModal?.user.user_metadata.gameType),
+          game_type: findOptionById(games, recordModal?.user.user_metadata.gameType) ?? undefined,
         });
       }
       modalRef.current?.onOpenModal();
@@ -158,7 +159,7 @@ export const MapModal = ({ ref }: { ref?: Ref<MapModalHandle> }) => {
             disabled={isSubmitting}
             required
             onChange={option => {
-              setValue('map_type', option);
+              setValue('map_type', option as ISelectOption);
             }}
           />
           <Select
@@ -171,7 +172,7 @@ export const MapModal = ({ ref }: { ref?: Ref<MapModalHandle> }) => {
             disabled={isSubmitting}
             required
             onChange={option => {
-              setValue('game_type', option);
+              setValue('game_type', option as ISelectOption);
             }}
           />
           <Flex w="200px" direction="column" gap="2">

@@ -5,7 +5,7 @@ import type ISweepstakeMapAPI from '~/models/Entity/Sweepstake/ISweepstakeMapAPI
 import supabase from '~/services/supabase';
 
 export async function getSweepstakeMaps(sweepstakeId: string): Promise<ISweepstakeMapAPI[]> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from(TABLE_SWEEPSTAKE_MAPS)
     .select(`
       id,
@@ -22,11 +22,19 @@ export async function getSweepstakeMaps(sweepstakeId: string): Promise<ISweepsta
     .order('order', { ascending: true })
     .eq('sweepstake_id', sweepstakeId);
 
-  return data as unknown as ISweepstakeMapAPI[];
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []) as unknown as ISweepstakeMapAPI[];
 }
 
 export async function getSweepstakeMap(id: string): Promise<ISweepstakeMapAPI> {
-  const { data } = await supabase.from(TABLE_SWEEPSTAKE_MAPS).select().eq('id', id).limit(1).single();
+  const { data, error } = await supabase.from(TABLE_SWEEPSTAKE_MAPS).select().eq('id', id).limit(1).single();
+
+  if (error) {
+    throw error;
+  }
 
   return data;
 }

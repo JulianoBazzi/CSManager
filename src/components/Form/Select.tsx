@@ -1,14 +1,14 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: <ignore> */
 import { Field, Skeleton } from '@chakra-ui/react';
 import { Select as ChakraReactSelect, type SelectInstance } from 'chakra-react-select';
 import type { Ref } from 'react';
+import type { FieldError } from 'react-hook-form';
 
 import type ISelectOption from '~/models/ISelectOption';
 
 interface ISelectProps {
   name: string;
   label?: string;
-  error?: any;
+  error?: FieldError;
   maxW?: string | string[];
   options: ISelectOption[];
   isSearchable?: boolean;
@@ -18,7 +18,7 @@ interface ISelectProps {
   required?: boolean;
   loading?: boolean;
   value?: ISelectOption | ISelectOption[];
-  onChange: (option: any) => void;
+  onChange: (option: ISelectOption | null) => void;
   ref?: Ref<SelectInstance<ISelectOption>>;
 }
 
@@ -75,7 +75,7 @@ export const Select = ({
           getOptionLabel={({ name: nameOption }: ISelectOption) => nameOption}
           getOptionValue={({ id }: ISelectOption) => String(id)}
           required={required}
-          onChange={option => onChange(option as ISelectOption)}
+          onChange={option => onChange(option as ISelectOption | null)}
           placeholder=""
           noOptionsMessage={() => 'Nenhum Registro Encontrado'}
           loadingMessage={() => 'Carregando...'}

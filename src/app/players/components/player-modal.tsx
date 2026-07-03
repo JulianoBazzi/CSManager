@@ -158,23 +158,7 @@ export const PlayerModal = ({ ref }: { ref?: Ref<PlayerModalHandle> }) => {
               loading={isLoading}
               disabled={isSubmitting}
               required
-            >
-              {/* {watch('steam_id') && (
-                <InputRightElement>
-                  {isRefreshScore ? (
-                    <Spinner size="sm" />
-                  ) : (
-                    <Icon
-                      as={RiRepeatFill}
-                      title="Atualizar Ranking"
-                      fontSize="xl"
-                      cursor="pointer"
-                      onClick={() => refreshScoreMutateAsync()}
-                    />
-                  )}
-                </InputRightElement>
-              )} */}
-            </NumberInput>
+            />
           </Stack>
           <Text mr="auto" cursor="pointer" onClick={() => setValue('rating', 0)}>
             Avaliação

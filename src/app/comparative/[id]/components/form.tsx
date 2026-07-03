@@ -64,6 +64,16 @@ interface IComparativeMessageAPI {
   damage?: string;
 }
 
+const EMPTY_STATS = {
+  count: 0,
+  quantity: 0,
+  kills: 0,
+  deaths: 0,
+  assistances: 0,
+  headshot_percentage: 0,
+  damage: 0,
+};
+
 export function ComparativeForm({ user, userId, usernameOne, usernameTwo }: IComparativePlayersProps) {
   const isMobile = useBreakpointValue({ base: true, md: false });
   const { errorFeedbackToast } = useFeedback();
@@ -133,31 +143,13 @@ export function ComparativeForm({ user, userId, usernameOne, usernameTwo }: ICom
     if (usernameOne) {
       const one = playerOptions.find(player => player.description === usernameOne);
       if (one) {
-        setPlayerOne({
-          ...one,
-          count: 0,
-          quantity: 0,
-          kills: 0,
-          deaths: 0,
-          assistances: 0,
-          headshot_percentage: 0,
-          damage: 0,
-        });
+        setPlayerOne({ ...one, ...EMPTY_STATS });
       }
     }
     if (usernameTwo) {
       const two = playerOptions.find(player => player.description === usernameTwo);
       if (two) {
-        setPlayerTwo({
-          ...two,
-          count: 0,
-          quantity: 0,
-          kills: 0,
-          deaths: 0,
-          assistances: 0,
-          headshot_percentage: 0,
-          damage: 0,
-        });
+        setPlayerTwo({ ...two, ...EMPTY_STATS });
       }
     }
   }, [playerOptions]);
@@ -190,37 +182,9 @@ export function ComparativeForm({ user, userId, usernameOne, usernameTwo }: ICom
         playerStatsMap[stat.name].two = stat;
       }
 
-      setPlayerOne(previousOne => {
-        if (previousOne) {
-          return {
-            ...previousOne,
-            count: 0,
-            quantity: 0,
-            kills: 0,
-            deaths: 0,
-            assistances: 0,
-            headshot_percentage: 0,
-            damage: 0,
-          };
-        }
-        return undefined;
-      });
+      setPlayerOne(previousOne => (previousOne ? { ...previousOne, ...EMPTY_STATS } : undefined));
 
-      setPlayerTwo(previousTwo => {
-        if (previousTwo) {
-          return {
-            ...previousTwo,
-            count: 0,
-            quantity: 0,
-            kills: 0,
-            deaths: 0,
-            assistances: 0,
-            headshot_percentage: 0,
-            damage: 0,
-          };
-        }
-        return undefined;
-      });
+      setPlayerTwo(previousTwo => (previousTwo ? { ...previousTwo, ...EMPTY_STATS } : undefined));
 
       const statNames = Object.keys(playerStatsMap);
       for (let i = 0; i < statNames.length; i++) {
@@ -641,7 +605,7 @@ export function ComparativeForm({ user, userId, usernameOne, usernameTwo }: ICom
                 </Tabs.Content>
               </Tabs.Root>
 
-              <Tabs.Root mt="4" fitted variant="enclosed" defaultValue="0">
+              <Tabs.Root mt="4" fitted variant="enclosed" defaultValue="0" lazyMount unmountOnExit>
                 <Tabs.List overflowY="hidden" overflowX="auto">
                   <Tabs.Trigger value="0">Dano</Tabs.Trigger>
                   <Tabs.Trigger value="1">Vítimas</Tabs.Trigger>

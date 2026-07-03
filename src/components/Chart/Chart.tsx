@@ -1,7 +1,7 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: <ignore> */
 import { Chart as ChakraChart, useChart } from '@chakra-ui/charts';
 import { Skeleton } from '@chakra-ui/react';
-import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
 
 interface IChartSeries {
   name?: string;
@@ -51,25 +51,23 @@ export default function Chart({
 
   return (
     <ChakraChart.Root chart={chart} w="100%" h={height}>
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={chart.data}>
-          <CartesianGrid stroke={chart.color('border.muted')} vertical={false} />
-          <XAxis dataKey={chart.key('category')} stroke={chart.color('border')} />
-          <YAxis stroke={chart.color('border')} />
-          <Tooltip cursor={false} content={<ChakraChart.Tooltip />} />
-          {!hideLegend && <Legend content={<ChakraChart.Legend />} />}
-          {chart.series.map(item => (
-            <Line
-              key={item.name}
-              dataKey={chart.key(item.name)}
-              stroke={item.color}
-              strokeWidth={2}
-              dot={false}
-              isAnimationActive={false}
-            />
-          ))}
-        </LineChart>
-      </ResponsiveContainer>
+      <LineChart data={chart.data} responsive>
+        <CartesianGrid stroke={chart.color('border.muted')} vertical={false} />
+        <XAxis dataKey={chart.key('category')} stroke={chart.color('border')} />
+        <YAxis stroke={chart.color('border')} />
+        <Tooltip cursor={false} content={<ChakraChart.Tooltip />} />
+        {!hideLegend && <Legend content={<ChakraChart.Legend />} />}
+        {chart.series.map(item => (
+          <Line
+            key={item.name}
+            dataKey={chart.key(item.name)}
+            stroke={item.color}
+            strokeWidth={2}
+            dot={false}
+            isAnimationActive={false}
+          />
+        ))}
+      </LineChart>
     </ChakraChart.Root>
   );
 }

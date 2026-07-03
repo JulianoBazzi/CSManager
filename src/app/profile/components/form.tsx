@@ -2,6 +2,7 @@
 
 import { Button, CardFooter, Stack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { findOptionById } from '@julianobazzi/utils';
 import type { User } from '@supabase/supabase-js';
 import { type SubmitHandler, useForm } from 'react-hook-form';
 import { RiUserSettingsLine } from 'react-icons/ri';
@@ -57,8 +58,8 @@ export function ProfileForm({ user }: IProfileFormProps) {
     resolver: yupResolver(profileFormSchema),
     defaultValues: {
       name: user.user_metadata.name,
-      game_type: games.find(game => game.id === user.user_metadata.gameType),
-      engine: sweepstakeEngines.find(engine => engine.id === user.user_metadata.sweepstakeEngine),
+      game_type: findOptionById(games, user.user_metadata.gameType) ?? undefined,
+      engine: findOptionById(sweepstakeEngines, user.user_metadata.sweepstakeEngine) ?? undefined,
     },
   });
 
@@ -83,7 +84,7 @@ export function ProfileForm({ user }: IProfileFormProps) {
               disabled={isSubmitting}
               required
               onChange={option => {
-                setValue('game_type', option);
+                setValue('game_type', option as ISelectOption);
               }}
             />
 
@@ -96,7 +97,7 @@ export function ProfileForm({ user }: IProfileFormProps) {
               disabled={isSubmitting}
               required
               onChange={option => {
-                setValue('engine', option);
+                setValue('engine', option as ISelectOption);
               }}
             />
           </Stack>

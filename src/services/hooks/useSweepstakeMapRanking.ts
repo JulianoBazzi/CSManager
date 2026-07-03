@@ -14,7 +14,7 @@ export function formatSweepstakeMapRanking(ranking: IRankingAPI): IRankingAPI {
 }
 
 export async function getSweepstakeMapRanking(params: IRankingParamsRequest): Promise<IRankingAPI[]> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from(TABLE_RANKING)
     .select(`
       id,
@@ -29,16 +29,11 @@ export async function getSweepstakeMapRanking(params: IRankingParamsRequest): Pr
     .eq('sweepstake_id', params.sweepstakeId)
     .eq('map_id', params.mapId);
 
-  const formattedData: IRankingAPI[] = [];
-
-  if (data) {
-    for (let i = 0; i < data.length; i++) {
-      const ranking = data[i];
-      formattedData.push(formatSweepstakeMapRanking(ranking as unknown as IRankingAPI));
-    }
+  if (error) {
+    throw error;
   }
 
-  return formattedData;
+  return (data ?? []).map(ranking => formatSweepstakeMapRanking(ranking as unknown as IRankingAPI));
 }
 
 export function useSweepstakeMapRanking(params: IRankingParamsRequest) {

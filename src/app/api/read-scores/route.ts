@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { openai } from '~/config/openai';
 import type ILeaderboardAPI from '~/models/Entity/Leaderboard/ILeaderboardAPI';
+import { parseJsonFromCompletion } from '~/utils/openai';
 
 export async function POST(request: Request) {
   const { image_url } = await request.json();
@@ -13,17 +14,18 @@ export async function POST(request: Request) {
   try {
     const response = await openai.chat.completions.create({
       model: 'gpt-5.4-mini',
+      response_format: { type: 'json_object' },
       messages: [
         {
           role: 'system',
-          content: 'Return only the text, nothing more.',
+          content: 'Return only the JSON object, nothing more.',
         },
         {
           role: 'user',
           content: [
             {
               type: 'text',
-              text: 'Read the image and return its data to me in a string. Give me back: game, map and an array of players with: name, kills, deaths, assistances, headshot_percentage and damage.',
+              text: 'Read the image and return its data as a JSON object. Give me back: game, map and an array of players with: name, kills, deaths, assistances, headshot_percentage and damage.',
             },
             {
               type: 'image_url',
@@ -36,17 +38,14 @@ export async function POST(request: Request) {
       ],
     });
 
-    if (!response.choices[0].message.content) {
-      return NextResponse.json({ error: 'An error occurred while generating the data' }, { status: 400 });
-    }
-
-    const leaderboard: ILeaderboardAPI = JSON.parse(
-      response.choices[0].message.content.replace(/`/g, '').replace('json', '')
-    );
+    const leaderboard = parseJsonFromCompletion<ILeaderboardAPI>(response);
 
     return NextResponse.json(leaderboard);
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error }, { status: 500 });
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'An error occurred while generating the data' },
+      { status: 500 }
+    );
   }
 }

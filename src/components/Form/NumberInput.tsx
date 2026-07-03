@@ -6,6 +6,7 @@ import {
   Skeleton,
   Spinner,
 } from '@chakra-ui/react';
+import { allowNumericKeyDown } from '@julianobazzi/nextjs-utils';
 import type { ReactNode, Ref } from 'react';
 import type { FieldError } from 'react-hook-form';
 
@@ -48,12 +49,7 @@ export const NumberInput = ({
           type="number"
           name={name}
           autoComplete="off"
-          onKeyPress={event => {
-            const reg = /^[0-9]*$/;
-            if (!reg.test(event.key)) {
-              event.preventDefault();
-            }
-          }}
+          onKeyDown={allowNumericKeyDown}
           onFocus={event => {
             event.target.select();
           }}

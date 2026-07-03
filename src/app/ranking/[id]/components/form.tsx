@@ -5,7 +5,7 @@ import type { User } from '@supabase/supabase-js';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
 import { RiNumbersLine } from 'react-icons/ri';
-import removeAccents from 'remove-accents';
+import { removeAccents } from '@julianobazzi/utils';
 
 import { years } from '~/assets/years';
 import { RankBadge } from '~/components/Badge/RankBadge';
@@ -122,7 +122,7 @@ export function RankingForm({ user, userId }: IRankingProps) {
                 options={years}
                 value={selectedYear}
                 required
-                onChange={option => setSelectedYear(option)}
+                onChange={option => option && setSelectedYear(option)}
               />
             </Flex>
           </Flex>

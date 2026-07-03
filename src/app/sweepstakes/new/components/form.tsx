@@ -2,7 +2,7 @@
 
 import { Checkbox, Flex, Stack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { getRandomInt } from '@julianobazzi/utils';
+import { findOptionById, getRandomInt } from '@julianobazzi/utils';
 import type { User } from '@supabase/supabase-js';
 import { useMutation } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
@@ -273,8 +273,8 @@ export function NewSweepstakeForm({ user }: INewSweepstakeProps) {
   } = useForm({
     resolver: yupResolver(sweepstakeSchema),
     defaultValues: {
-      game_type: games.find(game => game.id === user.user_metadata.gameType),
-      engine: sweepstakeEngines.find(engine => engine.id === user.user_metadata.sweepstakeEngine),
+      game_type: findOptionById(games, user.user_metadata.gameType) ?? undefined,
+      engine: findOptionById(sweepstakeEngines, user.user_metadata.sweepstakeEngine) ?? undefined,
       departure_at: dayjs().set('hour', 21).set('minute', 0).set('second', 0).format('YYYY-MM-DD HH:mm'),
     },
   });
@@ -310,7 +310,7 @@ export function NewSweepstakeForm({ user }: INewSweepstakeProps) {
               disabled={isLoadingCreate}
               required
               onChange={option => {
-                setValue('game_type', option);
+                setValue('game_type', option as ISelectOption);
               }}
             />
             <Input
@@ -330,7 +330,7 @@ export function NewSweepstakeForm({ user }: INewSweepstakeProps) {
               disabled={isLoadingCreate}
               required
               onChange={option => {
-                setValue('engine', option);
+                setValue('engine', option as ISelectOption);
               }}
             />
             <Stack direction="row" gap="4" w="100%">

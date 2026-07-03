@@ -1,8 +1,8 @@
-import { onlyNumbers } from '@julianobazzi/utils';
 import axios from 'axios';
 import { NextResponse } from 'next/server';
 
 import { SCRAPE_DO_TOKEN } from '~/config/constants';
+import { extractPeak } from '~/utils/premier';
 
 export const maxDuration = 60;
 
@@ -13,25 +13,6 @@ const CONCURRENCY = 5;
 interface IPremierResult {
   steam_id: string;
   premier: number | null;
-}
-
-// Extrai o pico de Premier da página csstats.gg/player/{steam_id} (leaderboard da Valve).
-// O painel de ranks mostra Premier nas colunas "Rank" (atual) e "Best" (pico) e o gráfico
-// de partidas, todos como `<div class="cs2rating ...">10<small>,104</small></div>`. O pico
-// é sempre o maior valor entre eles (Best >= atual >= partidas). Sem `cs2rating`
-// (jogador não rastreado no csstats) -> 0.
-function extractPeak(html: string): number {
-  const numbers: number[] = [];
-  const regex = /cs2rating[^>]*>([\s\S]*?)<\/div>/g;
-  let match: RegExpExecArray | null;
-  // biome-ignore lint/suspicious/noAssignInExpressions: padrão idiomático de exec em loop
-  while ((match = regex.exec(html)) !== null) {
-    const digits = onlyNumbers(match[1].replace(/<[^>]*>/g, ''));
-    if (digits) {
-      numbers.push(Number.parseInt(digits, 10));
-    }
-  }
-  return numbers.length > 0 ? Math.max(...numbers) : 0;
 }
 
 async function fetchPremier(steam_id: string): Promise<number | null> {
@@ -56,6 +37,10 @@ export async function POST(request: Request) {
 
   if (!Array.isArray(steam_ids) || steam_ids.length === 0) {
     return NextResponse.json({ error: 'No steam_ids provided' }, { status: 400 });
+  }
+
+  if (!SCRAPE_DO_TOKEN) {
+    return NextResponse.json({ error: 'Variável de ambiente ausente: SCRAPE_DO_TOKEN.' }, { status: 500 });
   }
 
   try {

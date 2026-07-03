@@ -1,4 +1,5 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: <ignore> */
+import { getLabelById } from '@julianobazzi/utils';
 import { type Ref, useCallback, useImperativeHandle, useRef, useState } from 'react';
 
 import { alertOrigins } from '~/assets/alertOrigins';
@@ -31,7 +32,7 @@ export const ConfirmRegisterAlert = ({ isSubmitting, onClose, ref, ...rest }: IC
 
   const [alertProps, setAlertProps] = useState<IOpenConfirmRegisterAlertProps<any> | undefined>(undefined);
 
-  const description = () => alertOrigins.find(origin => origin.id === alertProps?.origin)?.name ?? 'Não Localizado';
+  const description = () => getLabelById(alertOrigins, alertProps?.origin, 'name', 'Não Localizado');
 
   const title = () => {
     if (alertProps?.type === AlertTypeEnum.Update) {

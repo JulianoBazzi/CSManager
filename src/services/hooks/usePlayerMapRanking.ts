@@ -5,13 +5,17 @@ import type IViewMapRankingAPI from '~/models/Entity/Ranking/IViewMapRankingAPI'
 import supabase from '~/services/supabase';
 
 export async function getPlayerMapRanking(playerId: string): Promise<IViewMapRankingAPI[]> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from(VIEW_MAP_RANKING)
     .select()
     .order('damage', { ascending: false })
     .eq('player_id', playerId);
 
-  return data as unknown as IViewMapRankingAPI[];
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []) as unknown as IViewMapRankingAPI[];
 }
 
 export function usePlayerMapRanking(

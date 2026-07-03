@@ -5,7 +5,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { RiTrophyLine } from 'react-icons/ri';
-import removeAccents from 'remove-accents';
+import { removeAccents } from '@julianobazzi/utils';
 
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';

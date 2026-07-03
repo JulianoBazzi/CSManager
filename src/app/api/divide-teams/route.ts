@@ -1,17 +1,19 @@
 import { NextResponse } from 'next/server';
 
 import { openai } from '~/config/openai';
+import { parseJsonFromCompletion } from '~/utils/openai';
 
 export async function POST(request: Request) {
   const body = await request.json();
 
-  if (!body || body.length === 0) {
+  if (!Array.isArray(body) || body.length === 0) {
     return NextResponse.json({ error: 'No players provided' }, { status: 400 });
   }
 
   try {
     const response = await openai.chat.completions.create({
       model: 'gpt-5.4-mini',
+      response_format: { type: 'json_object' },
       messages: [
         {
           role: 'system',
@@ -47,12 +49,12 @@ export async function POST(request: Request) {
       ],
     });
 
-    if (!response.choices[0].message.content) {
-      return NextResponse.json({ error: 'An error occurred while generating the data' }, { status: 400 });
-    }
-
-    return NextResponse.json(JSON.parse(response.choices[0].message.content.replace(/`/g, '').replace('json', '')));
+    return NextResponse.json(parseJsonFromCompletion(response));
   } catch (error) {
-    return NextResponse.json({ error }, { status: 500 });
+    console.error(error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'An error occurred while generating the data' },
+      { status: 500 }
+    );
   }
 }
