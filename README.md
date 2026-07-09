@@ -26,7 +26,7 @@
 
 > 🌐 **English** | [Português](README.pt-BR.md)
 
-A web app to manage Counter-Strike matches and communities: register players, run **sweepstakes** with AI-powered team balancing, track per-map scores, build rankings, and pull stats — including reading scoreboards straight from a screenshot.
+A web app to manage Counter-Strike matches and communities: register players, run **sweepstakes** with automatic team balancing, track per-map scores, build rankings, and pull stats — including reading scoreboards straight from a screenshot.
 
 ## Demo
 
@@ -36,7 +36,7 @@ A web app to manage Counter-Strike matches and communities: register players, ru
 
 - **Players** — manage players with name, Steam ID, 1–5★ rating and active status.
 - **Maps** — catalog maps by game type (5v5, 2v2, …) and map type.
-- **Sweepstakes** — create a draw with selected players and maps, **balance teams with AI** (OpenAI), and track per-map scores for two teams across two halves, with automatic match status.
+- **Sweepstakes** — create a draw with selected players and maps, **balance teams automatically** by player strength (star rating + average damage on the chosen maps), and track per-map scores for two teams across two halves, with automatic match status.
 - **Rankings** — yearly ranking (`get_ranking_by_year` RPC), per-map ranking and per-sweepstake ranking, with kills/deaths/damage/headshot stats.
 - **Scoreboard OCR** — extract player stats from a leaderboard screenshot via OpenAI Vision.
 - **Premier rank** — fetch CS2 Premier peaks by scraping [csstats.gg](https://csstats.gg/).
@@ -47,7 +47,6 @@ A web app to manage Counter-Strike matches and communities: register players, ru
 
 | Route | Description |
 |-------|-------------|
-| `POST /api/divide-teams` | AI team balancing (OpenAI) by score sum + star rating |
 | `POST /api/read-scores` | OCR a leaderboard screenshot into player stats (OpenAI Vision) |
 | `POST /api/premier-rank` | Scrape csstats.gg (via scrape.do) for CS2 Premier peaks |
 | `POST /api/comparative-messages` | AI-generated commentary for player comparisons |
@@ -61,7 +60,7 @@ A web app to manage Counter-Strike matches and communities: register players, ru
 - [Supabase](https://supabase.com/) (database + auth)
 - [TanStack Query](https://tanstack.com/query) & [TanStack Table](https://tanstack.com/table)
 - [React Hook Form](https://react-hook-form.com/) + [Yup](https://github.com/jquense/yup) (`yup-locale-pt`)
-- [OpenAI](https://platform.openai.com/) (team balancing, OCR, commentary)
+- [OpenAI](https://platform.openai.com/) (OCR, commentary)
 - [@julianobazzi/utils](https://www.npmjs.com/package/@julianobazzi/utils) & [@julianobazzi/nextjs-utils](https://www.npmjs.com/package/@julianobazzi/nextjs-utils)
 - [Biome](https://biomejs.dev/) (lint/format)
 
@@ -92,7 +91,7 @@ App runs at [http://localhost:3000](http://localhost:3000).
 |----------|-------------|
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL (client-side) |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key (client-side) |
-| `OPENAI_API_KEY` | OpenAI key for team balancing, OCR and commentary |
+| `OPENAI_API_KEY` | OpenAI key for OCR and commentary |
 | `SCRAPE_DO_TOKEN` | [scrape.do](https://scrape.do/) token for Premier rank scraping |
 | `NODE_ENV` | Application environment (`development` / `production`) |
 

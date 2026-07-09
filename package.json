@@ -1,6 +1,6 @@
 {
   "name": "csmanager",
-  "version": "1.10.2",
+  "version": "1.10.3",
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
@@ -20,8 +20,8 @@
     "@emotion/react": "11.14.0",
     "@hookform/resolvers": "5.4.0",
     "@julianobazzi/nextjs-utils": "1.0.4",
-    "@julianobazzi/utils": "1.0.8",
-    "@supabase/supabase-js": "2.110.0",
+    "@julianobazzi/utils": "1.0.9",
+    "@supabase/supabase-js": "2.110.1",
     "@tanstack/react-query": "5.101.2",
     "@tanstack/react-table": "8.21.3",
     "axios": "1.18.1",
@@ -35,21 +35,21 @@
     "openai": "6.45.0",
     "react": "19.2.7",
     "react-dom": "19.2.7",
-    "react-hook-form": "7.80.0",
+    "react-hook-form": "7.81.0",
     "react-icons": "5.7.0",
     "react-simple-star-rating": "5.1.7",
-    "recharts": "3.9.1",
+    "recharts": "3.9.2",
     "uuid": "14.0.1",
     "yup": "1.7.1",
     "yup-locale-pt": "0.0.9"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.2",
+    "@biomejs/biome": "2.5.3",
     "@types/lodash": "4.17.24",
-    "@types/node": "26.1.0",
+    "@types/node": "26.1.1",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
     "typescript": "6.0.3",
-    "vitest": "4.1.9"
+    "vitest": "4.1.10"
   }
 }

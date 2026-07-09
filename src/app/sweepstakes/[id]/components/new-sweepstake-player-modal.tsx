@@ -13,8 +13,6 @@ import { Table } from '~/components/Form/Table';
 import { TABLE_SWEEPSTAKE_PLAYERS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import type IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
-import type IPlayerScoreAPI from '~/models/Entity/Player/IPlayerScoreAPI';
-import { SeepstakeEngineEnum } from '~/models/Entity/Sweepstake/ISweepstakeAPI';
 import type ISweepstakePlayer from '~/models/Entity/Sweepstake/ISweepstakePlayer';
 import { SweepstakeTeamEnum } from '~/models/Entity/Sweepstake/ISweepstakePlayerAPI';
 import type INewSweepstakePlayerModal from '~/models/Modal/INewSweepstakePlayerModal';
@@ -118,31 +116,23 @@ export const NewSweepstakePlayerModal = ({ ref }: { ref?: Ref<NewSweepstakePlaye
         return [];
       }
 
-      let playerScoreList: IPlayerScoreAPI[] = [];
-
-      if (recordModalProps?.sweepstake?.engine === SeepstakeEngineEnum.Ranking) {
-        playerScoreList =
-          (await getPlayersScoresOnMaps(
-            selectedPlayers.map(player => player.id),
-            recordModalProps.maps.map(map => map.map_id),
-            recordModalProps.user.id
-          )) ?? [];
-      }
+      const playerScoreList =
+        (await getPlayersScoresOnMaps(
+          selectedPlayers.map(player => player.id),
+          recordModalProps.maps.map(map => map.map_id),
+          recordModalProps.user.id
+        )) ?? [];
 
       const playerList: ISweepstakePlayer[] = [];
       for (let i = 0; i < selectedPlayers.length; ) {
-        let score = selectedPlayers[i].premier;
         const ranking = playerScoreList.find(player => player.id === selectedPlayers[i].id);
-        if (recordModalProps?.sweepstake?.engine === SeepstakeEngineEnum.Ranking && ranking) {
-          score = ranking.score;
-        }
 
         playerList.push({
           user_id: recordModalProps.user.id,
           sweepstake_id: recordModalProps.id,
           player_id: selectedPlayers[i].id,
           team: recordModalProps.team,
-          score,
+          score: ranking?.score ?? 0,
         });
 
         i += 1;

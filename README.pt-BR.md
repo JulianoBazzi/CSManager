@@ -26,7 +26,7 @@
 
 > [English](README.md) | 🌐 **Português**
 
-Aplicação web para gerenciar partidas e comunidades de Counter-Strike: cadastre jogadores, faça **sorteios** com balanceamento de times por IA, registre o placar por mapa, monte rankings e extraia estatísticas — inclusive lendo o placar direto de um print.
+Aplicação web para gerenciar partidas e comunidades de Counter-Strike: cadastre jogadores, faça **sorteios** com balanceamento automático de times, registre o placar por mapa, monte rankings e extraia estatísticas — inclusive lendo o placar direto de um print.
 
 ## Demo
 
@@ -36,7 +36,7 @@ Aplicação web para gerenciar partidas e comunidades de Counter-Strike: cadastr
 
 - **Jogadores** — gerencie jogadores com nome, Steam ID, nota de 1 a 5★ e status ativo.
 - **Mapas** — catálogo de mapas por tipo de jogo (5v5, 2v2, …) e tipo de mapa.
-- **Sorteios** — crie um sorteio com os jogadores e mapas selecionados, **balanceie os times com IA** (OpenAI) e acompanhe o placar por mapa de dois times em dois tempos, com status da partida automático.
+- **Sorteios** — crie um sorteio com os jogadores e mapas selecionados, **balanceie os times automaticamente** pela força de cada jogador (estrelas + dano médio nos mapas escolhidos) e acompanhe o placar por mapa de dois times em dois tempos, com status da partida automático.
 - **Rankings** — ranking anual (RPC `get_ranking_by_year`), ranking por mapa e por sorteio, com estatísticas de kills/mortes/dano/headshot.
 - **Leitura de placar (OCR)** — extraia as estatísticas dos jogadores a partir de um print do placar via OpenAI Vision.
 - **Premier rank** — busca o pico do Premier no CS2 via scrape do [csstats.gg](https://csstats.gg/).
@@ -47,7 +47,6 @@ Aplicação web para gerenciar partidas e comunidades de Counter-Strike: cadastr
 
 | Rota | Descrição |
 |------|-----------|
-| `POST /api/divide-teams` | Balanceamento de times por IA (OpenAI) pela soma de pontuação + estrelas |
 | `POST /api/read-scores` | OCR de um print do placar em estatísticas (OpenAI Vision) |
 | `POST /api/premier-rank` | Scrape do csstats.gg (via scrape.do) para o pico do Premier no CS2 |
 | `POST /api/comparative-messages` | Comentários gerados por IA para o comparativo de jogadores |
@@ -61,7 +60,7 @@ Aplicação web para gerenciar partidas e comunidades de Counter-Strike: cadastr
 - [Supabase](https://supabase.com/) (banco de dados + autenticação)
 - [TanStack Query](https://tanstack.com/query) e [TanStack Table](https://tanstack.com/table)
 - [React Hook Form](https://react-hook-form.com/) + [Yup](https://github.com/jquense/yup) (`yup-locale-pt`)
-- [OpenAI](https://platform.openai.com/) (balanceamento de times, OCR, comentários)
+- [OpenAI](https://platform.openai.com/) (OCR, comentários)
 - [@julianobazzi/utils](https://www.npmjs.com/package/@julianobazzi/utils) e [@julianobazzi/nextjs-utils](https://www.npmjs.com/package/@julianobazzi/nextjs-utils)
 - [Biome](https://biomejs.dev/) (lint/format)
 
@@ -92,7 +91,7 @@ A aplicação roda em [http://localhost:3000](http://localhost:3000).
 |----------|-----------|
 | `NEXT_PUBLIC_SUPABASE_URL` | URL do projeto Supabase (lado cliente) |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Chave anônima do Supabase (lado cliente) |
-| `OPENAI_API_KEY` | Chave da OpenAI para balanceamento, OCR e comentários |
+| `OPENAI_API_KEY` | Chave da OpenAI para OCR e comentários |
 | `SCRAPE_DO_TOKEN` | Token do [scrape.do](https://scrape.do/) para o scrape do Premier rank |
 | `NODE_ENV` | Ambiente da aplicação (`development` / `production`) |
 

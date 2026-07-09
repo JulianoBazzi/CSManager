@@ -1,7 +1,6 @@
 import { formatDateTime, getLabelById } from '@julianobazzi/utils';
 import { useQuery } from '@tanstack/react-query';
 import { games } from '~/assets/games';
-import { sweepstakeEngines } from '~/assets/sweepstakeEngines';
 import { TABLE_SWEEPSTAKES } from '~/config/constants';
 import type ISweepstakeAPI from '~/models/Entity/Sweepstake/ISweepstakeAPI';
 import { queryClient } from '~/services/queryClient';
@@ -12,7 +11,6 @@ export function formatSweepstakes(sweepstake: ISweepstakeAPI): ISweepstakeAPI {
     ...sweepstake,
     format_game_type: getLabelById(games, sweepstake.game_type, 'name', 'Não Localizado'),
     format_short_game_type: getLabelById(games, sweepstake.game_type, 'shortName', 'Não Localizado'),
-    format_engine: getLabelById(sweepstakeEngines, sweepstake.engine, 'name', 'Não Localizado'),
     format_departure_at: formatDateTime(sweepstake.departure_at),
   };
 }

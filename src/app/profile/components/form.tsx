@@ -10,7 +10,6 @@ import type { InferType } from 'yup';
 import * as yup from 'yup';
 
 import { games } from '~/assets/games';
-import { sweepstakeEngines } from '~/assets/sweepstakeEngines';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
@@ -38,14 +37,6 @@ export function ProfileForm({ user }: IProfileFormProps) {
       })
       .nullable()
       .required(),
-    engine: yup
-      .object()
-      .shape({
-        id: yup.lazy(value => (typeof value === 'number' ? yup.number() : yup.string()).required().nullable()),
-        name: yup.string(),
-      })
-      .nullable()
-      .required(),
   });
 
   const {
@@ -59,7 +50,6 @@ export function ProfileForm({ user }: IProfileFormProps) {
     defaultValues: {
       name: user.user_metadata.name,
       game_type: findOptionById(games, user.user_metadata.gameType) ?? undefined,
-      engine: findOptionById(sweepstakeEngines, user.user_metadata.sweepstakeEngine) ?? undefined,
     },
   });
 
@@ -85,19 +75,6 @@ export function ProfileForm({ user }: IProfileFormProps) {
               required
               onChange={option => {
                 setValue('game_type', option as ISelectOption);
-              }}
-            />
-
-            <Select
-              label="Método de Sorteio"
-              options={sweepstakeEngines}
-              value={watch('engine') as ISelectOption}
-              error={errors.engine?.id}
-              {...register('engine')}
-              disabled={isSubmitting}
-              required
-              onChange={option => {
-                setValue('engine', option as ISelectOption);
               }}
             />
           </Stack>

@@ -6,20 +6,28 @@ returns table (
 )
 language sql
 as $$
-SELECT p.id as id,
-       p.rating as rating,
-       coalesce((CASE
-                     WHEN x.count > 1 THEN ceil(x.damage / x.count)
-                     ELSE 0
-                 END), 0) AS score
-FROM players p
-LEFT JOIN
-  (SELECT v.player_id,
-          count(1) as count,
-          sum(v.damage) as damage
-     FROM v_map_ranking v
-    WHERE v.map_id = ANY(map_ids)
-    GROUP BY v.player_id) x ON p.id = x.player_id
-WHERE p.id = ANY(player_ids)
-  AND p.user_id = user_id;
+-- Score = dano médio ponderado pelo nº de partidas (v_map_ranking.quantity).
+-- Prioridade: mapas selecionados -> fallback: média geral em todos os mapas -> 0
+-- (o 0 é imputado pela média do grupo no TS, em balanceTeams).
+SELECT p.id AS id,
+       p.rating AS rating,
+       round(coalesce(sel.avg_damage, com.avg_damage, 0))::int AS score
+  FROM players p
+  LEFT JOIN (
+         SELECT v.player_id,
+                sum(v.damage * v.quantity)::numeric / nullif(sum(v.quantity), 0) AS avg_damage
+           FROM v_map_ranking v
+          WHERE v.map_id = ANY(map_ids)
+            AND v.player_id = ANY(player_ids)
+          GROUP BY v.player_id
+       ) sel ON sel.player_id = p.id
+  LEFT JOIN (
+         SELECT v.player_id,
+                sum(v.damage * v.quantity)::numeric / nullif(sum(v.quantity), 0) AS avg_damage
+           FROM v_map_ranking v
+          WHERE v.player_id = ANY(player_ids)
+          GROUP BY v.player_id
+       ) com ON com.player_id = p.id
+ WHERE p.id = ANY(player_ids)
+   AND p.user_id = get_player_scores_on_maps.user_id;
 $$;

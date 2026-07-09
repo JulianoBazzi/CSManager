@@ -125,7 +125,7 @@ export function PlayersForm({ user }: IPlayersProps) {
       header: 'Username',
     },
     {
-      accessorKey: 'actions',
+      accessorKey: 'steam_id',
       header: 'Steam ID',
       enableSorting: false,
       cell: ({ row }) => (
@@ -156,7 +156,7 @@ export function PlayersForm({ user }: IPlayersProps) {
       cell: ({ row }) => <ActiveBadge active={row.original.active} />,
     },
     {
-      accessorKey: 'actions',
+      id: 'actions',
       header: '',
       enableSorting: false,
       cell: ({ row }) => <RankingIconButton onClick={() => handleShowRankingModal(row.original)} size="xs" />,

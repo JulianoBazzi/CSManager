@@ -199,7 +199,7 @@ export const ImportImageLeaderboardModal = ({ ref }: { ref?: Ref<ImportImageLead
       enableSorting: false,
     },
     {
-      accessorKey: 'actions',
+      id: 'actions',
       header: '',
       enableSorting: false,
       cell: ({ row }) => (

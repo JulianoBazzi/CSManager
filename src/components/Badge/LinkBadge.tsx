@@ -9,7 +9,7 @@ interface ILinkBadgeProps {
 export function LinkBadge({ value, link }: ILinkBadgeProps) {
   if (value) {
     return (
-      <Link href={link} target="_blank" rel="noopener noreferrer">
+      <Link href={link} target="_blank" rel="noopener noreferrer" onClick={event => event.stopPropagation()}>
         <Flex align="center" gap="1">
           <Text>{value}</Text>
           <Icon fontSize="md">

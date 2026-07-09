@@ -16,7 +16,6 @@ interface ISweepstakeAPI {
 
   format_game_type: string;
   format_short_game_type: string;
-  format_engine: string;
   format_departure_at: string;
 }
 

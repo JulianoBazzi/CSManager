@@ -16,7 +16,6 @@ import type { InferType } from 'yup';
 import * as yup from 'yup';
 
 import { games } from '~/assets/games';
-import { sweepstakeEngines } from '~/assets/sweepstakeEngines';
 import { MapBadge } from '~/components/Badge/MapBadge';
 import { StarBadge } from '~/components/Badge/StarBadge';
 import Card from '~/components/Card';
@@ -32,7 +31,6 @@ import { TABLE_SWEEPSTAKE_MAPS, TABLE_SWEEPSTAKE_PLAYERS, TABLE_SWEEPSTAKES } fr
 import { useFeedback } from '~/contexts/FeedbackContext';
 import type IMapAPI from '~/models/Entity/Map/IMapAPI';
 import type IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
-import type IPlayerScoreAPI from '~/models/Entity/Player/IPlayerScoreAPI';
 import type ISweepstake from '~/models/Entity/Sweepstake/ISweepstake';
 import { SeepstakeEngineEnum } from '~/models/Entity/Sweepstake/ISweepstakeAPI';
 import type ISweepstakeMap from '~/models/Entity/Sweepstake/ISweepstakeMap';
@@ -79,37 +77,24 @@ export function NewSweepstakeForm({ user }: INewSweepstakeProps) {
   }
 
   const { mutateAsync, isPending: isLoadingCreate } = useMutation({
-    mutationFn: async ({ game_type, departure_at, engine }: ISweepstake) => {
+    mutationFn: async ({ game_type, departure_at }: ISweepstake) => {
       const sweepstakeId = v4();
       const playerList: ISweepstakePlayer[] = [];
 
-      let divisionTeams: [IPlayerScoreAPI[], IPlayerScoreAPI[]] = [[], []];
-
-      if (engine?.id === SeepstakeEngineEnum.Ranking) {
-        const playerScoreList = await getPlayersScoresOnMaps(
+      const playerScoreList =
+        (await getPlayersScoresOnMaps(
           selectedPlayers.map(player => player.id),
           selectedMaps,
           user?.id
-        );
+        )) ?? [];
 
-        if (playerScoreList) {
-          divisionTeams = balanceTeams(
-            playerScoreList.map(item => ({
-              id: item.id,
-              rating: item.rating,
-              score: item.score,
-            }))
-          );
-        }
-      } else {
-        divisionTeams = balanceTeams(
-          selectedPlayers.map(player => ({
-            id: player.id,
-            rating: player.rating,
-            score: player.premier,
-          }))
-        );
-      }
+      const divisionTeams = balanceTeams(
+        selectedPlayers.map(player => ({
+          id: player.id,
+          rating: player.rating,
+          score: playerScoreList.find(item => item.id === player.id)?.score ?? 0,
+        }))
+      );
 
       for (let i = 0; i < divisionTeams.length; i++) {
         const team = divisionTeams[i];
@@ -147,7 +132,7 @@ export function NewSweepstakeForm({ user }: INewSweepstakeProps) {
         id: sweepstakeId,
         user_id: user.id,
         game_type: game_type?.id,
-        engine: engine?.id,
+        engine: SeepstakeEngineEnum.Ranking,
         departure_at,
         quantity_players: playerList.length,
         quantity_maps: mapList.length,
@@ -254,14 +239,6 @@ export function NewSweepstakeForm({ user }: INewSweepstakeProps) {
       })
       .nullable()
       .required(),
-    engine: yup
-      .object()
-      .shape({
-        id: yup.lazy(value => (typeof value === 'number' ? yup.number() : yup.string()).required().nullable()),
-        name: yup.string(),
-      })
-      .nullable()
-      .required(),
   });
 
   const {
@@ -274,7 +251,6 @@ export function NewSweepstakeForm({ user }: INewSweepstakeProps) {
     resolver: yupResolver(sweepstakeSchema),
     defaultValues: {
       game_type: findOptionById(games, user.user_metadata.gameType) ?? undefined,
-      engine: findOptionById(sweepstakeEngines, user.user_metadata.sweepstakeEngine) ?? undefined,
       departure_at: dayjs().set('hour', 21).set('minute', 0).set('second', 0).format('YYYY-MM-DD HH:mm'),
     },
   });
@@ -320,18 +296,6 @@ export function NewSweepstakeForm({ user }: INewSweepstakeProps) {
               {...register('departure_at')}
               disabled={isLoadingCreate}
               required
-            />
-            <Select
-              label="Método de Sorteio"
-              options={sweepstakeEngines}
-              value={watch('engine') as ISelectOption}
-              error={errors.engine?.id}
-              {...register('engine')}
-              disabled={isLoadingCreate}
-              required
-              onChange={option => {
-                setValue('engine', option as ISelectOption);
-              }}
             />
             <Stack direction="row" gap="4" w="100%">
               <NumberInput

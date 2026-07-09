@@ -67,11 +67,6 @@ export function SweepstakesForm({ user }: ISweepstakesProps) {
       enableSorting: false,
     },
     {
-      accessorKey: 'format_engine',
-      header: 'Engine',
-      enableSorting: false,
-    },
-    {
       accessorKey: 'quantity_players',
       header: 'Nº Jogadores',
       enableSorting: false,
