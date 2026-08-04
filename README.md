@@ -64,7 +64,7 @@ A web app to manage Counter-Strike matches and communities: register players, ru
 - [@julianobazzi/utils](https://www.npmjs.com/package/@julianobazzi/utils) & [@julianobazzi/nextjs-utils](https://www.npmjs.com/package/@julianobazzi/nextjs-utils)
 - [Biome](https://biomejs.dev/) (lint/format)
 
-> Requires **Node ≥ 20.9**.
+> Requires **Node ≥ 24**.
 
 ## Getting Started
 

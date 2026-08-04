@@ -17,7 +17,7 @@ npm run lint:fix     # lint com auto-fix
 npx tsc --noEmit     # typecheck (não há script dedicado)
 ```
 
-Setup: `cp .env.example .env.local` e preencher `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `OPENAI_API_KEY` (OCR/comentários) e `SCRAPE_DO_TOKEN` (scraping do Premier). Node ≥ 20.9.
+Setup: `cp .env.example .env.local` e preencher `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `OPENAI_API_KEY` (OCR/comentários) e `SCRAPE_DO_TOKEN` (scraping do Premier). Node ≥ 24.
 
 Testes são Vitest em ambiente `node`, apenas `src/**/*.test.ts` (utils puros — sem testes de componente). Alias de import `~/` → `src/` (tsconfig e vitest.config.ts).
 

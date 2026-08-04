@@ -64,7 +64,7 @@ Aplicação web para gerenciar partidas e comunidades de Counter-Strike: cadastr
 - [@julianobazzi/utils](https://www.npmjs.com/package/@julianobazzi/utils) e [@julianobazzi/nextjs-utils](https://www.npmjs.com/package/@julianobazzi/nextjs-utils)
 - [Biome](https://biomejs.dev/) (lint/format)
 
-> Requer **Node ≥ 20.9**.
+> Requer **Node ≥ 24**.
 
 ## Como Rodar
 
