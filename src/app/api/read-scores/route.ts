@@ -13,7 +13,7 @@ export async function POST(request: Request) {
 
   try {
     const response = await openai.chat.completions.create({
-      model: 'gpt-5.4-mini',
+      model: 'gpt-6-luna',
       response_format: { type: 'json_object' },
       messages: [
         {
