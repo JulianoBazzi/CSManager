@@ -1,7 +1,6 @@
 'use client';
 
 import { Stack, Text, useBreakpointValue } from '@chakra-ui/react';
-import type { ColumnDef } from '@tanstack/react-table';
 import { type Ref, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import {
   ImportImageLeaderboardModal,
@@ -10,7 +9,7 @@ import {
 import { RankBadge } from '~/components/Badge/RankBadge';
 import { OutlineGrayButton } from '~/components/Button/Base/OutlineGrayButton';
 import { Modal, ModalBody, type ModalHandle } from '~/components/Form/Modal';
-import { Table } from '~/components/Form/Table';
+import { Table, type TableColumnDef } from '~/components/Form/Table';
 import { PlayerName } from '~/components/PlayerName';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import type IRankingAPI from '~/models/Entity/Ranking/IRankingAPI';
@@ -35,7 +34,7 @@ export const SweepstakeMapRankingModal = ({ ref }: { ref?: Ref<SweepstakeMapRank
     sweepstakeId: recordModalProps?.sweepstakeMap?.sweepstake_id,
   });
 
-  const rankingColumns: ColumnDef<IRankingAPI>[] = [
+  const rankingColumns: TableColumnDef<IRankingAPI>[] = [
     {
       id: 'position',
       header: '#',

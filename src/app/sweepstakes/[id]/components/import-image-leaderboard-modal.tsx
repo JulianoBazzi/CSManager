@@ -2,7 +2,6 @@
 
 import { Flex, Icon, Stack, Text } from '@chakra-ui/react';
 import { useMutation } from '@tanstack/react-query';
-import type { ColumnDef } from '@tanstack/react-table';
 import axios from 'axios';
 import { type ChangeEvent, type Ref, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import { RiAlertLine } from 'react-icons/ri';
@@ -16,7 +15,7 @@ import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
 import { SaveSolidButton } from '~/components/Button/SaveSolidButton';
 import { Input } from '~/components/Form/Input';
 import { Modal, ModalBody, ModalFooter, type ModalHandle } from '~/components/Form/Modal';
-import { Table } from '~/components/Form/Table';
+import { Table, type TableColumnDef } from '~/components/Form/Table';
 import { DeleteSolidIconButton } from '~/components/IconButton/DeleteSolidIconButton';
 import { TABLE_PLAYERS, TABLE_RANKING, VIEW_MAP_RANKING, VIEW_SWEEPSTAKE_RANKING } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
@@ -161,7 +160,7 @@ export const ImportImageLeaderboardModal = ({ ref }: { ref?: Ref<ImportImageLead
     },
   });
 
-  const playerLeaderboardColumns: ColumnDef<IPlayerLeaderboardAPI>[] = [
+  const playerLeaderboardColumns: TableColumnDef<IPlayerLeaderboardAPI>[] = [
     {
       accessorKey: 'name',
       header: 'Nome',

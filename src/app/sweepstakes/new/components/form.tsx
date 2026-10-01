@@ -5,7 +5,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { findOptionById, getRandomInt } from '@julianobazzi/utils';
 import type { User } from '@supabase/supabase-js';
 import { useMutation } from '@tanstack/react-query';
-import type { ColumnDef } from '@tanstack/react-table';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -24,7 +23,7 @@ import CardHeader from '~/components/Card/CardHeader';
 import { Input } from '~/components/Form/Input';
 import { NumberInput } from '~/components/Form/NumberInput';
 import { Select } from '~/components/Form/Select';
-import { Table } from '~/components/Form/Table';
+import { Table, type TableColumnDef } from '~/components/Form/Table';
 import { SweepstakeIconButton } from '~/components/IconButton/SweepstakeIconButton';
 import Template from '~/components/Template';
 import { TABLE_SWEEPSTAKE_MAPS, TABLE_SWEEPSTAKE_PLAYERS, TABLE_SWEEPSTAKES } from '~/config/constants';
@@ -160,7 +159,7 @@ export function NewSweepstakeForm({ user }: INewSweepstakeProps) {
     },
   });
 
-  const playerColumns: ColumnDef<IPlayerAPI>[] = [
+  const playerColumns: TableColumnDef<IPlayerAPI>[] = [
     {
       accessorKey: 'id',
       header: '',
@@ -200,7 +199,7 @@ export function NewSweepstakeForm({ user }: INewSweepstakeProps) {
     },
   ];
 
-  const mapColumns: ColumnDef<IMapAPI>[] = [
+  const mapColumns: TableColumnDef<IMapAPI>[] = [
     {
       accessorKey: 'id',
       header: '',

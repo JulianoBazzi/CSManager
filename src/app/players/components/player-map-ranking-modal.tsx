@@ -1,13 +1,12 @@
 'use client';
 
 import { Text } from '@chakra-ui/react';
-import type { ColumnDef } from '@tanstack/react-table';
 import { type Ref, useCallback, useImperativeHandle, useRef, useState } from 'react';
 
 import { MapBadge } from '~/components/Badge/MapBadge';
 import { RankBadge } from '~/components/Badge/RankBadge';
 import { Modal, ModalBody, type ModalHandle } from '~/components/Form/Modal';
-import { Table } from '~/components/Form/Table';
+import { Table, type TableColumnDef } from '~/components/Form/Table';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import type IViewMapRankingAPI from '~/models/Entity/Ranking/IViewMapRankingAPI';
 import type IPlayerMapRankingModal from '~/models/Modal/IPlayerMapRankingModal';
@@ -26,7 +25,7 @@ export const PlayerMapRankingModal = ({ ref }: { ref?: Ref<PlayerMapRankingModal
 
   const { data: rankings, isLoading } = usePlayerMapRanking(recordModalProps?.id ?? '');
 
-  const rankingColumns: ColumnDef<IViewMapRankingAPI>[] = [
+  const rankingColumns: TableColumnDef<IViewMapRankingAPI>[] = [
     {
       id: 'position',
       header: '#',

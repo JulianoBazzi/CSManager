@@ -2,7 +2,6 @@
 
 import { Flex } from '@chakra-ui/react';
 import type { User } from '@supabase/supabase-js';
-import type { ColumnDef } from '@tanstack/react-table';
 import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import { RiTeamLine } from 'react-icons/ri';
@@ -20,7 +19,7 @@ import { StarBadge } from '~/components/Badge/StarBadge';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
-import { Table } from '~/components/Form/Table';
+import { Table, type TableColumnDef } from '~/components/Form/Table';
 import { AddIconButton } from '~/components/IconButton/AddIconButton';
 import { RankingIconButton } from '~/components/IconButton/RankingIconButton';
 import { RefreshIconButton } from '~/components/IconButton/RefreshIconButton';
@@ -115,7 +114,7 @@ export function PlayersForm({ user }: IPlayersProps) {
     }
   }
 
-  const columns: ColumnDef<IPlayerAPI>[] = [
+  const columns: TableColumnDef<IPlayerAPI>[] = [
     {
       accessorKey: 'name',
       header: 'Nome',

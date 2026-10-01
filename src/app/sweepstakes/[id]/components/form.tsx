@@ -3,7 +3,6 @@
 import { Box, Flex, Icon, IconButton, Separator, Stack, Text, useBreakpointValue } from '@chakra-ui/react';
 import type { User } from '@supabase/supabase-js';
 import { useMutation } from '@tanstack/react-query';
-import type { ColumnDef } from '@tanstack/react-table';
 import { useRef, useState } from 'react';
 import { GiUnlitBomb } from 'react-icons/gi';
 import { MdEmojiPeople } from 'react-icons/md';
@@ -38,7 +37,7 @@ import { StarBadge } from '~/components/Badge/StarBadge';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
-import { Table } from '~/components/Form/Table';
+import { Table, type TableColumnDef } from '~/components/Form/Table';
 import { AddIconButton } from '~/components/IconButton/AddIconButton';
 import { ChangeTeamIconButton } from '~/components/IconButton/ChangeTeamIconButton';
 import { DeleteSolidIconButton } from '~/components/IconButton/DeleteSolidIconButton';
@@ -94,7 +93,7 @@ export function SweepstakeForm({ user, sweepstake: sweepstakeProp }: ISweepstake
     isFetching: isFetchingSweepstakeRankings,
   } = useSweepstakeRanking(sweepstake.id);
 
-  const rankingColumns: ColumnDef<IViewSeepstakeRankingAPI>[] = [
+  const rankingColumns: TableColumnDef<IViewSeepstakeRankingAPI>[] = [
     {
       id: 'position',
       header: '#',

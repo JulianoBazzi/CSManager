@@ -1,7 +1,6 @@
 'use client';
 
 import type { User } from '@supabase/supabase-js';
-import type { ColumnDef } from '@tanstack/react-table';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { RiTrophyLine } from 'react-icons/ri';
@@ -10,7 +9,7 @@ import { removeAccents } from '@julianobazzi/utils';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
-import { Table } from '~/components/Form/Table';
+import { Table, type TableColumnDef } from '~/components/Form/Table';
 import { AddIconButton } from '~/components/IconButton/AddIconButton';
 import { SearchBar } from '~/components/SearchBar';
 import Template from '~/components/Template';
@@ -55,7 +54,7 @@ export function SweepstakesForm({ user }: ISweepstakesProps) {
     router.push('/sweepstakes/new');
   }
 
-  const columns: ColumnDef<ISweepstakeAPI>[] = [
+  const columns: TableColumnDef<ISweepstakeAPI>[] = [
     {
       accessorKey: 'format_departure_at',
       header: 'Data/Hora Sorteio',

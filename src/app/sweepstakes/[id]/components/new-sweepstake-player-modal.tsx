@@ -2,14 +2,13 @@
 
 import { Checkbox } from '@chakra-ui/react';
 import { useMutation } from '@tanstack/react-query';
-import type { ColumnDef } from '@tanstack/react-table';
 import { type Ref, useCallback, useImperativeHandle, useRef, useState } from 'react';
 
 import { PremierBadge } from '~/components/Badge/PremierBadge';
 import { SolidBlueButton } from '~/components/Button/Base/SolidBlueButton';
 import { CancelOutlineButton } from '~/components/Button/CancelOutlineButton';
 import { Modal, ModalBody, ModalFooter, type ModalHandle } from '~/components/Form/Modal';
-import { Table } from '~/components/Form/Table';
+import { Table, type TableColumnDef } from '~/components/Form/Table';
 import { TABLE_SWEEPSTAKE_PLAYERS } from '~/config/constants';
 import { useFeedback } from '~/contexts/FeedbackContext';
 import type IPlayerAPI from '~/models/Entity/Player/IPlayerAPI';
@@ -44,7 +43,7 @@ export const NewSweepstakePlayerModal = ({ ref }: { ref?: Ref<NewSweepstakePlaye
     }
   }
 
-  const playerColumns: ColumnDef<IPlayerAPI>[] = [
+  const playerColumns: TableColumnDef<IPlayerAPI>[] = [
     {
       accessorKey: 'id',
       header: '',

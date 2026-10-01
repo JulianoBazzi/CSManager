@@ -2,7 +2,6 @@
 
 import { Box, Flex, Text } from '@chakra-ui/react';
 import type { User } from '@supabase/supabase-js';
-import type { ColumnDef } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
 import { RiNumbersLine } from 'react-icons/ri';
 import { removeAccents } from '@julianobazzi/utils';
@@ -14,7 +13,7 @@ import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
 import { Select } from '~/components/Form/Select';
-import { Table } from '~/components/Form/Table';
+import { Table, type TableColumnDef } from '~/components/Form/Table';
 import { PlayerName } from '~/components/PlayerName';
 import { SearchBar } from '~/components/SearchBar';
 import Template from '~/components/Template';
@@ -45,7 +44,7 @@ export function RankingForm({ user, userId }: IRankingProps) {
     );
   }, [search, data]);
 
-  const rankingColumns: ColumnDef<IViewRankingAPI>[] = [
+  const rankingColumns: TableColumnDef<IViewRankingAPI>[] = [
     {
       id: 'position',
       header: '#',

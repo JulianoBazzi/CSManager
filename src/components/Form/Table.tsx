@@ -3,14 +3,19 @@ import {
   type Cell,
   type ColumnDef,
   type ColumnSort,
+  type ColumnVisibilityState,
+  columnVisibilityFeature,
+  createPaginatedRowModel,
+  createSortedRowModel,
   flexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
   type PaginationState,
+  type RowData,
+  rowPaginationFeature,
+  rowSortingFeature,
   type SortingState,
-  useReactTable,
-  type VisibilityState,
+  sortFns,
+  tableFeatures,
+  useTable,
 } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { RiArrowDownSFill, RiArrowUpSFill, RiSubtractLine } from 'react-icons/ri';
@@ -21,13 +26,24 @@ import { NextPageGhostIconButton } from '~/components/IconButton/NextPageGhostIc
 import { PreviousPageGhostIconButton } from '~/components/IconButton/PreviousPageGhostIconButton';
 import type IEntityBase from '~/models/Entity/Base/IEntityBase';
 
+const features = tableFeatures({
+  rowSortingFeature,
+  rowPaginationFeature,
+  columnVisibilityFeature,
+  sortedRowModel: createSortedRowModel(),
+  paginatedRowModel: createPaginatedRowModel(),
+  sortFns,
+});
+
+export type TableColumnDef<T extends RowData> = ColumnDef<typeof features, T>;
+
 export type ITableProps<T extends IEntityBase> = {
-  columns: ColumnDef<T>[];
+  columns: TableColumnDef<T>[];
   orderBy?: ColumnSort;
   data?: T[];
   perPage?: number;
   loading?: boolean;
-  columnVisibility?: VisibilityState;
+  columnVisibility?: ColumnVisibilityState;
   disableTotalRecords?: boolean;
   disablePagination?: boolean;
   onRowClick?: (data: T) => void;
@@ -74,21 +90,10 @@ export function Table<T extends IEntityBase>({
     [pageIndex, pageSize]
   );
 
-  const {
-    getRowModel,
-    getHeaderGroups,
-    getPageCount,
-    setPageIndex,
-    getCanPreviousPage,
-    getCanNextPage,
-    previousPage,
-    nextPage,
-  } = useReactTable({
+  const tableInstance = useTable({
+    features,
     columns,
     data,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
     state: {
@@ -98,19 +103,19 @@ export function Table<T extends IEntityBase>({
     },
   });
 
-  function isActionsCell(cell: Cell<T, unknown>): boolean {
+  function isActionsCell(cell: Cell<typeof features, T>): boolean {
     return (
       cell.column.id === 'actions' ||
       (cell.column.columnDef.header === '' && cell.column.columnDef.enableSorting === false)
     );
   }
 
-  const headerMap = Object.fromEntries(getHeaderGroups()[0].headers.map(h => [h.column.id, h]));
+  const headerMap = Object.fromEntries(tableInstance.getHeaderGroups()[0].headers.map(h => [h.column.id, h]));
 
   const table = () => (
     <ChakraTable.Root size="sm" striped colorPalette="gray">
       <ChakraTable.Header>
-        {getHeaderGroups().map(headerGroup => (
+        {tableInstance.getHeaderGroups().map(headerGroup => (
           <ChakraTable.Row key={headerGroup.id}>
             {headerGroup.headers.map(header => (
               <ChakraTable.ColumnHeader key={header.id} colSpan={header.colSpan} textTransform="none">
@@ -156,7 +161,7 @@ export function Table<T extends IEntityBase>({
               ))}
             </ChakraTable.Row>
           ))}
-        {getRowModel().rows.map(row => {
+        {tableInstance.getRowModel().rows.map(row => {
           const selected = isRowSelected?.(row.original);
           return (
             <ChakraTable.Row
@@ -207,7 +212,7 @@ export function Table<T extends IEntityBase>({
               </Card.Body>
             </Card.Root>
           ))
-        : getRowModel().rows.map(row => {
+        : tableInstance.getRowModel().rows.map(row => {
             const selected = isRowSelected?.(row.original);
             return (
               <Card.Root
@@ -268,10 +273,22 @@ export function Table<T extends IEntityBase>({
           )}
           {!disablePagination && (
             <Flex gap="1" align="center">
-              <FirstPageGhostIconButton onClick={() => setPageIndex(0)} disabled={!getCanPreviousPage()} />
-              <PreviousPageGhostIconButton onClick={() => previousPage()} disabled={!getCanPreviousPage()} />
-              <NextPageGhostIconButton onClick={() => nextPage()} disabled={!getCanNextPage()} />
-              <LastPageGhostIconButton onClick={() => setPageIndex(getPageCount() - 1)} disabled={!getCanNextPage()} />
+              <FirstPageGhostIconButton
+                onClick={() => tableInstance.setPageIndex(0)}
+                disabled={!tableInstance.getCanPreviousPage()}
+              />
+              <PreviousPageGhostIconButton
+                onClick={() => tableInstance.previousPage()}
+                disabled={!tableInstance.getCanPreviousPage()}
+              />
+              <NextPageGhostIconButton
+                onClick={() => tableInstance.nextPage()}
+                disabled={!tableInstance.getCanNextPage()}
+              />
+              <LastPageGhostIconButton
+                onClick={() => tableInstance.setPageIndex(tableInstance.getPageCount() - 1)}
+                disabled={!tableInstance.getCanNextPage()}
+              />
             </Flex>
           )}
         </Flex>

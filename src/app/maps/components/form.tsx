@@ -1,7 +1,6 @@
 'use client';
 
 import type { User } from '@supabase/supabase-js';
-import type { ColumnDef } from '@tanstack/react-table';
 import { useEffect, useRef, useState } from 'react';
 import { RiMap2Line } from 'react-icons/ri';
 import { removeAccents } from '@julianobazzi/utils';
@@ -11,7 +10,7 @@ import { MapBadge } from '~/components/Badge/MapBadge';
 import Card from '~/components/Card';
 import CardBody from '~/components/Card/CardBody';
 import CardHeader from '~/components/Card/CardHeader';
-import { Table } from '~/components/Form/Table';
+import { Table, type TableColumnDef } from '~/components/Form/Table';
 import { AddIconButton } from '~/components/IconButton/AddIconButton';
 import { SearchBar } from '~/components/SearchBar';
 import Template from '~/components/Template';
@@ -50,7 +49,7 @@ export function MapsForm({ user }: IMapsProps) {
     });
   }
 
-  const columns: ColumnDef<IMapAPI>[] = [
+  const columns: TableColumnDef<IMapAPI>[] = [
     {
       accessorKey: 'name',
       header: 'Nome',
